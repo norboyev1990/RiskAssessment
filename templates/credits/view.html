@@ -1,0 +1,105 @@
+{% extends 'layout.html' %}
+{% load static %}
+{% load humanize %}
+{% load i18n %}
+{% load render_table from django_tables2 %}
+{% load querystring from django_tables2 %}
+{% block pagecontent %}
+
+    <div class="container-fluid">
+        <div class="header">
+            <h1 class="header-title">
+                {{ page_title }}
+            </h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">{% trans 'Home' %}</a></li>
+                    <li class="breadcrumb-item"><a href="#">Кредитный портфель</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ page_title }}</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="row">
+            <div class="col-xxl-12">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-actions float-right">
+                            <a href="#" class="mr-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-refresh-cw align-middle"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                            </a>
+                            <div class="d-inline-block dropdown show">
+                                <a href="#" data-toggle="dropdown" data-display="static">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical align-middle"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+                                </a>
+
+                                <div class="dropdown-menu dropdown-menu-right">
+                                    <a class="dropdown-item" href="{% querystring '_export'='xlsx' %}">
+                                        <i class="align-middle mr-1 fas fa-fw fa-file-excel"></i> Экспорт в Excel</a>
+{#                                    <a class="dropdown-item" href="#">Another action</a>#}
+{#                                    <a class="dropdown-item" href="#">Something else here</a>#}
+                                </div>
+                            </div>
+                        </div>
+                        <h5 class="card-title mb-0">{{ page_title }} {{ page_addon }}</h5>
+
+                    </div>
+
+                    <div class="card-body">
+                        {% if menu_group == 'by_percents' %}
+                        <div class="row">
+                            <div class="col-xl-auto">
+                                {% url 'by_percents' 'national_all' as bp_national_all_url %}
+                                {% url 'by_percents' 'foreign_all' as bp_foreign_all_url %}
+                                {% url 'by_percents' 'national_ul' as bp_national_ul_url %}
+                                {% url 'by_percents' 'foreign_ul' as bp_foreign_ul_url %}
+                                <a href="{{ bp_national_all_url }}" class="btn btn-pill
+                                    {% if request.path == bp_national_all_url %} btn-secondary active {% else %} btn-light {%endif%}">
+                                    в национальной валюте
+                                </a>
+                                <a href="{{ bp_foreign_all_url }}" class="btn btn-pill
+                                    {% if request.path == bp_foreign_all_url %} btn-secondary active {% else %} btn-light {%endif%}">
+                                    в иностранной валюте
+                                </a>
+                                <a href="{{ bp_national_ul_url }}" class="btn btn-pill
+                                    {% if request.path == bp_national_ul_url %} btn-secondary active {% else %} btn-light {%endif%}">
+                                    в национальной валюте по ЮЛ
+                                </a>
+                                <a href="{{ bp_foreign_ul_url }}" class="btn btn-pill
+                                    {% if request.path == bp_foreign_ul_url %} btn-secondary active {% else %} btn-light {%endif%}">
+                                    в иностранной валюте по ЮЛ
+                                </a>
+                            </div>
+                        </div><br>
+                        {% endif %}
+
+                        {% if menu_group == 'by_averages' %}
+                        <div class="row">
+                            <div class="col-xl-auto">
+                                {% url 'by_averages' 'juridical' as ba_juridical_url %}
+                                {% url 'by_averages' 'physical' as ba_physical_url %}
+                                <a href="{{ ba_juridical_url }}" class="btn btn-pill
+                                    {% if request.path == ba_juridical_url %} btn-secondary active {% else %} btn-light {%endif%}">
+                                    юридические лица
+                                </a>
+                                <a href="{{ ba_physical_url }}" class="btn btn-pill
+                                    {% if request.path == ba_physical_url %} btn-secondary active {% else %} btn-light {%endif%}">
+                                    физические лица
+                                </a>
+                            </div>
+                        </div><br>
+                        {% endif %}
+
+                        {% render_table data_table %}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scriptcontent %}
+<script>
+
+</script>
+{% endblock %}

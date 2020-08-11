@@ -1,0 +1,143 @@
+{% load static %}
+{% load i18n %}
+{% url 'home' as home_url %}
+{% url 'dashboard' as dashboard_url %}
+{% url 'general_info' as general_info_url %}
+{% url 'clients_list' as clients_list_url %}
+{% url 'npl_clients' as npl_clients_url %}
+{% url 'toxic_loans' as toxic_loans_url %}
+{% url 'overdue_loans' as overdue_loans_url %}
+{% url 'by_terms' as by_terms_url %}
+{% url 'by_subjects' as by_subjects_url %}
+{% url 'by_segments' as by_segments_url %}
+{% url 'by_currency' as by_currency_url %}
+{% url 'by_branches' as by_branches_url %}
+{% url 'by_products' as by_products_url %}
+{% url 'by_percents' 'national_all' as bp_national_all_url %}
+{% url 'by_percents' 'foreign_all' as bp_foreign_all_url %}
+{% url 'by_percents' 'national_ul' as bp_national_ul_url %}
+{% url 'by_percents' 'foreign_ul' as bp_foreign_ul_url %}
+{% url 'by_averages' 'juridical' as ba_juridical_url %}
+{% url 'by_averages' 'physical' as ba_physical_url %}
+{% url 'issued_overdues' as issued_overdues_url %}
+
+{% url 'repayments_top' as repayments_top_url %}
+{% url 'repayments_all' as repayments_all_url %}
+{% url 'repayments_by_subjects' as repayments_by_subjects_url %}
+{% url 'repayments_by_currency' as repayments_by_currency_url %}
+{% url 'issuance_upload' as issuance_upload_url %}
+
+<style>
+    .sidebar.toggled {
+        margin-left: -290px;
+    }
+</style>
+
+<nav id="sidebar" class="sidebar" style="min-width: 290px;">
+    <a class="sidebar-brand" href="{{ home_url }}">
+        <svg>
+            <use xlink:href="#ion-ios-pulse-strong">
+                <svg viewBox="0 0 512 512" id="ion-ios-pulse-strong">
+                    <path d="M448 273.001c-21.27 0-39.296 13.999-45.596 32.999h-38.857l-28.361-85.417a15.999 15.999 0 0 0-15.183-10.956c-.112 0-.224 0-.335.004a15.997 15.997 0 0 0-15.049 11.588l-44.484 155.262-52.353-314.108C206.535 54.893 200.333 48 192 48s-13.693 5.776-15.525 13.135L115.496 306H16v31.999h112c7.348 0 13.75-5.003 15.525-12.134l45.368-182.177 51.324 307.94c1.229 7.377 7.397 11.92 14.864 12.344.308.018.614.028.919.028 7.097 0 13.406-3.701 15.381-10.594l49.744-173.617 15.689 47.252A16.001 16.001 0 0 0 352 337.999h51.108C409.973 355.999 427.477 369 448 369c26.511 0 48-22.492 48-49 0-26.509-21.489-46.999-48-46.999z">
+                    </path>
+                </svg>
+            </use>
+          </svg>
+        Risk Assessement System
+    </a>
+
+    <div class="sidebar-content">
+        <div class="sidebar-user">
+            <img src="{% static 'spark/img/avatars/avatar-2.jpg' %}" class="img-fluid rounded-circle mb-2" alt="Linda Miller">
+            <div class="font-weight-bold">{{ request.user.first_name }} {{ request.user.last_name }}</div>
+            <small>{{ request.user.email }}</small>
+        </div>
+
+        <ul class="sidebar-nav">
+
+
+            <li class="sidebar-header">{% trans 'Main' %}</li>
+            <li class="sidebar-item {% if request.path == dashboard_url %} active {%endif%}">
+                <a href="{{ dashboard_url }}" class="sidebar-link">
+                    <i class="align-middle mr-2 fas fa-fw fa-home"></i>
+                    <span class="align-middle">{% trans 'Home' %}</span>
+                </a>
+            </li>
+            <li class="sidebar-item {% if request.path == clients_list_url %} active {%endif%}">
+                <a href="{{ clients_list_url }}" class="sidebar-link">
+                    <i class="align-middle mr-2 fas fa-fw fa-user-tie"></i>
+                    <span class="align-middle">{% trans 'Clients' %}</span>
+                </a>
+            </li>
+
+
+            <li class="sidebar-header">{% trans 'Reports' %}</li>
+            <li class="sidebar-item {% if menu_block == 'credits' %} active {%endif%}">
+                <a href="#loan-portfolio" data-toggle="collapse" class="sidebar-link collapsed">
+                    <i class="align-middle mr-2 fas fa-fw fa-folder-open"></i>
+                    <span class="align-middle">{% trans 'Loan portfolio' %}</span>
+                </a>
+
+                <ul id="loan-portfolio" class="sidebar-dropdown list-unstyled collapse " data-parent="#sidebar">
+                    <li class="sidebar-item {% if request.path == general_info_url %} active {%endif%}">
+                        <a class="sidebar-link" href="{{ general_info_url }}">{% trans 'General info' %}</a></li>
+                    <li class="sidebar-item {% if request.path == npl_clients_url %} active {%endif%}">
+                        <a class="sidebar-link" href="{{ npl_clients_url }}">{% trans 'NPL clients' %}</a></li>
+                    <li class="sidebar-item {% if request.path == toxic_loans_url %} active {%endif%}">
+                        <a class="sidebar-link" href="{{ toxic_loans_url }}">{% trans 'Toxic loans' %}</a></li>
+                    <li class="sidebar-item {% if request.path == overdue_loans_url %} active {%endif%}">
+                        <a class="sidebar-link" href="{{ overdue_loans_url }}">{% trans 'Overdue loans' %}</a></li>
+                    <li class="sidebar-item {% if request.path == by_terms_url %} active {%endif%}">
+                        <a class="sidebar-link" href="{{ by_terms_url }}">{% trans 'Disaggregated by terms' %}</a></li>
+                    <li class="sidebar-item {% if request.path == by_subjects_url %} active {%endif%}">
+                        <a class="sidebar-link" href="{{ by_subjects_url }}">{% trans 'Disaggregated by subjects' %}</a></li>
+                    <li class="sidebar-item {% if request.path == by_segments_url %} active {%endif%}">
+                        <a class="sidebar-link" href="{{ by_segments_url }}">{% trans 'Disaggregated by segments' %}</a></li>
+                    <li class="sidebar-item {% if request.path == by_currency_url %} active {%endif%}">
+                        <a class="sidebar-link" href="{{ by_currency_url }}">{% trans 'Disaggregated by currency' %}</a></li>
+                    <li class="sidebar-item {% if request.path == by_branches_url %} active {%endif%}">
+                        <a class="sidebar-link" href="{{ by_branches_url }}">{% trans 'Disaggregated by branches' %}</a></li>
+                    <li class="sidebar-item {% if request.path == by_products_url %} active {%endif%}">
+                        <a class="sidebar-link" href="{{ by_products_url }}">{% trans 'Disaggregated by products' %}</a></li>
+                    <li class="sidebar-item {% if menu_group == 'by_percents' %} active {%endif%}">
+                        <a class="sidebar-link" href="{{ bp_national_all_url }}">{% trans 'Disaggregated by percents' %}</a></li>
+                    <li class="sidebar-item {% if menu_group == 'by_averages' %} active {%endif%}">
+                        <a class="sidebar-link" href="{{ ba_juridical_url }}">{% trans 'Disaggregated by averages' %}</a></li>
+                    <li class="sidebar-item {% if request.path == issued_overdues_url %} active {%endif%}">
+                        <a class="sidebar-link" href="{{ issued_overdues_url }}">{% trans 'Issued overdues by branches' %}</a></li>
+                </ul>
+            </li>
+
+            <li class="sidebar-item {% if menu_block == 'repayment' %} active {%endif%}">
+                <a href="#issue-and-repayment" data-toggle="collapse" class="sidebar-link collapsed">
+                    <i class="align-middle mr-2 fas fa-fw fa-folder-open"></i>
+                    <span class="align-middle">{% trans 'Выдача и погашния' %}</span>
+                </a>
+
+                <ul id="issue-and-repayment" class="sidebar-dropdown list-unstyled collapse " data-parent="#sidebar">
+                    <li class="sidebar-item {% if request.path == repayments_top_url %} active {%endif%}">
+                        <a class="sidebar-link" href="{{ repayments_top_url }}">{% trans 'Выдачи по топ 25 клиента' %}</a></li>
+                    <li class="sidebar-item {% if request.path == repayments_all_url %} active {%endif%}">
+                        <a class="sidebar-link" href="{{ repayments_all_url }}">{% trans 'Выдачи по тип клиента' %}</a></li>
+                    <li class="sidebar-item {% if request.path == repayments_by_subjects_url %} active {%endif%}">
+                        <a class="sidebar-link" href="{{ repayments_by_subjects_url }}">{% trans 'Выдачи по субъектам' %}</a></li>
+                    <li class="sidebar-item {% if request.path == repayments_by_currency_url %} active {%endif%}">
+                        <a class="sidebar-link" href="{{ repayments_by_currency_url }}">{% trans 'Выдачи по валютам' %}</a></li>
+                </ul>
+            </li>
+
+            <li class="sidebar-header">{% trans 'Данные' %}</li>
+            <li class="sidebar-item {% if menu_block == 'uploads' %} active {%endif%}">
+                <a href="#upload-data" data-toggle="collapse" class="sidebar-link collapsed">
+                    <i class="align-middle mr-2 fas fa-fw fa-folder-open"></i>
+                    <span class="align-middle">{% trans 'Загрузка данных' %}</span>
+                </a>
+
+                <ul id="upload-data" class="sidebar-dropdown list-unstyled collapse " data-parent="#sidebar">
+                    <li class="sidebar-item {% if request.path == issuance_upload_url %} active {%endif%}">
+                        <a class="sidebar-link" href="{{ issuance_upload_url }}">{% trans 'Загрузка выдачи' %}</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</nav>

@@ -1,0 +1,6 @@
+*.swp
+*.xlsx
+*.sqlite3
+__pycache__/
+*.xls
+venv
