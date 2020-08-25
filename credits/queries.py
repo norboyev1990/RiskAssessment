@@ -878,6 +878,12 @@ class Query:
                     FROM REPORT_DATA_TABLE D
                     WHERE CURRENCY_NAME = 'JPY'
                     GROUP BY GROUPS
+                ),
+                
+                VALUTA_ALL (GROUPS, AVERAGE) AS (
+                    SELECT GROUPS, SUM(CREDIT_PERCENT)/SUM(VSEGO_ZADOLJENNOST)
+                    FROM REPORT_DATA_TABLE D
+                    GROUP BY GROUPS
                 )
 
             SELECT 
@@ -887,6 +893,7 @@ class Query:
                 NVL(USD.AVERAGE,0) AS AverageUSD,
                 NVL(EUR.AVERAGE,0) AS AverageEUR,
                 NVL(JPY.AVERAGE,0) AS AverageJPY,
+                NVL(ALL1.AVERAGE,0) AS AverageALL,
                 S_UZS.TOTAL AS TotalUZS,
                 S_USD.TOTAL AS TotalUSD,
                 S_EUR.TOTAL AS TotalEUR,
@@ -895,7 +902,8 @@ class Query:
             LEFT JOIN VALUTA_UZS UZS  ON UZS.GROUPS = TN.GROUPS
             LEFT JOIN VALUTA_USD USD  ON USD.GROUPS = TN.GROUPS
             LEFT JOIN VALUTA_EUR EUR  ON EUR.GROUPS = TN.GROUPS
-            LEFT JOIN VALUTA_JPY JPY  ON JPY.GROUPS = TN.GROUPS,
+            LEFT JOIN VALUTA_JPY JPY  ON JPY.GROUPS = TN.GROUPS
+            LEFT JOIN VALUTA_ALL ALL1  ON ALL1.GROUPS = TN.GROUPS,
             (SELECT SUM(CREDIT_PERCENT)/SUM(VSEGO_ZADOLJENNOST) AS TOTAL
               FROM REPORT_DATA_TABLE D WHERE CURRENCY_NAME = 'UZS') S_UZS,
             (SELECT SUM(CREDIT_PERCENT)/SUM(VSEGO_ZADOLJENNOST) AS TOTAL

@@ -1,4 +1,5 @@
 {% extends 'layout.html' %}
+{% load render_table from django_tables2 %}
 {% load static %}
 {% load i18n %}
 {% load humanize %}
@@ -128,6 +129,58 @@
                 <div class="card flex-fill w-100">
                     <div class="card-header">
                         <div class="card-actions float-right">
+                            <a href="javascript:update_line_chart()" class="mr-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                     viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                     class="feather feather-refresh-cw align-middle">
+                                    <polyline points="23 4 23 10 17 10"></polyline>
+                                    <polyline points="1 20 1 14 7 14"></polyline>
+                                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                                </svg>
+                            </a>
+                            <div class="d-inline-block dropdown show">
+                                <a href="#" data-toggle="dropdown" data-display="static">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                         viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                         class="feather feather-more-vertical align-middle">
+                                        <circle cx="12" cy="12" r="1"></circle>
+                                        <circle cx="12" cy="5" r="1"></circle>
+                                        <circle cx="12" cy="19" r="1"></circle>
+                                    </svg>
+                                </a>
+
+                                <div class="dropdown-menu dropdown-menu-right">
+                                    <a class="dropdown-item" href="javascript:init_line_chart('kpr')">Кредитний порфель</a>
+                                    <a class="dropdown-item" href="javascript:init_line_chart('npl')">NPL клиенты</a>
+                                    <a class="dropdown-item" href="javascript:init_line_chart('tox')">Токсичные кредиты</a>
+                                    <a class="dropdown-item" href="javascript:init_line_chart('prs')">Просрочкы</a>
+                                    <a class="dropdown-item" href="javascript:init_line_chart('res')">Резервы</a>
+                                </div>
+                            </div>
+                        </div>
+                        <h5 class="card-title">Line Chart</h5>
+{#                        <h6 class="card-subtitle text-muted">A line chart is a way of plotting data points on a line.</h6>#}
+                    </div>
+                    <div class="card-body">
+                        <div class="loader" style="position: absolute;left: 50%;top: 45%;">
+                            <div class="spinner-grow"></div>
+                        </div>
+                        <div class="chart">
+                            <div class="chartjs-size-monitor">
+                                <div class="chartjs-size-monitor-expand"><div class=""></div></div>
+                                <div class="chartjs-size-monitor-shrink"><div class=""></div></div>
+                            </div>
+                            <canvas id="chartjs-line" style="display: block; width: 698px; height: 300px;" width="698" height="300" class="chartjs-render-monitor"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-xxl-6 d-flex">
+                <div class="card flex-fill w-100">
+                    <div class="card-header">
+                        <div class="card-actions float-right">
                             <a href="#" class="mr-1">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                      viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -160,26 +213,25 @@
                         <h5 class="card-title mb-0">Sales by State</h5>
                     </div>
                     <div class="card-body px-4">
+                        <div class="loader" style="position: absolute;left: 50%;top: 45%;">
+                            <div class="spinner-grow"></div>
+                        </div>
                         <div id="uzb_map" style="height:294px;"></div>
                     </div>
                 </div>
             </div>
-            <div class="col-12 col-md-6 col-xxl-6 d-flex">
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="card-title">Bar Chart</h5>
-                        <h6 class="card-subtitle text-muted">A bar chart provides a way of showing data values represented as vertical bars.</h6>
+
+                        <h5 class="card-title">По продуктам розничного бизнеса</h5>
+
                     </div>
                     <div class="card-body">
-                        <div class="chart">
-                            <div class="chartjs-size-monitor">
-                                <div class="chartjs-size-monitor-expand"><div class=""></div></div>
-                                <div class="chartjs-size-monitor-shrink"><div class=""></div></div>
-                            </div>
-                            <canvas id="chartjs-bar" width="698" height="300" class="chartjs-render-monitor"
-                                    style="display: block; width: 698px; height: 300px;">
-                            </canvas>
-                        </div>
+                        {% render_table dt_products %}
                     </div>
                 </div>
             </div>
@@ -188,175 +240,251 @@
 {% endblock %}
 
 {% block scriptcontent %}
-<script type="text/javascript" src="{% static 'spark/js/uzbekistan.js' %}"></script>
-<script>
-    numberWithCommas = function(x) {
-        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-    }
+    <script type="text/javascript" src="{% static 'spark/js/uzbekistan.js' %}"></script>
 
-    get_status_template = function(arg){
-        if (arg > 0){
-            return '<span class="text-success"><i class="fas fa-level-up-alt"></i> ' + arg + '% </span> По сравнению с прошлым месяцем'}
-        else {
-            return '<span class="text-danger"><i class="fas fa-level-down-alt"></i> ' + arg + '% </span> По сравнению с прошлым месяцем'}
-    }
+    <script>
 
 
-
-    $.ajax({
-        type: "get",
-        url: "http://127.0.0.1:8000/api/credits/stat",
-        dataType: "json",
-        success: function(data){
-            result = data.results
-            $('#card_kpr .values').html(numberWithCommas(result.kpr.values))
-            $('#card_kpr .status').html(get_status_template(result.kpr.increase))
-            $('#card_npl .values').html(numberWithCommas(result.npl.values))
-            $('#card_npl .status').html(get_status_template(result.npl.increase))
-            $('#card_tox .values').html(numberWithCommas(result.tox.values))
-            $('#card_tox .status').html(get_status_template(result.tox.increase))
-            $('#card_prs .values').html(numberWithCommas(result.prs.values))
-            $('#card_prs .status').html(get_status_template(result.prs.increase))
-            $('.card .avatar-title').removeClass('spinner-grow')
-        },
-        error: function(){
-            alert("error");
+        get_status_template = function(arg){
+            if (arg > 0){
+                return '<span class="text-success"><i class="fas fa-level-up-alt"></i> ' + arg + '% </span> По сравнению с прошлым месяцем'}
+            else {
+                return '<span class="text-danger"><i class="fas fa-level-down-alt"></i> ' + arg + '% </span> По сравнению с прошлым месяцем'}
         }
-    });
-
-    $.ajax({
-        type: "get",
-        url: "http://127.0.0.1:8000/api/credits/geos",
-        dataType: "json",
-        success: function(data){
-            result = data.results
-            console.log(result)
-            init_map(result)
-        },
-        error: function(){
-            alert("error");
-        }
-    });
-
-    init_map = function (params){
-        $(function() {
-            $("#uzb_map").vectorMap({
-                map: "uzbekistan_mill_en",
-                backgroundColor: "transparent",
-                zoomOnScroll: false,
-                normalizeFunction: "polynomial",
-                hoverOpacity: .7,
-                hoverColor: false,
-                regionStyle: {
-                    initial: {
-                        fill: "#DCE3E8"
-                    }
-                },
-                series: {
-                    regions: [{
-                        values: params.gdp_data,
-                        scale: ['#769ae5', '#153d77'],
-                        normalizeFunction: 'polynomial',
-
-                    }]
-                },
-                onRegionTipShow: function (e, el, code) {
-                    if (typeof params.gdp_data[code] != 'undefined')
-                        el.html(el.html() + ': ' + numberWithCommas(params.gdp_data[code]) + ' mln. sum');
-                },
-                /*
-                markerStyle: {
-                    initial: {
-                        "r": 9,
-                        "fill": window.theme.primary,
-                        "fill-opacity": .9,
-                        "stroke": "#fff",
-                        "stroke-width": 7,
-                        "stroke-opacity": .4
-                    },
-                    hover: {
-                        "stroke": "#fff",
-                        "fill-opacity": 1,
-                        "stroke-width": 1.5
-                    }
-                },
-
-                markers: [{
-                    latLng: [37.77, -122.41],
-                    name: "San Francisco: 375"
-                }, {
-                    latLng: [40.71, -74.00],
-                    name: "New York: 350"
-                }, {
-                    latLng: [39.09, -94.57],
-                    name: "Kansas City: 250"
-                }, {
-                    latLng: [36.16, -115.13],
-                    name: "Las Vegas: 275"
-                }, {
-                    latLng: [32.77, -96.79],
-                    name: "Dallas: 225"
-                }]*/
-            });
-            setTimeout(function() {
-                $(window).trigger('resize');
-            }, 350)
-        })
-    }
-
-
-    $(function() {
-        // Bar chart
-        new Chart(document.getElementById("chartjs-bar"), {
-            type: "bar",
-            data: {
-                labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-                datasets: [{
-                    label: "Last year",
-                    backgroundColor: window.theme.primary,
-                    borderColor: window.theme.primary,
-                    hoverBackgroundColor: window.theme.primary,
-                    hoverBorderColor: window.theme.primary,
-                    data: [54, 67, 41, 55, 62, 45, 55, 73, 60, 76, 48, 79],
-                    barPercentage: .75,
-                    categoryPercentage: .5
-                }, {
-                    label: "This year",
-                    backgroundColor: "#E8EAED",
-                    borderColor: "#E8EAED",
-                    hoverBackgroundColor: "#E8EAED",
-                    hoverBorderColor: "#E8EAED",
-                    data: [69, 66, 24, 48, 52, 51, 44, 53, 62, 79, 51, 68],
-                    barPercentage: .75,
-                    categoryPercentage: .5
-                }]
+    </script>
+    <script>
+        $.ajax({
+            type: "get",
+            url: "http://127.0.0.1:8000/api/credits/stat",
+            dataType: "json",
+            success: function(data){
+                result = data.results
+                $('#card_kpr .values').html(numberWithCommas(result.kpr.values))
+                $('#card_kpr .status').html(get_status_template(result.kpr.increase))
+                $('#card_npl .values').html(numberWithCommas(result.npl.values))
+                $('#card_npl .status').html(get_status_template(result.npl.increase))
+                $('#card_tox .values').html(numberWithCommas(result.tox.values))
+                $('#card_tox .status').html(get_status_template(result.tox.increase))
+                $('#card_prs .values').html(numberWithCommas(result.prs.values))
+                $('#card_prs .status').html(get_status_template(result.prs.increase))
+                $('.card .avatar-title').removeClass('spinner-grow')
             },
-            options: {
-                maintainAspectRatio: false,
-                legend: {
-                    display: false
-                },
-                scales: {
-                    yAxes: [{
-                        gridLines: {
-                            display: false
-                        },
-                        stacked: false,
-                        ticks: {
-                            stepSize: 20
-                        }
-                    }],
-                    xAxes: [{
-                        stacked: false,
-                        gridLines: {
-                            color: "transparent"
-                        }
-                    }]
-                }
+            error: function(){
+                alert("error");
             }
         });
-    });
+    </script>
 
+    {#  Загрузка GEODATA  #}
+    <script>
+        $.ajax({
+            type: "get",
+            url: "http://127.0.0.1:8000/api/credits/geos",
+            dataType: "json",
+            success: function(data){
+                result = data.results
+                console.log('loading geodata:')
+                console.log(data)
+                init_map(result)
+            },
+            error: function(){
+                alert("error");
+            }
+        });
 
-</script>
+        init_map = function (params){
+            $(function() {
+                $("#uzb_map").vectorMap({
+                    map: "uzbekistan_mill_en",
+                    backgroundColor: "transparent",
+                    zoomOnScroll: false,
+                    normalizeFunction: "polynomial",
+                    hoverOpacity: .7,
+                    hoverColor: false,
+                    regionStyle: {
+                        initial: {
+                            fill: "#DCE3E8"
+                        }
+                    },
+                    series: {
+                        regions: [{
+                            values: params.gdp_data,
+                            scale: ['#769ae5', '#153d77'],
+                            normalizeFunction: 'polynomial',
+
+                        }]
+                    },
+                    onRegionTipShow: function (e, el, code) {
+                        if (typeof params.gdp_data[code] != 'undefined')
+                            el.html(el.html() + ': ' + numberWithCommas(params.gdp_data[code]) + ' mln. sum');
+                    },
+                    /*
+                    markerStyle: {
+                        initial: {
+                            "r": 9,
+                            "fill": window.theme.primary,
+                            "fill-opacity": .9,
+                            "stroke": "#fff",
+                            "stroke-width": 7,
+                            "stroke-opacity": .4
+                        },
+                        hover: {
+                            "stroke": "#fff",
+                            "fill-opacity": 1,
+                            "stroke-width": 1.5
+                        }
+                    },
+
+                    markers: [{
+                        latLng: [37.77, -122.41],
+                        name: "San Francisco: 375"
+                    }, {
+                        latLng: [40.71, -74.00],
+                        name: "New York: 350"
+                    }, {
+                        latLng: [39.09, -94.57],
+                        name: "Kansas City: 250"
+                    }, {
+                        latLng: [36.16, -115.13],
+                        name: "Las Vegas: 275"
+                    }, {
+                        latLng: [32.77, -96.79],
+                        name: "Dallas: 225"
+                    }]*/
+                });
+                setTimeout(function() {
+                    $(window).trigger('resize');
+                }, 350)
+            })
+        }
+    </script>
+
+    {#  Загрузка LINECHART  #}
+    <script>
+
+    update_line_chart = function(){
+        $('.loader').removeClass('d-none')
+        $.ajax({
+            type: "get",
+            url: "http://127.0.0.1:8000/api/credits/kprbymonth/npl",
+            dataType: "json",
+            success: function(data){
+
+                document.cookie = "portfel_stat=" + JSON.stringify(data) + "; expires=" + (new Date(Date.now() + 7 * 86400000).toGMTString());
+                mychart.config.data.datasets[0].data = data.result.kpr
+                mychart.config.data.datasets[1].data = data.result.npl
+                mychart.config.data.datasets[2].data = data.result.tox
+                mychart.config.data.datasets[3].data = data.result.psr
+                mychart.config.data.datasets[4].data = data.result.res
+                mychart.update()
+                $('.loader').addClass('d-none')
+                //console.log(mychart.config.data.datasets[0].data)
+            },
+            error: function(){
+                alert("error");
+            }
+        });
+    }
+
+    init_chart = function(params){
+        $('.loader').addClass('d-none')
+        $(function() {
+            // Line chart
+            mychart = new Chart(document.getElementById("chartjs-line"), {
+                type: "line",
+                data: {
+                    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                    datasets: [{
+                        label: "КП",
+                        fill: true,
+                        backgroundColor: "transparent",
+                        borderColor: window.theme.primary,
+                        data: params.kpr
+                    }, {
+                        label: "NPL",
+                        fill: true,
+                        backgroundColor: "transparent",
+                        borderColor: '#c82333',
+
+                        data: params.npl
+                    },{
+                        label: "Токсичные",
+                        fill: true,
+                        backgroundColor: "transparent",
+                        borderColor: '#e96b02',
+                        data: params.tox
+                    },{
+                        label: "Просрочка",
+                        fill: true,
+                        backgroundColor: "transparent",
+                        borderColor: '#1ba87e',
+                        data: params.psr
+                    },{
+                        label: "Резервы",
+                        fill: true,
+                        backgroundColor: "transparent",
+                        borderColor: '#28a745',
+                        data: params.res
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    legend: {
+                        display: true
+                    },
+                    tooltips: {
+                        intersect: false
+                    },
+                    hover: {
+                        intersect: true
+                    },
+                    plugins: {
+                        filler: {
+                            propagate: false
+                        }
+                    },
+                    scales: {
+                        xAxes: [{
+                            reverse: true,
+                            gridLines: {
+                                color: "rgba(0,0,0,0.05)"
+                            }
+                        }],
+                        yAxes: [{
+                            ticks: {
+                                stepSize: 500
+                            },
+                            display: true,
+                            borderDash: [5, 5],
+                            gridLines: {
+                                color: "rgba(0,0,0,0)",
+                                fontColor: "#fff"
+                            }
+                        }]
+                    }
+                }
+            });
+        });
+    }
+
+    portfel_data = getCookie('portfel_stat')
+    if (portfel_data !== ""){
+        json = JSON.parse(portfel_data)
+        init_chart(json.result)
+    }else{
+        $.ajax({
+            type: "get",
+            url: "http://127.0.0.1:8000/api/credits/kprbymonth/npl",
+            dataType: "json",
+            success: function(data){
+                document.cookie = "portfel_stat=" + JSON.stringify(data) + "; expires=" + (new Date(Date.now() + 7 * 86400000).toGMTString());
+                init_chart(data.result)
+            },
+            error: function(){
+                alert("error");
+            }
+        });
+    }
+
+    </script>
 {% endblock %}

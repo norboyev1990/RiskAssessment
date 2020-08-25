@@ -1,0 +1,214 @@
+{% extends 'layout.html' %}
+{% load static %}
+{% load humanize %}
+{% load i18n %}
+{% load render_table from django_tables2 %}
+{% load querystring from django_tables2 %}
+
+{% block pagecontent %}
+
+    <div class="container-fluid">
+        <div class="header">
+            <h1 class="header-title">
+                Аналитика кредитный портфель
+            </h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">{% trans 'Home' %}</a></li>
+                    <li class="breadcrumb-item"><a href="#">Аналитика</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Аналитика кредитный портфель</li>
+                </ol>
+            </nav>
+            <div class="row mt-3 mb-2">
+                {% include 'analytics/menu.html' %}
+            </div>
+        </div>
+        <div class="row mt-n4">
+            <div class="col-xxl-12">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-actions float-right">
+                            <a href="javascript:update_line_chart()" class="mr-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                     viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                     class="feather feather-refresh-cw align-middle">
+                                    <polyline points="23 4 23 10 17 10"></polyline>
+                                    <polyline points="1 20 1 14 7 14"></polyline>
+                                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                                </svg>
+                            </a>
+                            <div class="d-inline-block dropdown show">
+                                <a href="#" data-toggle="dropdown" data-display="static">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                         viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                         class="feather feather-more-vertical align-middle">
+                                        <circle cx="12" cy="12" r="1"></circle>
+                                        <circle cx="12" cy="5" r="1"></circle>
+                                        <circle cx="12" cy="19" r="1"></circle>
+                                    </svg>
+                                </a>
+
+                                <div class="dropdown-menu dropdown-menu-right">
+                                    <a class="dropdown-item" href="javascript:init_line_chart('kpr')">Кредитний порфель</a>
+                                    <a class="dropdown-item" href="javascript:init_line_chart('npl')">NPL клиенты</a>
+                                    <a class="dropdown-item" href="javascript:init_line_chart('tox')">Токсичные кредиты</a>
+                                    <a class="dropdown-item" href="javascript:init_line_chart('prs')">Просрочкы</a>
+                                    <a class="dropdown-item" href="javascript:init_line_chart('res')">Резервы</a>
+                                </div>
+                            </div>
+                        </div>
+                        <h5 class="card-title">Line Chart</h5>
+{#                        <h6 class="card-subtitle text-muted">A line chart is a way of plotting data points on a line.</h6>#}
+                    </div>
+                    <div class="card-body">
+                        <div class="loader" style="position: absolute;left: 50%;top: 45%;">
+                            <div class="spinner-grow"></div>
+                        </div>
+                        <div class="chart">
+                            <div class="chartjs-size-monitor">
+                                <div class="chartjs-size-monitor-expand"><div class=""></div></div>
+                                <div class="chartjs-size-monitor-shrink"><div class=""></div></div>
+                            </div>
+                            <canvas id="chartjs-line" style="display: block; width: 698px; height: 500px;" width="698" height="500" class="chartjs-render-monitor"></canvas>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scriptcontent %}
+<script>
+
+    update_line_chart = function(){
+        $('.loader').removeClass('d-none')
+        $.ajax({
+            type: "get",
+            url: "http://127.0.0.1:8000/api/credits/kprbymonth/npl",
+            dataType: "json",
+            success: function(data){
+                document.cookie = "portfel_stat=" + JSON.stringify(data) + "; expires=" + (new Date(Date.now() + 7 * 86400000).toGMTString());
+                mychart.config.data.datasets[0].data = data.result.kpr
+                mychart.config.data.datasets[1].data = data.result.npl
+                mychart.config.data.datasets[2].data = data.result.tox
+                mychart.config.data.datasets[3].data = data.result.psr
+                mychart.config.data.datasets[4].data = data.result.res
+                mychart.update()
+                $('.loader').addClass('d-none')
+                //console.log(mychart.config.data.datasets[0].data)
+            },
+            error: function(){
+                alert("error");
+            }
+        });
+    }
+
+    init_chart = function(params){
+        $('.loader').addClass('d-none')
+        $(function() {
+            // Line chart
+            mychart = new Chart(document.getElementById("chartjs-line"), {
+                type: "line",
+                data: {
+                    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                    datasets: [{
+                        label: "КП",
+                        fill: true,
+                        backgroundColor: "transparent",
+                        borderColor: window.theme.primary,
+                        data: params.kpr
+                    }, {
+                        label: "NPL",
+                        fill: true,
+                        backgroundColor: "transparent",
+                        borderColor: '#c82333',
+
+                        data: params.npl
+                    },{
+                        label: "Токсичные",
+                        fill: true,
+                        backgroundColor: "transparent",
+                        borderColor: '#e96b02',
+                        data: params.tox
+                    },{
+                        label: "Просрочка",
+                        fill: true,
+                        backgroundColor: "transparent",
+                        borderColor: '#1ba87e',
+                        data: params.psr
+                    },{
+                        label: "Резервы",
+                        fill: true,
+                        backgroundColor: "transparent",
+                        borderColor: '#28a745',
+                        data: params.res
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    legend: {
+                        display: true
+                    },
+                    tooltips: {
+                        intersect: false
+                    },
+                    hover: {
+                        intersect: true
+                    },
+                    plugins: {
+                        filler: {
+                            propagate: false
+                        }
+                    },
+                    scales: {
+                        xAxes: [{
+                            reverse: true,
+                            gridLines: {
+                                color: "rgba(0,0,0,0.05)"
+                            }
+                        }],
+                        yAxes: [{
+                            ticks: {
+                                stepSize: 500
+                            },
+                            display: true,
+                            borderDash: [5, 5],
+                            gridLines: {
+                                color: "rgba(0,0,0,0)",
+                                fontColor: "#fff"
+                            }
+                        }]
+                    }
+                }
+            });
+        });
+    }
+
+    portfel_data = getCookie('portfel_stat')
+    if (portfel_data !== ""){
+        json = JSON.parse(portfel_data)
+        init_chart(json.result)
+    }else{
+        $.ajax({
+            type: "get",
+            url: "http://127.0.0.1:8000/api/credits/kprbymonth/npl",
+            dataType: "json",
+            success: function(data){
+                document.cookie = "portfel_stat=" + JSON.stringify(data) + "; expires=" + (new Date(Date.now() + 7 * 86400000).toGMTString());
+                init_chart(data.result)
+            },
+            error: function(){
+                alert("error");
+            }
+        });
+    }
+
+
+
+</script>
+
+{% endblock %}

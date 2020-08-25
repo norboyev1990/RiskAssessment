@@ -1,0 +1,20 @@
+{% url 'general_analytics' as general_analytics_url %}
+{% url 'line_chart_portfolio' as line_chart_portfolio_url %}
+{% url 'vector_map_portfolio' as vector_map_portfolio_url %}
+
+<div class="col-auto">
+    <nav class="nav btn-group">
+        <a href="{{ general_analytics_url }}" class="btn
+            {% if request.path == general_analytics_url %} btn-primary active {% else %} btn-light {%endif%}">
+            Общая аналитика
+        </a>
+{#        <a href="{{ line_chart_portfolio_url }}" class="btn#}
+{#            {% if request.path == line_chart_portfolio_url %} btn-primary active {% else %} btn-light {%endif%}">#}
+{#            Диаграмма КП по месяцам#}
+{#        </a>#}
+        <a href="{{ vector_map_portfolio_url }}" class="btn
+            {% if request.path == vector_map_portfolio_url %} btn-primary active {% else %} btn-light {%endif%}">
+            Распределение КП по регионам
+        </a>
+    </nav>
+</div>

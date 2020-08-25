@@ -1,0 +1,47 @@
+{% extends 'layout.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% load humanize %}
+{% load i18n %}
+{% load render_table from django_tables2 %}
+{% load querystring from django_tables2 %}
+{% block pagecontent %}
+
+    <div class="container-fluid">
+        <div class="header">
+            <h1 class="header-title">
+                {{ page_title }}
+            </h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">{% trans 'Home' %}</a></li>
+                    <li class="breadcrumb-item"><a href="#">Загрузка данных в базу</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ page_title }}</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="row">
+            <div class="col-xxl-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">{{ page_title }} {{ page_addon }}</h5>
+
+                    </div>
+
+                    <div class="card-body">
+                        <i class="align-middle mr-2 fas fa-fw fa-check text-success"></i> Успешно добавлен!
+                        <hr>
+                        <a href="{% url 'issuance_upload' %}" class="btn btn-secondary">Добавить еще</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scriptcontent %}
+<script>
+
+</script>
+{% endblock %}

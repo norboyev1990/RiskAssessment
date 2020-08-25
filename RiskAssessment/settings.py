@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'repayment.apps.RepaymentConfig',
     'references.apps.ReferencesConfig',
     'issuances.apps.IssuancesConfig',
+    'analytics.apps.AnalyticsConfig',
+    'uploads.apps.UploadsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

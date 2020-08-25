@@ -1,0 +1,370 @@
+{% extends 'layout.html' %}
+{% load static %}
+{% load humanize %}
+{% load i18n %}
+{% load render_table from django_tables2 %}
+
+{% block pagecontent %}
+
+    <div class="container-fluid">
+        <div class="header">
+            <h1 class="header-title">
+                Аналитика кредитный портфель
+            </h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">{% trans 'Home' %}</a></li>
+                    <li class="breadcrumb-item"><a href="#">Аналитика</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Аналитика кредитный портфель</li>
+                </ol>
+            </nav>
+            <div class="row mt-3 mb-2">
+                {% include 'analytics/menu.html' %}
+            </div>
+        </div>
+        <div class="row mt-n4">
+            <div class="col-xxl-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Empty card</h5>
+                    </div>
+                    <div class="card-body">
+                        {% render_table data_table %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-xxl-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Diagram</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="chartdiv1" style="height: 300px"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xxl-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Table</h5>
+                    </div>
+                    <div class="card-body">
+                        {% render_table data_table2 %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-xxl-6">
+                <div class="card flex-fill w-100">
+                    <div class="card-header">
+                        <div class="card-actions float-right">
+                            <a href="#" class="mr-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                     viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                     class="feather feather-refresh-cw align-middle">
+                                    <polyline points="23 4 23 10 17 10"></polyline>
+                                    <polyline points="1 20 1 14 7 14"></polyline>
+                                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                                </svg>
+                            </a>
+                            <div class="d-inline-block dropdown show">
+                                <a href="#" data-toggle="dropdown" data-display="static">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                         viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                         class="feather feather-more-vertical align-middle">
+                                        <circle cx="12" cy="12" r="1"></circle>
+                                        <circle cx="12" cy="5" r="1"></circle>
+                                        <circle cx="12" cy="19" r="1"></circle>
+                                    </svg>
+                                </a>
+
+                                <div class="dropdown-menu dropdown-menu-right">
+                                    <a class="dropdown-item" href="#">Action</a>
+                                    <a class="dropdown-item" href="#">Another action</a>
+                                    <a class="dropdown-item" href="#">Something else here</a>
+                                </div>
+                            </div>
+                        </div>
+                        <h5 class="card-title mb-0">Sales by State</h5>
+                    </div>
+                    <div class="card-body px-4">
+                        <div id="chartdiv" style="height:300px;"></div>
+{#                        <div id="uzb_map" style="height:500px;"></div>#}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scriptcontent %}
+    <script src="{% static 'lib/amcharts4/themes/frozen.js' %}"></script>
+    <script type="text/javascript" src="{% static 'spark/js/uzbekistan.js' %}"></script>
+    <!-- Chart code -->
+    <script>
+    am4core.ready(function() {
+
+    // Themes begin
+    am4core.useTheme(am4themes_animated);
+    // Themes end
+
+    window.onload = function() {
+
+    /**
+     * This demo uses our own method of determining user's location
+     * It is not public web service that you can use
+     * You'll need to find your own. We recommend http://www.maxmind.com
+     */
+    //jQuery.getJSON( "https://www.amcharts.com/tools/country/?v=xz6Z", function( geo ) {
+      geo = {"country_code":"UZ","country_name":"Uzbekistan"}
+      // Default map
+      var defaultMap = "usaAlbersLow";
+
+      // calculate which map to be used
+      var currentMap = defaultMap;
+      var title = "";
+      if ( am4geodata_data_countries2[ geo.country_code ] !== undefined ) {
+        currentMap = am4geodata_data_countries2[ geo.country_code ][ "maps" ][ 0 ];
+
+        // add country title
+        if ( am4geodata_data_countries2[ geo.country_code ][ "country" ] ) {
+          title = am4geodata_data_countries2[ geo.country_code ][ "country" ];
+        }
+
+      }
+
+      // Create map instance
+      var chart = am4core.create("chartdiv", am4maps.MapChart);
+
+      chart.titles.create().text = title;
+
+      // Set map definition
+      chart.geodataSource.url = "{% static 'json/uzbekistanLow.json' %}";
+
+      chart.geodataSource.events.on("parseended", function(ev) {
+        var data = [];
+        console.log(data)
+        for(var i = 0; i < ev.target.data.features.length; i++) {
+          data.push({
+            id: ev.target.data.features[i].id,
+            value: Math.round( Math.random() * 10000 )
+          })
+        }
+        console.log(data)
+        polygonSeries.data = data;
+      })
+
+      // Set projection
+      chart.projection = new am4maps.projections.Mercator();
+
+      // Create map polygon series
+      var polygonSeries = chart.series.push(new am4maps.MapPolygonSeries());
+
+      //Set min/max fill color for each area
+      polygonSeries.heatRules.push({
+        property: "fill",
+        target: polygonSeries.mapPolygons.template,
+        min: chart.colors.getIndex(1).brighten(1),
+        max: chart.colors.getIndex(1).brighten(-0.3)
+      });
+
+      // Make map load polygon data (state shapes and names) from GeoJSON
+      polygonSeries.useGeodata = true;
+
+      // Set up heat legend
+      let heatLegend = chart.createChild(am4maps.HeatLegend);
+      heatLegend.series = polygonSeries;
+      heatLegend.align = "right";
+      heatLegend.width = am4core.percent(25);
+      heatLegend.marginRight = am4core.percent(4);
+      heatLegend.minValue = 0;
+      heatLegend.maxValue = 40000000;
+      heatLegend.valign = "bottom";
+
+      // Set up custom heat map legend labels using axis ranges
+      var minRange = heatLegend.valueAxis.axisRanges.create();
+      minRange.value = heatLegend.minValue;
+      minRange.label.text = "Little";
+      var maxRange = heatLegend.valueAxis.axisRanges.create();
+      maxRange.value = heatLegend.maxValue;
+      maxRange.label.text = "A lot!";
+
+      // Blank out internal heat legend value axis labels
+      heatLegend.valueAxis.renderer.labels.template.adapter.add("text", function(labelText) {
+        return "";
+      });
+
+      // Configure series tooltip
+      var polygonTemplate = polygonSeries.mapPolygons.template;
+      polygonTemplate.tooltipText = "{name}: {value} $";
+      polygonTemplate.nonScalingStroke = true;
+      polygonTemplate.strokeWidth = 0.5;
+
+      // Create hover state and set alternative fill color
+      var hs = polygonTemplate.states.create("hover");
+      hs.properties.fill = chart.colors.getIndex(1).brighten(-0.5);
+
+    //});
+
+    };
+
+    }); // end am4core.ready()
+    </script>
+<script>
+    am4core.ready(function() {
+
+    // Themes begin
+    am4core.useTheme(am4themes_frozen);
+    am4core.useTheme(am4themes_animated);
+    // Themes end
+
+    var chart = am4core.create("chartdiv1", am4charts.XYChart);
+    chart.hiddenState.properties.opacity = 0; // this creates initial fade-in
+
+    chart.data = {{ data_dlist | safe}}
+
+    var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+    categoryAxis.renderer.grid.template.location = 0;
+    categoryAxis.dataFields.category = "title";
+    categoryAxis.renderer.minGridDistance = 40;
+    categoryAxis.fontSize = 11;
+
+    var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+    valueAxis.min = 0;
+    valueAxis.max = 26000000000000;
+    valueAxis.strictMinMax = true;
+    valueAxis.renderer.minGridDistance = 30;
+    // axis break
+    var axisBreak = valueAxis.axisBreaks.create();
+    axisBreak.startValue = 3500000000000;
+    axisBreak.endValue = 24000000000000;
+    //axisBreak.breakSize = 0.005;
+
+    // fixed axis break
+    var d = (axisBreak.endValue - axisBreak.startValue) / (valueAxis.max - valueAxis.min);
+    axisBreak.breakSize = 0.05 * (1 - d) / d; // 0.05 means that the break will take 5% of the total value axis height
+
+    // make break expand on hover
+    var hoverState = axisBreak.states.create("hover");
+    hoverState.properties.breakSize = 1;
+    hoverState.properties.opacity = 0.1;
+    hoverState.transitionDuration = 1500;
+
+    axisBreak.defaultState.transitionDuration = 1000;
+    /*
+    // this is exactly the same, but with events
+    axisBreak.events.on("over", function() {
+      axisBreak.animate(
+        [{ property: "breakSize", to: 1 }, { property: "opacity", to: 0.1 }],
+        1500,
+        am4core.ease.sinOut
+      );
+    });
+    axisBreak.events.on("out", function() {
+      axisBreak.animate(
+        [{ property: "breakSize", to: 0.005 }, { property: "opacity", to: 1 }],
+        1000,
+        am4core.ease.quadOut
+      );
+    });*/
+
+    var series = chart.series.push(new am4charts.ColumnSeries());
+    series.dataFields.categoryX = "title";
+    series.dataFields.valueY = "value";
+    series.columns.template.tooltipText = "{valueY.value}";
+    series.columns.template.tooltipY = 0;
+    series.columns.template.strokeOpacity = 0;
+
+    // as by default columns of the same series are of the same color, we add adapter which takes colors from chart.colors color set
+    series.columns.template.adapter.add("fill", function(fill, target) {
+      return chart.colors.getIndex(target.dataItem.index);
+    });
+
+    }); // end am4core.ready()
+</script>
+{#    <script>#}
+{#        $.ajax({#}
+{#            type: "get",#}
+{#            url: "http://127.0.0.1:8000/api/credits/geos",#}
+{#            dataType: "json",#}
+{#            success: function(data){#}
+{#                result = data.results#}
+{#                console.log(result)#}
+{#                init_map(result)#}
+{#            },#}
+{#            error: function(){#}
+{#                alert("error");#}
+{#            }#}
+{#        });#}
+{##}
+{#        init_map = function (params){#}
+{#            $('.loader').addClass('d-none')#}
+{#            $(function() {#}
+{#                $("#uzb_map").vectorMap({#}
+{#                    map: "uzbekistan_mill_en",#}
+{#                    backgroundColor: "transparent",#}
+{#                    zoomOnScroll: false,#}
+{#                    normalizeFunction: "polynomial",#}
+{#                    hoverOpacity: .7,#}
+{#                    hoverColor: false,#}
+{#                    regionStyle: {#}
+{#                        initial: {#}
+{#                            fill: "#DCE3E8"#}
+{#                        }#}
+{#                    },#}
+{#                    series: {#}
+{#                        regions: [{#}
+{#                            values: params.gdp_data,#}
+{#                            scale: ['#769ae5', '#153d77'],#}
+{#                            normalizeFunction: 'polynomial',#}
+{##}
+{#                        }]#}
+{#                    },#}
+{#                    onRegionTipShow: function (e, el, code) {#}
+{#                        if (typeof params.gdp_data[code] != 'undefined')#}
+{#                            el.html(el.html() + ': ' + numberWithCommas(params.gdp_data[code]) + ' mln. sum');#}
+{#                    },#}
+{#                    /*#}
+{#                    markerStyle: {#}
+{#                        initial: {#}
+{#                            "r": 9,#}
+{#                            "fill": window.theme.primary,#}
+{#                            "fill-opacity": .9,#}
+{#                            "stroke": "#fff",#}
+{#                            "stroke-width": 7,#}
+{#                            "stroke-opacity": .4#}
+{#                        },#}
+{#                        hover: {#}
+{#                            "stroke": "#fff",#}
+{#                            "fill-opacity": 1,#}
+{#                            "stroke-width": 1.5#}
+{#                        }#}
+{#                    },#}
+{##}
+{#                    markers: [{#}
+{#                        latLng: [37.77, -122.41],#}
+{#                        name: "San Francisco: 375"#}
+{#                    }, {#}
+{#                        latLng: [40.71, -74.00],#}
+{#                        name: "New York: 350"#}
+{#                    }, {#}
+{#                        latLng: [39.09, -94.57],#}
+{#                        name: "Kansas City: 250"#}
+{#                    }, {#}
+{#                        latLng: [36.16, -115.13],#}
+{#                        name: "Las Vegas: 275"#}
+{#                    }, {#}
+{#                        latLng: [32.77, -96.79],#}
+{#                        name: "Dallas: 225"#}
+{#                    }]*/#}
+{#                });#}
+{#                setTimeout(function() {#}
+{#                    $(window).trigger('resize');#}
+{#                }, 350)#}
+{#            })#}
+{#        }#}
+{#    </script>#}
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends 'layout.html' %}
+{% load static %}
+{% load humanize %}
+{% load i18n %}
+{% load render_table from django_tables2 %}
+{% load querystring from django_tables2 %}
+
+{% block pagecontent %}
+
+    <div class="container-fluid">
+
+        <div class="header">
+            <h1 class="header-title">
+                {{ page_title }}
+            </h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">{% trans 'Home' %}</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'clients_list' %}">Клиенты</a></li>
+                    <li class="breadcrumb-item"><a href="#">Профиль клиента</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">О договоре</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="row">
+						<div class="col-12">
+							<div class="card">
+								<div class="card-header">
+									<h5 class="card-title mb-0">Список платежей</h5>
+								</div>
+								<div class="card-body">
+                                    {% render_table data_table %}
+								</div>
+							</div>
+						</div>
+					</div>
+    </div>
+{% endblock %}
+
+{% block scriptcontent %}
+<script>
+
+</script>
+{% endblock %}

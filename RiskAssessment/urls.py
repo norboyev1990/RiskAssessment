@@ -26,5 +26,7 @@ urlpatterns = [
     path('repayment/', include('repayment.urls')),
     path('issuances/', include('issuances.urls')),
     path('references/', include('references.urls')),
+    path('analytics/', include('analytics.urls')),
+    path('uploads/', include('uploads.urls')),
     path('api/', include('api.urls')),
 ]

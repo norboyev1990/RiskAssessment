@@ -6,6 +6,7 @@ class Clients(models.Model):
     ClientType = models.CharField(max_length=20, verbose_name="Тип клиента")
     TotalLoans = models.DecimalField(max_digits=20, decimal_places=0, verbose_name="Всего задолженность")
     Address    = models.CharField(max_length=255, verbose_name="Адрес клиента")
+    Status     = models.IntegerField(verbose_name="Статус клиент")
 
     class Meta:
         managed = False
@@ -22,6 +23,15 @@ class InfoCredits(models.Model):
 
     def get_new_value(self):
         return self.New_Value if self.id not in [3, 5, 8, 10] else '{}%'.format(self.New_Value)
+
+    class Meta:
+        managed = False
+
+class DataForLineChart(models.Model):
+    Title = models.CharField(max_length=5)
+    Total = models.FloatField()
+    Prosr = models.FloatField()
+    Reserv = models.FloatField()
 
     class Meta:
         managed = False

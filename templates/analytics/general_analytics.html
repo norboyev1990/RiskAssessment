@@ -1,0 +1,290 @@
+{% extends 'layout.html' %}
+{% load static %}
+{% load humanize %}
+{% load i18n %}
+{% load render_table from django_tables2 %}
+{% load querystring from django_tables2 %}
+
+{% block pagecontent %}
+
+    <div class="container-fluid">
+        <div class="header">
+            <h1 class="header-title">
+                Аналитика кредитный портфель
+            </h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">{% trans 'Home' %}</a></li>
+                    <li class="breadcrumb-item"><a href="#">Аналитика</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Аналитика кредитный портфель</li>
+                </ol>
+            </nav>
+            <div class="row mt-3 mb-2">
+                {% include 'analytics/menu.html' %}
+            </div>
+        </div>
+        <div class="row mt-n4">
+            <!-- Chart #1 -->
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">По субъектам</h5>
+                        <h6 class="card-subtitle text-muted">A line chart is a way of plotting data points on a line.</h6>
+                    </div>
+                    <div class="card-body">
+                        <div id="chartdiv1" style="height: 383px"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Chart #2 -->
+            <div class="col-md-9">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">По филиалам</h5>
+                        <h6 class="card-subtitle text-muted">A line chart is a way of plotting data points on a line.</h6>
+                    </div>
+                    <div class="card-body">
+                        <div id="chartdiv" style="height: 400px"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Chart #3 -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">По средневзвешенной процентной ставке</h5>
+                        <h6 class="card-subtitle text-muted">A line chart is a way of plotting data points on a line.</h6>
+                    </div>
+                    <div class="card-body">
+                        <div id="chartdiv5" style="height: 350px"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Chart #4 -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">По средневзвешенной процентной ставке</h5>
+                        <h6 class="card-subtitle text-muted">A line chart is a way of plotting data points on a line.</h6>
+                    </div>
+                    <div class="card-body">
+                        <div id="chartdiv6" style="height: 350px"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scriptcontent %}
+
+<script>
+    jQuery.getJSON( "{% url 'get_data_subjects' %}", function( response ) {
+
+        // Themes begin
+        am4core.useTheme(am4themes_animated);
+        // Themes end
+
+        // Create chart instance
+        var chart = am4core.create("chartdiv1", am4charts.PieChart);
+
+        // Add data
+        chart.data = response.result.data;
+
+        // Add and configure Series
+        var pieSeries = chart.series.push(new am4charts.PieSeries());
+        pieSeries.dataFields.value = "PORBALANS";
+        pieSeries.dataFields.category = "TITLE";
+        pieSeries.innerRadius = am4core.percent(50);
+        pieSeries.ticks.template.disabled = true;
+        pieSeries.labels.template.disabled = true;
+
+        var rgm = new am4core.LinearGradientModifier();
+        rgm.brightnesses.push(0, - 0.4);
+        pieSeries.slices.template.fillModifier = rgm;
+
+        var rgm2 = new am4core.LinearGradientModifier();
+        rgm2.brightnesses.push(0, - 0.4);
+
+        pieSeries.slices.template.strokeModifier = rgm2;
+        pieSeries.slices.template.strokeOpacity = 1;
+        pieSeries.slices.template.strokeWidth = 1;
+
+
+        chart.legend = new am4charts.Legend();
+        chart.legend.position = "bottom";
+
+        pieSeries.slices.template.events.on("validated", function(event){
+            var gradient = event.target.fillModifier.gradient
+            gradient.rotation = event.target.middleAngle + 90;
+
+            var gradient2 = event.target.strokeModifier.gradient
+            gradient2.rotation = event.target.middleAngle + 90;
+        })
+    });
+
+</script>
+<script>
+    jQuery.getJSON( "{% url 'get_data_branches' %}", function( response ) {
+        {#console.log(response)#}
+        am4core.ready(function () {
+
+            var chart = am4core.create("chartdiv", am4charts.XYChart);
+            chart.hiddenState.properties.opacity = 0; // this creates initial fade-in
+
+            chart.data = response.result.data
+
+            var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+            categoryAxis.renderer.grid.template.location = 0;
+            categoryAxis.dataFields.category = "TITLE";
+            categoryAxis.renderer.minGridDistance = 40;
+            categoryAxis.fontSize = 11;
+            categoryAxis.renderer.labels.template.horizontalCenter = "right";
+            categoryAxis.renderer.labels.template.verticalCenter = "middle";
+            categoryAxis.renderer.labels.template.rotation = 270;
+
+            var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+            valueAxis.min = 0;
+            valueAxis.max = 13772598;
+            valueAxis.strictMinMax = true;
+            valueAxis.renderer.minGridDistance = 30;
+            // axis break
+            var axisBreak = valueAxis.axisBreaks.create();
+            axisBreak.startValue = 1821000;
+            axisBreak.endValue = 12700000;
+            //axisBreak.breakSize = 0.005;
+
+            // fixed axis break
+            var d = (axisBreak.endValue - axisBreak.startValue) / (valueAxis.max - valueAxis.min);
+            axisBreak.breakSize = 0.05 * (1 - d) / d; // 0.05 means that the break will take 5% of the total value axis height
+
+            // make break expand on hover
+            var hoverState = axisBreak.states.create("hover");
+            hoverState.properties.breakSize = 1;
+            hoverState.properties.opacity = 0.1;
+            hoverState.transitionDuration = 1500;
+
+            axisBreak.defaultState.transitionDuration = 1000;
+
+            var series = chart.series.push(new am4charts.ColumnSeries());
+            series.dataFields.categoryX = "TITLE";
+            series.dataFields.valueY = "PORBALANS";
+            series.columns.template.tooltipText = "{valueY.value}";
+            series.columns.template.tooltipY = 0;
+            series.columns.template.strokeOpacity = 0;
+
+            // as by default columns of the same series are of the same color, we add adapter which takes colors from chart.colors color set
+            series.columns.template.adapter.add("fill", function (fill, target) {
+                return chart.colors.getIndex(target.dataItem.index);
+            });
+
+        }); // end am4core.ready()
+    })
+</script>
+<script>
+jQuery.getJSON( "{% url 'get_data_average' %}", function( response ) {
+    console.log(response)
+    am4core.ready(function() {
+
+        var chart = am4core.create("chartdiv5", am4charts.XYChart);
+        chart.padding(10, 10, 10, 10);
+
+        var categoryAxis = chart.yAxes.push(new am4charts.CategoryAxis());
+        categoryAxis.renderer.grid.template.location = 0;
+        categoryAxis.dataFields.category = "TITLE";
+        categoryAxis.renderer.minGridDistance = 1;
+        categoryAxis.renderer.inversed = true;
+        categoryAxis.renderer.grid.template.disabled = true;
+
+        var valueAxis = chart.xAxes.push(new am4charts.ValueAxis());
+        valueAxis.min = 0;
+
+        var series = chart.series.push(new am4charts.ColumnSeries());
+        series.dataFields.categoryY = "TITLE";
+        series.dataFields.valueX = "BALANCE";
+        series.tooltipText = "{valueX.value}"
+        series.columns.template.strokeOpacity = 0;
+        series.columns.template.column.cornerRadiusBottomRight = 5;
+        series.columns.template.column.cornerRadiusTopRight = 5;
+
+        var labelBullet = series.bullets.push(new am4charts.LabelBullet())
+        labelBullet.label.horizontalCenter = "left";
+        labelBullet.label.dx = 10;
+        labelBullet.label.text = "{values.valueX.workingValue.formatNumber('#.0as')}";
+        labelBullet.locationX = 1;
+
+        // as by default columns of the same series are of the same color, we add adapter which takes colors from chart.colors color set
+        series.columns.template.adapter.add("fill", function(fill, target){
+          return chart.colors.getIndex(target.dataItem.index);
+        });
+
+        categoryAxis.sortBySeries = series;
+        chart.data = response.result.data
+    }); // end am4core.ready()
+});
+</script>
+<script>
+jQuery.getJSON( "{% url 'get_data_average_juridical' %}", function( response ) {
+    console.log(response)
+    am4core.ready(function () {
+
+        // Themes begin
+        am4core.useTheme(am4themes_animated);
+        // Themes end
+
+        // Create chart instance
+        var chart = am4core.create("chartdiv6", am4charts.PieChart);
+
+        // Set data
+        var selected;
+        var types = response.result.data
+
+        // Add data
+        chart.data = generateChartData();
+
+        // Add and configure Series
+        var pieSeries = chart.series.push(new am4charts.PieSeries());
+        pieSeries.dataFields.value = "percent";
+        pieSeries.dataFields.category = "type";
+        pieSeries.slices.template.propertyFields.fill = "color";
+        pieSeries.slices.template.propertyFields.isActive = "pulled";
+        pieSeries.slices.template.strokeWidth = 0;
+
+        function generateChartData() {
+            var chartData = [];
+            for (var i = 0; i < types.length; i++) {
+                if (i == selected) {
+                    for (var x = 0; x < types[i].subs.length; x++) {
+                        chartData.push({
+                            type: types[i].subs[x].type,
+                            percent: types[i].subs[x].percent,
+                            color: types[i].color,
+                            pulled: true
+                        });
+                    }
+                } else {
+                    chartData.push({
+                        type: types[i].type,
+                        percent: types[i].percent,
+                        color: types[i].color,
+                        id: i
+                    });
+                }
+            }
+            return chartData;
+        }
+
+        pieSeries.slices.template.events.on("hit", function (event) {
+            if (event.target.dataItem.dataContext.id != undefined) {
+                selected = event.target.dataItem.dataContext.id;
+            } else {
+                selected = undefined;
+            }
+            chart.data = generateChartData();
+        });
+
+    }); // end am4core.ready()
+})
+</script>
+
+{% endblock %}

@@ -25,7 +25,14 @@
 {% url 'repayments_all' as repayments_all_url %}
 {% url 'repayments_by_subjects' as repayments_by_subjects_url %}
 {% url 'repayments_by_currency' as repayments_by_currency_url %}
-{% url 'issuance_upload' as issuance_upload_url %}
+{% url 'general_analytics' as general_analytics_url %}
+{% url 'line_chart_portfolio' as line_chart_portfolio_url %}
+{% url 'vector_map_portfolio' as vector_map_portfolio_url %}
+
+
+
+{% url 'upload_credits' as upload_credits_url %}
+{% url 'upload_issuances' as upload_issuances_url %}
 
 <style>
     .sidebar.toggled {
@@ -48,7 +55,7 @@
 
     <div class="sidebar-content">
         <div class="sidebar-user">
-            <img src="{% static 'spark/img/avatars/avatar-2.jpg' %}" class="img-fluid rounded-circle mb-2" alt="Linda Miller">
+            <img src="{% static 'spark/img/avatars/user.png' %}" class="img-fluid rounded-circle mb-2" alt="Linda Miller">
             <div class="font-weight-bold">{{ request.user.first_name }} {{ request.user.last_name }}</div>
             <small>{{ request.user.email }}</small>
         </div>
@@ -70,6 +77,17 @@
                 </a>
             </li>
 
+            <li class="sidebar-item {% if menu_block == 'analytics' %} active {%endif%}">
+                <a href="#analytics" data-toggle="collapse" class="sidebar-link collapsed">
+                    <i class="align-middle mr-1 fas fa-fw fa-chart-pie"></i>
+                    <span class="align-middle">{% trans 'Аналитика' %}</span>
+                </a>
+
+                <ul id="analytics" class="sidebar-dropdown list-unstyled collapse " data-parent="#sidebar">
+                    <li class="sidebar-item {% if menu_block == 'analytics' %} active {%endif%}">
+                        <a class="sidebar-link" href="{{ general_analytics_url }}">{% trans 'Аналитика КП' %}</a></li>
+                </ul>
+            </li>
 
             <li class="sidebar-header">{% trans 'Reports' %}</li>
             <li class="sidebar-item {% if menu_block == 'credits' %} active {%endif%}">
@@ -130,12 +148,14 @@
             <li class="sidebar-item {% if menu_block == 'uploads' %} active {%endif%}">
                 <a href="#upload-data" data-toggle="collapse" class="sidebar-link collapsed">
                     <i class="align-middle mr-2 fas fa-fw fa-folder-open"></i>
-                    <span class="align-middle">{% trans 'Загрузка данных' %}</span>
+                    <span class="align-middle">{% trans 'Загрузка данных в базу' %}</span>
                 </a>
 
                 <ul id="upload-data" class="sidebar-dropdown list-unstyled collapse " data-parent="#sidebar">
-                    <li class="sidebar-item {% if request.path == issuance_upload_url %} active {%endif%}">
-                        <a class="sidebar-link" href="{{ issuance_upload_url }}">{% trans 'Загрузка выдачи' %}</a></li>
+                    <li class="sidebar-item {% if request.path == upload_credits_url %} active {%endif%}">
+                        <a class="sidebar-link" href="{{ upload_credits_url }}">{% trans 'Загрузка портфель' %}</a></li>
+                    <li class="sidebar-item {% if request.path == upload_issuances_url %} active {%endif%}">
+                        <a class="sidebar-link" href="{{ upload_issuances_url }}">{% trans 'Загрузка выдачи' %}</a></li>
                 </ul>
             </li>
         </ul>

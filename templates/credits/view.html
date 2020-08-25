@@ -24,6 +24,7 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="card-actions float-right">
+
                             <a href="#" class="mr-1">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-refresh-cw align-middle"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
                             </a>
@@ -35,8 +36,10 @@
                                 <div class="dropdown-menu dropdown-menu-right">
                                     <a class="dropdown-item" href="{% querystring '_export'='xlsx' %}">
                                         <i class="align-middle mr-1 fas fa-fw fa-file-excel"></i> Экспорт в Excel</a>
-{#                                    <a class="dropdown-item" href="#">Another action</a>#}
-{#                                    <a class="dropdown-item" href="#">Something else here</a>#}
+                                    <a class="dropdown-item" href="{% url 'export_doklad_excel' %}">
+                                        <i class="align-middle mr-1 fas fa-fw fa-file-excel"></i> Докладная (Excel)</a>
+                                    <a class="dropdown-item" href="{% url 'export_doklad_word' %}">
+                                        <i class="align-middle mr-1 fas fa-fw fa-file-word"></i> Докладная (Word)</a>
                                 </div>
                             </div>
                         </div>

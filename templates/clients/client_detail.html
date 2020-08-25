@@ -1,0 +1,348 @@
+{% extends 'layout.html' %}
+{% load static %}
+{% load humanize %}
+{% load i18n %}
+{% load render_table from django_tables2 %}
+{% load querystring from django_tables2 %}
+
+{% block pagecontent %}
+
+    <div class="container-fluid">
+
+        <div class="header">
+            <h1 class="header-title">
+                {{ page_title }}
+            </h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">{% trans 'Home' %}</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'clients_list' %}">Клиенты</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Профиль клиента</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="row">
+            <div class="col-xxl-3">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-actions float-right">
+                            <a href="#" class="mr-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-refresh-cw align-middle"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                              </a>
+                            <div class="d-inline-block dropdown show">
+                                <a href="#" data-toggle="dropdown" data-display="static">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical align-middle"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+                                </a>
+
+                                <div class="dropdown-menu dropdown-menu-right">
+                                    <a class="dropdown-item" href="#">Action</a>
+                                    <a class="dropdown-item" href="#">Another action</a>
+                                    <a class="dropdown-item" href="#">Something else here</a>
+                                </div>
+                            </div>
+                        </div>
+                        <h5 class="card-title mb-0">Информации о клиента</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row no-gutters">
+                            <div class="col-sm-2 col-xl-12 col-xxl-3 text-center">
+                                {% if client.Subject == 'P' %}
+                                    <i class="align-middle mr-2 fas fa-fw fa-user-tie mt-4" style="font-size: 60px"></i>
+                                {% else %}
+                                    <i class="align-middle mr-1 fas fa-fw fa-building mt-1" style="font-size: 40px"></i>
+                                {% endif %}
+                            </div>
+                            <div class="col-sm-10 col-xl-12 col-xxl-9">
+                                <strong>Наименование</strong>
+                                <p>{{client.ClientName}}</p>
+                            </div>
+                        </div>
+
+                        <table class="table table-sm table-striped my-2" style="font-size: 0.9em;">
+                            <tbody>
+                                <tr>
+                                    <th>Тип клиента</th>
+                                    <td>{{client.ClientType}}</td>
+                                </tr>
+                                <tr>
+                                    <th>ИНН/Паспорт</th>
+                                    <td>{{client.Passport}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Адрес клиента</th>
+                                    <td>{{client.Address}}</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-truncate">Кол-во кредитов</th>
+                                    <td>{{client.CountLoans}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Всего задол.</th>
+                                    <td>{{client.TotalLoans}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Текущий статус клиента</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="status" style="height: 200px"></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Резервы</h5>
+                    </div>
+                    <div class="card-body">
+                            <table class="table table-sm" style="font-size: 0.9em;">
+                            <tbody>
+                                <tr>
+                                    <th>Текущий</th>
+                                    <td>{{client.OstatokReserve}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Необходимо</th>
+                                    <td>{{client.Reserve}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Итого:</th>
+                                    <td>{{total}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xxl-9">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-actions float-right">
+                            <a href="#" class="mr-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-refresh-cw align-middle"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                            </a>
+                            <div class="d-inline-block dropdown show">
+                                <a href="#" data-toggle="dropdown" data-display="static">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical align-middle"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+                                </a>
+
+                                <div class="dropdown-menu dropdown-menu-right">
+                                    <a class="dropdown-item" href="#">Action</a>
+                                    <a class="dropdown-item" href="#">Another action</a>
+                                    <a class="dropdown-item" href="#">Something else here</a>
+                                </div>
+                            </div>
+                        </div>
+                        <h5 class="card-title mb-0">Все кредиты</h5>
+                    </div>
+
+                    <div class="card-body">
+
+                        {% render_table credits_table %}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scriptcontent %}
+<script>
+am4core.ready(function() {
+
+// Themes begin
+am4core.useTheme(am4themes_animated);
+// Themes end
+
+var chartMin = 0;
+var chartMax = 100;
+
+
+
+var data = {
+  score: {{ client.Status }},
+  gradingData: [
+    {
+      title: "Безнадежный",
+      color: "#ee1f25",
+      lowScore: 0,
+      highScore: 20
+    },
+    {
+      title: "Сомнительный",
+      color: "#f04922",
+      lowScore: 20,
+      highScore: 40
+    },
+    {
+      title: "Неудовлет.",
+      color: "#fdae19",
+      lowScore: 40,
+      highScore: 60
+    },
+    {
+      title: "Субстандарт",
+      color: "#b0d136",
+      lowScore: 60,
+      highScore: 80
+    },
+    {
+      title: "Стандарт",
+      color: "#54b947",
+      lowScore: 80,
+      highScore: 100
+    }
+  ]
+};
+
+/**
+Grading Lookup
+ */
+function lookUpGrade(lookupScore, grades) {
+  // Only change code below this line
+  for (var i = 0; i < grades.length; i++) {
+    if (
+      grades[i].lowScore < lookupScore &&
+      grades[i].highScore >= lookupScore
+    ) {
+      return grades[i];
+    }
+  }
+  return null;
+}
+
+// create chart
+var chart = am4core.create("status", am4charts.GaugeChart);
+chart.hiddenState.properties.opacity = 0;
+chart.fontSize = 7;
+chart.innerRadius = am4core.percent(75);
+chart.resizable = true;
+chart.padding(-40, -30, 0, -30);
+
+/**
+ * Normal axis
+ */
+
+var axis = chart.xAxes.push(new am4charts.ValueAxis());
+axis.min = chartMin;
+axis.max = chartMax;
+axis.strictMinMax = false;
+axis.renderer.radius = am4core.percent(80);
+axis.renderer.inside = true;
+axis.renderer.line.strokeOpacity = 0.1;
+axis.renderer.ticks.template.disabled = false;
+axis.renderer.ticks.template.strokeOpacity = 1;
+axis.renderer.ticks.template.strokeWidth = 0.5;
+axis.renderer.ticks.template.length = 5;
+axis.renderer.grid.template.disabled = true;
+axis.renderer.labels.template.radius = am4core.percent(15);
+axis.renderer.labels.template.fontSize = "1em";
+
+/**
+ * Axis for ranges
+ */
+
+var axis2 = chart.xAxes.push(new am4charts.ValueAxis());
+axis2.min = chartMin;
+axis2.max = chartMax;
+axis2.strictMinMax = true;
+axis2.renderer.labels.template.disabled = true;
+axis2.renderer.ticks.template.disabled = true;
+axis2.renderer.grid.template.disabled = false;
+axis2.renderer.grid.template.opacity = 0.5;
+axis2.renderer.labels.template.bent = true;
+axis2.renderer.labels.template.fill = am4core.color("#000");
+axis2.renderer.labels.template.fontWeight = "bold";
+axis2.renderer.labels.template.fillOpacity = 0.3;
+
+
+
+/**
+Ranges
+*/
+
+for (let grading of data.gradingData) {
+  var range = axis2.axisRanges.create();
+  range.axisFill.fill = am4core.color(grading.color);
+  range.axisFill.fillOpacity = 0.8;
+  range.axisFill.zIndex = -1;
+  range.value = grading.lowScore > chartMin ? grading.lowScore : chartMin;
+  range.endValue = grading.highScore < chartMax ? grading.highScore : chartMax;
+  range.grid.strokeOpacity = 0;
+  range.stroke = am4core.color(grading.color).lighten(-0.1);
+  range.label.inside = true;
+  range.label.text = grading.title.toUpperCase();
+  range.label.inside = true;
+  range.label.location = 0.5;
+  range.label.inside = true;
+  range.label.radius = am4core.percent(10);
+  range.label.paddingBottom = -5; // ~half font size
+  range.label.fontSize = "1.2em";
+}
+
+var matchingGrade = lookUpGrade(data.score, data.gradingData);
+
+/**
+ * Label 1
+ */
+
+var label = chart.radarContainer.createChild(am4core.Label);
+label.isMeasured = false;
+label.fontSize = "6em";
+label.x = am4core.percent(50);
+label.paddingBottom = 15;
+label.horizontalCenter = "middle";
+label.verticalCenter = "bottom";
+//label.dataItem = data;
+label.text = data.score.toFixed(1);
+//label.text = "{score}";
+label.fill = am4core.color(matchingGrade.color);
+
+/**
+ * Label 2
+ */
+
+var label2 = chart.radarContainer.createChild(am4core.Label);
+label2.isMeasured = false;
+label2.fontSize = "2em";
+label2.horizontalCenter = "middle";
+label2.verticalCenter = "bottom";
+label2.text = matchingGrade.title.toUpperCase();
+label2.fill = am4core.color(matchingGrade.color);
+
+
+/**
+ * Hand
+ */
+
+var hand = chart.hands.push(new am4charts.ClockHand());
+hand.axis = axis2;
+hand.innerRadius = am4core.percent(55);
+hand.startWidth = 8;
+hand.pin.disabled = true;
+hand.value = data.score;
+hand.fill = am4core.color("#444");
+hand.stroke = am4core.color("#000");
+
+hand.events.on("positionchanged", function(){
+  label.text = axis2.positionToValue(hand.currentPosition).toFixed(1);
+  var value2 = axis.positionToValue(hand.currentPosition);
+  var matchingGrade = lookUpGrade(axis.positionToValue(hand.currentPosition), data.gradingData);
+  label2.text = matchingGrade.title.toUpperCase();
+  label2.fill = am4core.color(matchingGrade.color);
+  label2.stroke = am4core.color(matchingGrade.color);
+  label.fill = am4core.color(matchingGrade.color);
+})
+
+/*setInterval(function() {
+    var value = chartMin + Math.random() * (chartMax - chartMin);
+    hand.showValue(value, 1000, am4core.ease.cubicOut);
+}, 2000);
+*/
+}); // end am4core.ready()
+</script>
+{% endblock %}

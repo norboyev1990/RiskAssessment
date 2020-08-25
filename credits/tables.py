@@ -1,4 +1,8 @@
+from django.utils.html import escape
+
 import django_tables2 as tables
+from django.utils.safestring import mark_safe
+
 from .models import *
 
 attrs_title = {
@@ -33,7 +37,6 @@ class NumberColumn(tables.Column):
     def render(self, value):
         return int('{:0.0f}'.format(value))
 
-
 class PercentColumn(tables.Column):
     attrs = attrs_text_center
 
@@ -42,6 +45,18 @@ class PercentColumn(tables.Column):
 
     def render_footer(self, bound_column, table):
         return '{:0.1%}'.format(sum(bound_column.accessor.resolve(row) for row in table.data))
+
+class ProgressColumn(tables.Column):
+    attrs = {"td": {"class":"d-none d-xl-table-cell", "style":"width: 246px"}}
+
+    def render(self, value):
+        return mark_safe('''
+            <div class="progress">
+               <div class="progress-bar bg-primary-dark" role="progressbar" 
+                    style="width: {:0.1%};" aria-valuenow="{:0.1f}" aria-valuemin="0" aria-valuemax="100">
+                    {:0.1%}
+                </div>
+            </div>'''.format(value,value*100,value))
 
 class SummingColumn(tables.Column):
     attrs = attrs_text_center
@@ -59,8 +74,13 @@ class AverageColumn(tables.Column):
         return '{:0.1f}'.format(value)
 
 class InfoCreditsTable(tables.Table):
-    Older = tables.Column(accessor='get_old_value', verbose_name="Предыдущий  месяц")
-    Never = tables.Column(accessor='get_new_value', verbose_name="Текущий месяц")
+    Older = tables.Column(accessor='get_old_value')
+    Never = tables.Column(accessor='get_new_value')
+
+    def __init__(self, *args, c1_name="", c2_name="", **kwargs):  # will get the c1_name from where the the class will be called.
+        self.base_columns['Older'].verbose_name = c1_name
+        self.base_columns['Never'].verbose_name = c2_name
+        super().__init__(*args, **kwargs)
 
     class Meta:
         model = InfoCredits
@@ -235,3 +255,16 @@ class ByOverdueBranchTable(tables.Table):
         orderable = False
         exclude = ('id',)
 
+
+
+class ProductProcessTable(tables.Table):
+    Title = tables.Column(verbose_name="Продукт")
+    PorBalans = tables.Column(verbose_name="Кредитный портфель")
+    PorPercent = ProgressColumn(verbose_name="Доля")
+
+    class Meta:
+        model = ByRetailProduct
+        template_name = "django_tables2/bootstrap4.html"
+        attrs = attrs_table_style
+        orderable = False
+        exclude = ('id','Numeral','PrsBalans','NplBalans','NplWeight','NachBalans')
