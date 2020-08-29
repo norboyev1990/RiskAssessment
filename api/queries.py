@@ -115,3 +115,54 @@ class Query():
                 group by l.report_month) x
             order by title, report_month
         '''
+
+    @staticmethod
+    def subjects_by_npl():
+        return '''
+        select SUBJECT, SUM(LOAN) BALANCE from (
+            select 
+                sum(VSEGO_ZADOLJENNOST) AS LOAN, 
+                max(SUBJECT) AS SUBJECT  
+            from CREDITS
+            where REPORT_ID = %s
+            group by UNIQUE_CODE
+            having CLIENT_STATUS(nvl(max(days),0), nvl(max(arrear_days),0),
+                sum(ostatok_sudeb), sum(ostatok_vneb_prosr), sum(ostatok_peresm)) < 60)
+        group by SUBJECT
+        '''
+
+    @staticmethod
+    def branches_by_npl():
+        return '''
+            select MFO, MAX(B.NAME) BRANCH, SUM(LOAN)/1000000 BALANCE from (
+                select 
+                    sum(VSEGO_ZADOLJENNOST) AS LOAN, 
+                    max(MFO) AS MFO  
+                from CREDITS
+                where REPORT_ID = %s
+                group by UNIQUE_CODE
+                having CLIENT_STATUS(nvl(max(days),0), nvl(max(arrear_days),0),
+                    sum(ostatok_sudeb), sum(ostatok_vneb_prosr), sum(ostatok_peresm)) < 60) A
+            left join CREDITS_BRANCH B on B.CODE = A.MFO
+            group by MFO 
+            order by BALANCE DESC 
+            '''
+
+    @staticmethod
+    def average_juridical_by_npl():
+        return '''
+            
+            select 
+                SROK, 
+                CODE_VAL,
+                sum(VSEGO_ZADOLJENNOST) AS BALANCE 
+            from (
+                select UNIQUE_CODE 
+                from CREDITS
+                where REPORT_ID = %s and CLIENT_TYPE = 'J'
+                group by UNIQUE_CODE
+                ) A
+            left join CREDITS C on C.UNIQUE_CODE = A.UNIQUE_CODE
+            group by SROK, CODE_VAL
+            order by SROK, CODE_VAL
+        '''

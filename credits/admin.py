@@ -3,5 +3,6 @@ from . import models
 
 admin.site.register(models.ListReports)
 admin.site.register(models.ReportData)
+admin.site.register(models.ExcludedNpls)
 
 

@@ -26,7 +26,7 @@ SECRET_KEY = '%#6o*s$06b7@0ad8zlmcd-mwpuex-sl#bvpn(wdb$dct*)4=o8'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition

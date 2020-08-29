@@ -31,7 +31,7 @@
                     <div class="card-body">
                         <i class="align-middle mr-2 fas fa-fw fa-check text-success"></i> Успешно добавлен!
                         <hr>
-                        <a href="{% url 'issuance_upload' %}" class="btn btn-secondary">Добавить еще</a>
+                        <a href="{{request.META.HTTP_REFERER}}" class="btn btn-secondary">Добавить еще</a>
                     </div>
 
                 </div>

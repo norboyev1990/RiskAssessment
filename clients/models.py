@@ -2,16 +2,16 @@ from django.db import models
 
 class Clients(models.Model):
     ClientID = models.IntegerField(primary_key=True)
-    ClientName = models.CharField(max_length=255)
-    ClientType = models.CharField(max_length=255)
+    ClientName = models.CharField(max_length=255, verbose_name="Наименование")
+    ClientType = models.CharField(max_length=255, verbose_name="Тип клиента")
     Subject = models.CharField(max_length=2)
     Passport = models.CharField(max_length=255)
-    CountLoans = models.IntegerField()
-    TotalLoans = models.DecimalField(max_digits=20, decimal_places=0)
+    CountLoans = models.IntegerField(verbose_name="Кол-во кред-ов")
+    TotalLoans = models.DecimalField(max_digits=20, decimal_places=0, verbose_name="Всего задолжен")
     Address    = models.CharField(max_length=255)
-    Status = models.IntegerField()
-    Reserve = models.FloatField()
-    OstatokReserve = models.FloatField()
+    Status = models.IntegerField(verbose_name="Класс качества")
+    Reserve = models.FloatField(verbose_name="Резервы")
+    OstatokReserve = models.FloatField(verbose_name="Необход. резервы")
 
     class Meta:
         managed = False
@@ -34,6 +34,7 @@ class Credits(models.Model):
     UniqueCode = models.CharField(max_length=10)
     OstatokReserve = models.FloatField("Остаток резерв")
     Reserve = models.FloatField(verbose_name="Необход. резерв")
+    NachPercent = models.FloatField(verbose_name="Нач. процент")
 
 
     class Meta:

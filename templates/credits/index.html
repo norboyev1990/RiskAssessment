@@ -123,8 +123,60 @@
             </div>
         </div>
 
-        <!-- Статистика кредитный портфель -->
+        <!-- Аналитика КП -->
         <div class="row">
+            <!-- Chart #1 -->
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">По субъектам</h5>
+                        <h6 class="card-subtitle text-muted">A line chart is a way of plotting data points on a line.</h6>
+                    </div>
+                    <div class="card-body">
+                        <div id="chartdiv1" style="height: 383px"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Chart #2 -->
+            <div class="col-md-9">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">По филиалам</h5>
+                        <h6 class="card-subtitle text-muted">A line chart is a way of plotting data points on a line.</h6>
+                    </div>
+                    <div class="card-body">
+                        <div id="chartdiv" style="height: 400px"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Chart #3 -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">По средневзвешенной процентной ставке</h5>
+                        <h6 class="card-subtitle text-muted">A line chart is a way of plotting data points on a line.</h6>
+                    </div>
+                    <div class="card-body">
+                        <div id="chartdiv5" style="height: 350px"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Chart #4 -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">По средневзвешенной процентной ставке</h5>
+                        <h6 class="card-subtitle text-muted">A line chart is a way of plotting data points on a line.</h6>
+                    </div>
+                    <div class="card-body">
+                        <div id="chartdiv6" style="height: 350px"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Статистика кредитный портфель -->
+        <!--<div class="row">
             <div class="col-12 col-md-6 col-xxl-6 d-flex">
                 <div class="card flex-fill w-100">
                     <div class="card-header">
@@ -231,260 +283,251 @@
 
                     </div>
                     <div class="card-body">
-                        {% render_table dt_products %}
+                        % render_table dt_products %}
                     </div>
                 </div>
             </div>
-        </div>
+        </div>-->
     </div>
 {% endblock %}
 
 {% block scriptcontent %}
-    <script type="text/javascript" src="{% static 'spark/js/uzbekistan.js' %}"></script>
+<script type="text/javascript" src="{% static 'spark/js/uzbekistan.js' %}"></script>
+<script>
+    jQuery.getJSON( "{% url 'get_data_subjects' %}", function( response ) {
 
-    <script>
+        // Themes begin
+        am4core.useTheme(am4themes_animated);
+        // Themes end
+
+        // Create chart instance
+        var chart = am4core.create("chartdiv1", am4charts.PieChart);
+
+        // Add data
+        chart.data = response.result.data;
+
+        // Add and configure Series
+        var pieSeries = chart.series.push(new am4charts.PieSeries());
+        pieSeries.dataFields.value = "PORBALANS";
+        pieSeries.dataFields.category = "TITLE";
+        pieSeries.innerRadius = am4core.percent(50);
+        pieSeries.ticks.template.disabled = true;
+        pieSeries.labels.template.disabled = true;
+
+        var rgm = new am4core.LinearGradientModifier();
+        rgm.brightnesses.push(0, - 0.4);
+        pieSeries.slices.template.fillModifier = rgm;
+
+        var rgm2 = new am4core.LinearGradientModifier();
+        rgm2.brightnesses.push(0, - 0.4);
+
+        pieSeries.slices.template.strokeModifier = rgm2;
+        pieSeries.slices.template.strokeOpacity = 1;
+        pieSeries.slices.template.strokeWidth = 1;
 
 
-        get_status_template = function(arg){
-            if (arg > 0){
-                return '<span class="text-success"><i class="fas fa-level-up-alt"></i> ' + arg + '% </span> По сравнению с прошлым месяцем'}
-            else {
-                return '<span class="text-danger"><i class="fas fa-level-down-alt"></i> ' + arg + '% </span> По сравнению с прошлым месяцем'}
-        }
-    </script>
-    <script>
-        $.ajax({
-            type: "get",
-            url: "http://127.0.0.1:8000/api/credits/stat",
-            dataType: "json",
-            success: function(data){
-                result = data.results
-                $('#card_kpr .values').html(numberWithCommas(result.kpr.values))
-                $('#card_kpr .status').html(get_status_template(result.kpr.increase))
-                $('#card_npl .values').html(numberWithCommas(result.npl.values))
-                $('#card_npl .status').html(get_status_template(result.npl.increase))
-                $('#card_tox .values').html(numberWithCommas(result.tox.values))
-                $('#card_tox .status').html(get_status_template(result.tox.increase))
-                $('#card_prs .values').html(numberWithCommas(result.prs.values))
-                $('#card_prs .status').html(get_status_template(result.prs.increase))
-                $('.card .avatar-title').removeClass('spinner-grow')
-            },
-            error: function(){
-                alert("error");
-            }
-        });
-    </script>
+        chart.legend = new am4charts.Legend();
+        chart.legend.position = "bottom";
 
-    {#  Загрузка GEODATA  #}
-    <script>
-        $.ajax({
-            type: "get",
-            url: "http://127.0.0.1:8000/api/credits/geos",
-            dataType: "json",
-            success: function(data){
-                result = data.results
-                console.log('loading geodata:')
-                console.log(data)
-                init_map(result)
-            },
-            error: function(){
-                alert("error");
-            }
-        });
+        pieSeries.slices.template.events.on("validated", function(event){
+            var gradient = event.target.fillModifier.gradient
+            gradient.rotation = event.target.middleAngle + 90;
 
-        init_map = function (params){
-            $(function() {
-                $("#uzb_map").vectorMap({
-                    map: "uzbekistan_mill_en",
-                    backgroundColor: "transparent",
-                    zoomOnScroll: false,
-                    normalizeFunction: "polynomial",
-                    hoverOpacity: .7,
-                    hoverColor: false,
-                    regionStyle: {
-                        initial: {
-                            fill: "#DCE3E8"
-                        }
-                    },
-                    series: {
-                        regions: [{
-                            values: params.gdp_data,
-                            scale: ['#769ae5', '#153d77'],
-                            normalizeFunction: 'polynomial',
+            var gradient2 = event.target.strokeModifier.gradient
+            gradient2.rotation = event.target.middleAngle + 90;
+        })
+    });
 
-                        }]
-                    },
-                    onRegionTipShow: function (e, el, code) {
-                        if (typeof params.gdp_data[code] != 'undefined')
-                            el.html(el.html() + ': ' + numberWithCommas(params.gdp_data[code]) + ' mln. sum');
-                    },
-                    /*
-                    markerStyle: {
-                        initial: {
-                            "r": 9,
-                            "fill": window.theme.primary,
-                            "fill-opacity": .9,
-                            "stroke": "#fff",
-                            "stroke-width": 7,
-                            "stroke-opacity": .4
-                        },
-                        hover: {
-                            "stroke": "#fff",
-                            "fill-opacity": 1,
-                            "stroke-width": 1.5
-                        }
-                    },
+</script>
+<script>
+    jQuery.getJSON( "{% url 'get_data_branches' %}", function( response ) {
+        am4core.ready(function () {
 
-                    markers: [{
-                        latLng: [37.77, -122.41],
-                        name: "San Francisco: 375"
-                    }, {
-                        latLng: [40.71, -74.00],
-                        name: "New York: 350"
-                    }, {
-                        latLng: [39.09, -94.57],
-                        name: "Kansas City: 250"
-                    }, {
-                        latLng: [36.16, -115.13],
-                        name: "Las Vegas: 275"
-                    }, {
-                        latLng: [32.77, -96.79],
-                        name: "Dallas: 225"
-                    }]*/
-                });
-                setTimeout(function() {
-                    $(window).trigger('resize');
-                }, 350)
-            })
-        }
-    </script>
+            var chart = am4core.create("chartdiv", am4charts.XYChart);
+            chart.hiddenState.properties.opacity = 0; // this creates initial fade-in
 
-    {#  Загрузка LINECHART  #}
-    <script>
+            chart.data = response.result.data
 
-    update_line_chart = function(){
-        $('.loader').removeClass('d-none')
-        $.ajax({
-            type: "get",
-            url: "http://127.0.0.1:8000/api/credits/kprbymonth/npl",
-            dataType: "json",
-            success: function(data){
+            var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+            categoryAxis.renderer.grid.template.location = 0;
+            categoryAxis.dataFields.category = "TITLE";
+            categoryAxis.renderer.minGridDistance = 40;
+            categoryAxis.fontSize = 11;
+            categoryAxis.renderer.labels.template.horizontalCenter = "right";
+            categoryAxis.renderer.labels.template.verticalCenter = "middle";
+            categoryAxis.renderer.labels.template.rotation = 270;
 
-                document.cookie = "portfel_stat=" + JSON.stringify(data) + "; expires=" + (new Date(Date.now() + 7 * 86400000).toGMTString());
-                mychart.config.data.datasets[0].data = data.result.kpr
-                mychart.config.data.datasets[1].data = data.result.npl
-                mychart.config.data.datasets[2].data = data.result.tox
-                mychart.config.data.datasets[3].data = data.result.psr
-                mychart.config.data.datasets[4].data = data.result.res
-                mychart.update()
-                $('.loader').addClass('d-none')
-                //console.log(mychart.config.data.datasets[0].data)
-            },
-            error: function(){
-                alert("error");
-            }
-        });
-    }
+            var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+            valueAxis.min = 0;
+            valueAxis.max = response.result.max_value;
+            valueAxis.strictMinMax = true;
+            valueAxis.renderer.minGridDistance = 30;
+            // axis break
+            var axisBreak = valueAxis.axisBreaks.create();
+            axisBreak.startValue = response.result.min;
+            axisBreak.endValue = response.result.max;
+            //axisBreak.breakSize = 0.005;
 
-    init_chart = function(params){
-        $('.loader').addClass('d-none')
-        $(function() {
-            // Line chart
-            mychart = new Chart(document.getElementById("chartjs-line"), {
-                type: "line",
-                data: {
-                    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-                    datasets: [{
-                        label: "КП",
-                        fill: true,
-                        backgroundColor: "transparent",
-                        borderColor: window.theme.primary,
-                        data: params.kpr
-                    }, {
-                        label: "NPL",
-                        fill: true,
-                        backgroundColor: "transparent",
-                        borderColor: '#c82333',
+            // fixed axis break
+            var d = (axisBreak.endValue - axisBreak.startValue) / (valueAxis.max - valueAxis.min);
+            axisBreak.breakSize = 0.05 * (1 - d) / d; // 0.05 means that the break will take 5% of the total value axis height
 
-                        data: params.npl
-                    },{
-                        label: "Токсичные",
-                        fill: true,
-                        backgroundColor: "transparent",
-                        borderColor: '#e96b02',
-                        data: params.tox
-                    },{
-                        label: "Просрочка",
-                        fill: true,
-                        backgroundColor: "transparent",
-                        borderColor: '#1ba87e',
-                        data: params.psr
-                    },{
-                        label: "Резервы",
-                        fill: true,
-                        backgroundColor: "transparent",
-                        borderColor: '#28a745',
-                        data: params.res
-                    }]
-                },
-                options: {
-                    maintainAspectRatio: false,
-                    legend: {
-                        display: true
-                    },
-                    tooltips: {
-                        intersect: false
-                    },
-                    hover: {
-                        intersect: true
-                    },
-                    plugins: {
-                        filler: {
-                            propagate: false
-                        }
-                    },
-                    scales: {
-                        xAxes: [{
-                            reverse: true,
-                            gridLines: {
-                                color: "rgba(0,0,0,0.05)"
-                            }
-                        }],
-                        yAxes: [{
-                            ticks: {
-                                stepSize: 500
-                            },
-                            display: true,
-                            borderDash: [5, 5],
-                            gridLines: {
-                                color: "rgba(0,0,0,0)",
-                                fontColor: "#fff"
-                            }
-                        }]
-                    }
-                }
+            // make break expand on hover
+            var hoverState = axisBreak.states.create("hover");
+            hoverState.properties.breakSize = 1;
+            hoverState.properties.opacity = 0.1;
+            hoverState.transitionDuration = 1500;
+
+            axisBreak.defaultState.transitionDuration = 1000;
+
+            var series = chart.series.push(new am4charts.ColumnSeries());
+            series.dataFields.categoryX = "TITLE";
+            series.dataFields.valueY = "PORBALANS";
+            series.columns.template.tooltipText = "{valueY.value}";
+            series.columns.template.tooltipY = 0;
+            series.columns.template.strokeOpacity = 0;
+
+            // as by default columns of the same series are of the same color, we add adapter which takes colors from chart.colors color set
+            series.columns.template.adapter.add("fill", function (fill, target) {
+                return chart.colors.getIndex(target.dataItem.index);
             });
-        });
-    }
 
-    portfel_data = getCookie('portfel_stat')
-    if (portfel_data !== ""){
-        json = JSON.parse(portfel_data)
-        init_chart(json.result)
-    }else{
-        $.ajax({
-            type: "get",
-            url: "http://127.0.0.1:8000/api/credits/kprbymonth/npl",
-            dataType: "json",
-            success: function(data){
-                document.cookie = "portfel_stat=" + JSON.stringify(data) + "; expires=" + (new Date(Date.now() + 7 * 86400000).toGMTString());
-                init_chart(data.result)
-            },
-            error: function(){
-                alert("error");
+        }); // end am4core.ready()
+    })
+</script>
+<script>
+jQuery.getJSON( "{% url 'get_data_average' %}", function( response ) {
+    console.log(response)
+    am4core.ready(function() {
+
+        var chart = am4core.create("chartdiv5", am4charts.XYChart);
+        chart.padding(10, 10, 10, 10);
+
+        var categoryAxis = chart.yAxes.push(new am4charts.CategoryAxis());
+        categoryAxis.renderer.grid.template.location = 0;
+        categoryAxis.dataFields.category = "TITLE";
+        categoryAxis.renderer.minGridDistance = 1;
+        categoryAxis.renderer.inversed = true;
+        categoryAxis.renderer.grid.template.disabled = true;
+
+        var valueAxis = chart.xAxes.push(new am4charts.ValueAxis());
+        valueAxis.min = 0;
+
+        var series = chart.series.push(new am4charts.ColumnSeries());
+        series.dataFields.categoryY = "TITLE";
+        series.dataFields.valueX = "BALANCE";
+        series.tooltipText = "{valueX.value}"
+        series.columns.template.strokeOpacity = 0;
+        series.columns.template.column.cornerRadiusBottomRight = 5;
+        series.columns.template.column.cornerRadiusTopRight = 5;
+
+        var labelBullet = series.bullets.push(new am4charts.LabelBullet())
+        labelBullet.label.horizontalCenter = "left";
+        labelBullet.label.dx = 10;
+        labelBullet.label.text = "{values.valueX.workingValue.formatNumber('#.0as')}";
+        labelBullet.locationX = 1;
+
+        // as by default columns of the same series are of the same color, we add adapter which takes colors from chart.colors color set
+        series.columns.template.adapter.add("fill", function(fill, target){
+          return chart.colors.getIndex(target.dataItem.index);
+        });
+
+        categoryAxis.sortBySeries = series;
+        chart.data = response.result.data
+    }); // end am4core.ready()
+});
+</script>
+<script>
+jQuery.getJSON( "{% url 'get_data_average_juridical' %}", function( response ) {
+    console.log(response)
+    am4core.ready(function () {
+
+        // Themes begin
+        am4core.useTheme(am4themes_animated);
+        // Themes end
+
+        // Create chart instance
+        var chart = am4core.create("chartdiv6", am4charts.PieChart);
+
+        // Set data
+        var selected;
+        var types = response.result.data
+
+        // Add data
+        chart.data = generateChartData();
+
+        // Add and configure Series
+        var pieSeries = chart.series.push(new am4charts.PieSeries());
+        pieSeries.dataFields.value = "percent";
+        pieSeries.dataFields.category = "type";
+        pieSeries.slices.template.propertyFields.fill = "color";
+        pieSeries.slices.template.propertyFields.isActive = "pulled";
+        pieSeries.slices.template.strokeWidth = 0;
+
+        function generateChartData() {
+            var chartData = [];
+            for (var i = 0; i < types.length; i++) {
+                if (i == selected) {
+                    for (var x = 0; x < types[i].subs.length; x++) {
+                        chartData.push({
+                            type: types[i].subs[x].type,
+                            percent: types[i].subs[x].percent,
+                            color: types[i].color,
+                            pulled: true
+                        });
+                    }
+                } else {
+                    chartData.push({
+                        type: types[i].type,
+                        percent: types[i].percent,
+                        color: types[i].color,
+                        id: i
+                    });
+                }
             }
-        });
-    }
+            return chartData;
+        }
 
-    </script>
+        pieSeries.slices.template.events.on("hit", function (event) {
+            if (event.target.dataItem.dataContext.id != undefined) {
+                selected = event.target.dataItem.dataContext.id;
+            } else {
+                selected = undefined;
+            }
+            chart.data = generateChartData();
+        });
+
+    }); // end am4core.ready()
+})
+</script>
+<script>
+    get_status_template = function(arg){
+        if (arg > 0){
+            return '<span class="text-success"><i class="fas fa-level-up-alt"></i> ' + arg + '% </span> По сравнению с прошлым месяцем'}
+        else {
+            return '<span class="text-danger"><i class="fas fa-level-down-alt"></i> ' + arg + '% </span> По сравнению с прошлым месяцем'}
+    }
+</script>
+<script>
+    $.ajax({
+        type: "get",
+        url: "{% url 'get_stat_data' %}",
+        dataType: "json",
+        success: function(data){
+            result = data.results
+            $('#card_kpr .values').html(numberWithCommas(result.kpr.values))
+            $('#card_kpr .status').html(get_status_template(result.kpr.increase))
+            $('#card_npl .values').html(numberWithCommas(result.npl.values))
+            $('#card_npl .status').html(get_status_template(result.npl.increase))
+            $('#card_tox .values').html(numberWithCommas(result.tox.values))
+            $('#card_tox .status').html(get_status_template(result.tox.increase))
+            $('#card_prs .values').html(numberWithCommas(result.prs.values))
+            $('#card_prs .status').html(get_status_template(result.prs.increase))
+            $('.card .avatar-title').removeClass('spinner-grow')
+        },
+        error: function(){
+            alert("error");
+        }
+    });
+</script>
 {% endblock %}

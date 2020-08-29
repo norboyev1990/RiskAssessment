@@ -55,10 +55,16 @@
                                 <th class="text-truncate">Тип клиента</th>
                                 <th class="text-truncate">Филиал</th>
                                 <th class="text-truncate">Всего задолженность</th>
-{#                                <th class="text-truncate">Адрес</th>#}
                                 <th class="text-truncate">Статус</th>
                                 <th class="text-truncate">Резервы</th>
-                                <th class="text-truncate">Reserve</th>
+                                <th class="text-truncate">Необход. резервы</th>
+                                <th class="text-truncate">Остаток судебный</th>
+                                <th class="text-truncate">Остаток вне баланс</th>
+                                <th class="text-truncate">Остаток пересм.</th>
+                                <th class="text-truncate">Остаток просрочки</th>
+                                <th class="text-truncate">Просроченные дни</th>
+                                <th class="text-truncate">Нач. проср. процент</th>
+                                <th class="text-truncate">Просроченные дни</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -69,10 +75,11 @@
                               </tr>
                             </tbody>
                             <tfoot class="table-primary">
-                                <tr>
-                                    <th colspan="5" style="text-align:right">Total:</th>
+                                <th>
+                                    <th colspan="4" style="text-align:right">Total:</th>
                                     <th colspan="2" style="text-align:right">Reserve:</th>
                                     <th colspan="1" style="text-align:right;width:200px"></th>
+                                    <th colspan="7"></th>
                                 </tr>
                             </tfoot>
                         </table>
@@ -94,9 +101,10 @@
 <script>
     var table = $('#clients_table').dataTable({
         ajax: {
-            url: 'http://127.0.0.1:8000/api/clients',
+            url: '{% url 'api_clients_list' %}',
             dataSrc: 'results'
         },
+        scrollX: true,
         buttons: {
             dom: {
                 container: {
@@ -110,10 +118,16 @@
             { "data": "CLIENTTYPE"},
             { "data": "BRANCHNAME"},
             { "data": "TOTALLOANS"},
-            {#{ "data": "ADDRESS"},#}
             { "data": "STATUSCLIENT"},
             { "data": "TOTALRESERVE"},
             { "data": "RESERVE"},
+            { "data": "SUMMASUDEB"},
+            { "data": "SUMMAVNEB"},
+            { "data": "SUMMAPERESM"},
+            { "data": "OVERDUE"},
+            { "data": "OVERDUEDAYS"},
+            { "data": "NACHPERCENT"},
+            { "data": "ARREARDAYS"}
         ],
         columnDefs: [
             { className: "", targets: "_all" },
@@ -133,6 +147,11 @@
                 }
             },
             { targets: 4, data: "loan",
+                render: function (data, type, row, meta) {
+                    return numberWithCommas(Number(data));
+                }
+            },
+            { targets: 8, data: "loan",
                 render: function (data, type, row, meta) {
                     return numberWithCommas(Number(data));
                 }

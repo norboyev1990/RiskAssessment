@@ -9,13 +9,13 @@
     <div class="container-fluid">
         <div class="header">
             <h1 class="header-title">
-                Аналитика кредитный портфель
+                Аналитика проблемных кредитов
             </h1>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">{% trans 'Home' %}</a></li>
                     <li class="breadcrumb-item"><a href="#">Аналитика</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Аналитика кредитный портфель</li>
+                    <li class="breadcrumb-item active" aria-current="page">Аналитика проблемных кредитов</li>
                 </ol>
             </nav>
             <div class="row mt-3 mb-2">
@@ -26,7 +26,7 @@
             <div class="col-xxl-6">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="card-title mb-0">Empty card</h5>
+                        <h5 class="card-title mb-0">Класс качества кредитов</h5>
                     </div>
                     <div class="card-body">
                         {% render_table data_table %}
@@ -36,7 +36,7 @@
             <div class="col-xxl-6">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="card-title mb-0">Diagram</h5>
+                        <h5 class="card-title mb-0">Класс качества кредитов</h5>
                     </div>
                     <div class="card-body">
                         <div id="chartdiv1" style="height: 300px"></div>
@@ -45,17 +45,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-xxl-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">Table</h5>
-                    </div>
-                    <div class="card-body">
-                        {% render_table data_table2 %}
-                    </div>
-                </div>
-            </div>
-            <div class="col-xxl-6">
+            <div class="col-xxl-8   ">
                 <div class="card flex-fill w-100">
                     <div class="card-header">
                         <div class="card-actions float-right">
@@ -88,7 +78,7 @@
                                 </div>
                             </div>
                         </div>
-                        <h5 class="card-title mb-0">Sales by State</h5>
+                        <h5 class="card-title mb-0">Безнадежные кредиты по регионам</h5>
                     </div>
                     <div class="card-body px-4">
                         <div id="chartdiv" style="height:300px;"></div>
@@ -234,13 +224,13 @@
 
     var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
     valueAxis.min = 0;
-    valueAxis.max = 26000000000000;
+    valueAxis.max = {{ max_value | safe }};
     valueAxis.strictMinMax = true;
     valueAxis.renderer.minGridDistance = 30;
     // axis break
     var axisBreak = valueAxis.axisBreaks.create();
-    axisBreak.startValue = 3500000000000;
-    axisBreak.endValue = 24000000000000;
+    axisBreak.startValue = {{min|safe}};
+    axisBreak.endValue = {{max|safe}};
     //axisBreak.breakSize = 0.005;
 
     // fixed axis break

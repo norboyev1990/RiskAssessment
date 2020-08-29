@@ -6,11 +6,11 @@ class Query():
             select
                    Status,
                    MAX(cl.name) as Title,
-                   sum(totalloan) as Balance,
+                   ROUND(sum(totalloan)/1000000,0) as Balance,
                    sum(totalloan)/max(t.totals) Percent,
                    count(*) as Counts,
-                   sum(totalreserve) as Reserve,
-                   sum(totalneeded) as Needed
+                   ROUND(sum(totalreserve)/1000000,0) as Reserve,
+                   ROUND(sum(totalneeded)/1000000,0) as Needed
             from (
                 select
                    sum(vsego_zadoljennost) as totalloan,

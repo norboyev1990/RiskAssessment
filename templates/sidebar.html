@@ -32,7 +32,9 @@
 
 
 {% url 'upload_credits' as upload_credits_url %}
+{% url 'upload_repayment' as upload_repayment_url %}
 {% url 'upload_issuances' as upload_issuances_url %}
+{% url 'upload_overdues' as upload_overdues_url %}
 
 <style>
     .sidebar.toggled {
@@ -85,7 +87,7 @@
 
                 <ul id="analytics" class="sidebar-dropdown list-unstyled collapse " data-parent="#sidebar">
                     <li class="sidebar-item {% if menu_block == 'analytics' %} active {%endif%}">
-                        <a class="sidebar-link" href="{{ general_analytics_url }}">{% trans 'Аналитика КП' %}</a></li>
+                        <a class="sidebar-link" href="{{ general_analytics_url }}">{% trans 'Проблемных кредитов' %}</a></li>
                 </ul>
             </li>
 
@@ -154,8 +156,12 @@
                 <ul id="upload-data" class="sidebar-dropdown list-unstyled collapse " data-parent="#sidebar">
                     <li class="sidebar-item {% if request.path == upload_credits_url %} active {%endif%}">
                         <a class="sidebar-link" href="{{ upload_credits_url }}">{% trans 'Загрузка портфель' %}</a></li>
+                    <li class="sidebar-item {% if request.path == upload_repayment_url %} active {%endif%}">
+                        <a class="sidebar-link" href="{{ upload_repayment_url }}">{% trans 'Загрузка пред. платежи' %}</a></li>
                     <li class="sidebar-item {% if request.path == upload_issuances_url %} active {%endif%}">
                         <a class="sidebar-link" href="{{ upload_issuances_url }}">{% trans 'Загрузка выдачи' %}</a></li>
+                    <li class="sidebar-item {% if request.path == upload_overdues_url %} active {%endif%}">
+                        <a class="sidebar-link" href="{{ upload_overdues_url }}">{% trans 'Загрузка просрочки' %}</a></li>
                 </ul>
             </li>
         </ul>

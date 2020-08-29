@@ -16,6 +16,6 @@ urlpatterns = [
     path('by_percents/<str:sts>/', views.by_percents, name='by_percents'),
     path('by_averages/<str:sts>/', views.by_averages, name='by_averages'),
     path('issued_overdues/', views.issued_overdues, name='issued_overdues'),
-    path('export_doklad_word/', views.export_all_tables, name='export_doklad_word'),
-    path('export_doklad_excel/', views.export_all_docx, name='export_doklad_excel'),
+    path('export_doklad_excel/', views.export_all_tables, name='export_doklad_word'),
+    path('export_doklad_word/', views.export_all_docx, name='export_doklad_excel'),
 ]

@@ -43,16 +43,23 @@ def vector_map_portfolio(request):
             "value":str(p.Balance)
         })
 
-    query = Query.find_clients_by_status()
-    model = Clients.objects.raw(query, [report.id,10])
-    table2 = ClientsByClassTable(model)
-    table2.paginate(page=request.GET.get('page',1),per_page=10)
+    df = pd.DataFrame(dlist)
+    df['value'] = df['value'].astype('float').round(1)
+    df = df.sort_values(by='value', ascending=False)
+    df['delta'] = df['value'] - df['value'].shift(-1)
+    df['max'] = df['value'] - df['delta'] * 0.1
+    df['min'] = df['value'] - df['delta'] * 0.9
+    df = df.fillna(0)
+    df = df.sort_values(by='delta', ascending=False)
+    r = df.iloc[0]
 
     context = {
         "page_title": title,
         "data_table": table,
-        "data_table2": table2,
         "data_dlist": dlist,
-        "menu_group": "analytics"
+        "menu_group": "analytics",
+        "max": r['max'],
+        "min": r['min'],
+        "max_value": df['value'].max() * 1.1,
     }
     return render(request, 'analytics/vector_map_portfolio.html', context)

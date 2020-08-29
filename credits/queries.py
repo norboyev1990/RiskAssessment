@@ -8,19 +8,27 @@ class Query:
                 UNIQUE_CODE as id,
                 MAX(NAME_CLIENT) as Name, 
                 MAX(B.NAME) as Branch,
-                NVL(SUM(VSEGO_ZADOLJENNOST)/1000000,0) as Balans
+                NVL(SUM(VSEGO_ZADOLJENNOST)/1,0) as Balans,
+                NVL(SUM(OSTATOK_PROSR),0) as TotalOverdue,
+                NVL(MAX(C.DAYS),0) as DaysOverdue,
+                NVL(SUM(OSTATOK_NACH_PROSR_PRCNT),0) as NachPercent,
+                NVL(MAX(C.ARREAR_DAYS),0) as DaysOverduePercent
             FROM CREDITS C
             LEFT JOIN CREDITS_LISTREPORTS L ON L.ID = C.REPORT_ID
             LEFT JOIN CREDITS_BRANCH B ON B.CODE = C.MFO
             LEFT JOIN VIEW_OVERDUE_GROUPS O ON O.LOANID = C.CODE_CONTRACT AND O.REPORT_ID = C.REPORT_ID
             WHERE C.REPORT_ID = %s
             GROUP BY UNIQUE_CODE
-            HAVING 
-                MAX(C.DAYS) > 90 
+            HAVING UNIQUE_CODE not in (
+                                select CREDITS_EXCLUDED_NPLS.UNIQUE_CODE 
+                                from CREDITS_EXCLUDED_NPLS 
+                                where END_DATE is null) and
+                (MAX(C.DAYS) > 90 
                 OR MAX(C.ARREAR_DAYS) > 90
                 OR SUM(C.OSTATOK_SUDEB) IS NOT NULL
-                OR SUM(C.OSTATOK_VNEB_PROSR) IS NOT NULL
+                OR SUM(C.OSTATOK_VNEB_PROSR) IS NOT NULL)
             ORDER BY BALANS DESC
+            
         '''
 
     @staticmethod
@@ -37,12 +45,15 @@ class Query:
             LEFT JOIN CREDITS_BRANCH B ON B.CODE = C.MFO
             WHERE REPORT_ID = %s
             GROUP BY UNIQUE_CODE
-            HAVING 
-                NVL(MAX(C.DAYS),0) <= 90 
+            HAVING UNIQUE_CODE not in (
+                                select CREDITS_EXCLUDED_NPLS.UNIQUE_CODE 
+                                from CREDITS_EXCLUDED_NPLS 
+                                where END_DATE is null) and
+                (NVL(MAX(C.DAYS),0) <= 90 
                 AND NVL(MAX(C.ARREAR_DAYS),0) <= 90
                 AND SUM(OSTATOK_SUDEB) IS NULL
                 AND SUM(OSTATOK_VNEB_PROSR) IS NULL
-                AND SUM(OSTATOK_PERESM) IS NOT NULL
+                AND SUM(OSTATOK_PERESM) IS NOT NULL)
             ORDER BY BALANS DESC
         '''
 
@@ -110,6 +121,10 @@ class Query:
                     SELECT GROUPS, SUM(VSEGO_ZADOLJENNOST)
                     FROM NPL_UNIQUE_TABLE N
                     LEFT JOIN REPORT_DATA_TABLE D ON D.UNIQUE_CODE = N.UNIQUE_CODE
+                    WHERE N.UNIQUE_CODE not in (
+                                select CREDITS_EXCLUDED_NPLS.UNIQUE_CODE 
+                                from CREDITS_EXCLUDED_NPLS 
+                                where END_DATE is null)
                     GROUP BY GROUPS
                 ),
 
@@ -128,6 +143,10 @@ class Query:
                     SELECT GROUPS, SUM(VSEGO_ZADOLJENNOST)
                     FROM TOX_UNIQUE_TABLE T
                     LEFT JOIN REPORT_DATA_TABLE D ON D.UNIQUE_CODE = T.UNIQUE_CODE
+                    WHERE T.UNIQUE_CODE not in (
+                                select CREDITS_EXCLUDED_NPLS.UNIQUE_CODE 
+                                from CREDITS_EXCLUDED_NPLS 
+                                where END_DATE is null)
                     GROUP BY GROUPS
                 )
                 SELECT 
@@ -192,6 +211,10 @@ class Query:
                     SELECT GROUPS, SUM(VSEGO_ZADOLJENNOST)
                     FROM NPL_UNIQUE_TABLE N
                     LEFT JOIN REPORT_DATA_TABLE D ON D.UNIQUE_CODE = N.UNIQUE_CODE
+                    WHERE N.UNIQUE_CODE not in (
+                                select CREDITS_EXCLUDED_NPLS.UNIQUE_CODE 
+                                from CREDITS_EXCLUDED_NPLS 
+                                where END_DATE is null)
                     GROUP BY GROUPS
                 ),
 
@@ -210,6 +233,10 @@ class Query:
                     SELECT GROUPS, SUM(VSEGO_ZADOLJENNOST)
                     FROM TOX_UNIQUE_TABLE T
                     LEFT JOIN REPORT_DATA_TABLE D ON D.UNIQUE_CODE = T.UNIQUE_CODE
+                    WHERE T.UNIQUE_CODE not in (
+                                select CREDITS_EXCLUDED_NPLS.UNIQUE_CODE 
+                                from CREDITS_EXCLUDED_NPLS 
+                                where END_DATE is null)
                     GROUP BY GROUPS
                 )
 
@@ -272,6 +299,10 @@ class Query:
                     SELECT GROUPS, SUM(VSEGO_ZADOLJENNOST)
                     FROM NPL_UNIQUE_TABLE N
                     LEFT JOIN REPORT_DATA_TABLE D ON D.UNIQUE_CODE = N.UNIQUE_CODE
+                    WHERE N.UNIQUE_CODE not in (
+                                select CREDITS_EXCLUDED_NPLS.UNIQUE_CODE 
+                                from CREDITS_EXCLUDED_NPLS 
+                                where END_DATE is null)
                     GROUP BY GROUPS
                 ),
 
@@ -290,6 +321,10 @@ class Query:
                     SELECT GROUPS, SUM(VSEGO_ZADOLJENNOST)
                     FROM TOX_UNIQUE_TABLE T
                     LEFT JOIN REPORT_DATA_TABLE D ON D.UNIQUE_CODE = T.UNIQUE_CODE
+                    WHERE T.UNIQUE_CODE not in (
+                                select CREDITS_EXCLUDED_NPLS.UNIQUE_CODE 
+                                from CREDITS_EXCLUDED_NPLS 
+                                where END_DATE is null)
                     GROUP BY GROUPS
                 )
 
@@ -352,6 +387,10 @@ class Query:
                     SELECT GROUPS, SUM(VSEGO_ZADOLJENNOST)
                     FROM NPL_UNIQUE_TABLE N
                     LEFT JOIN REPORT_DATA_TABLE D ON D.UNIQUE_CODE = N.UNIQUE_CODE
+                    WHERE N.UNIQUE_CODE not in (
+                                select CREDITS_EXCLUDED_NPLS.UNIQUE_CODE 
+                                from CREDITS_EXCLUDED_NPLS 
+                                where END_DATE is null)
                     GROUP BY GROUPS
                 ),
 
@@ -370,6 +409,10 @@ class Query:
                     SELECT GROUPS, SUM(VSEGO_ZADOLJENNOST)
                     FROM TOX_UNIQUE_TABLE T
                     LEFT JOIN REPORT_DATA_TABLE D ON D.UNIQUE_CODE = T.UNIQUE_CODE
+                    WHERE T.UNIQUE_CODE not in (
+                                select CREDITS_EXCLUDED_NPLS.UNIQUE_CODE 
+                                from CREDITS_EXCLUDED_NPLS 
+                                where END_DATE is null)
                     GROUP BY GROUPS
                 )
 
@@ -432,6 +475,10 @@ class Query:
                     SELECT GROUPS, SUM(VSEGO_ZADOLJENNOST)
                     FROM NPL_UNIQUE_TABLE N
                     LEFT JOIN REPORT_DATA_TABLE D ON D.UNIQUE_CODE = N.UNIQUE_CODE
+                    WHERE N.UNIQUE_CODE not in (
+                                select CREDITS_EXCLUDED_NPLS.UNIQUE_CODE 
+                                from CREDITS_EXCLUDED_NPLS 
+                                where END_DATE is null)
                     GROUP BY GROUPS
                 ),
 
@@ -450,6 +497,10 @@ class Query:
                     SELECT GROUPS, SUM(VSEGO_ZADOLJENNOST)
                     FROM TOX_UNIQUE_TABLE T
                     LEFT JOIN REPORT_DATA_TABLE D ON D.UNIQUE_CODE = T.UNIQUE_CODE
+                    WHERE T.UNIQUE_CODE not in (
+                                select CREDITS_EXCLUDED_NPLS.UNIQUE_CODE 
+                                from CREDITS_EXCLUDED_NPLS 
+                                where END_DATE is null)
                     GROUP BY GROUPS
                 )
 
@@ -522,6 +573,10 @@ class Query:
                         SELECT GROUPS, SUM(VSEGO_ZADOLJENNOST)
                         FROM NPL_UNIQUE_TABLE N
                         LEFT JOIN REPORT_DATA_TABLE D ON D.UNIQUE_CODE = N.UNIQUE_CODE
+                        WHERE N.UNIQUE_CODE not in (
+                                select CREDITS_EXCLUDED_NPLS.UNIQUE_CODE 
+                                from CREDITS_EXCLUDED_NPLS 
+                                where END_DATE is null)
                         GROUP BY GROUPS
                     )
 
@@ -955,10 +1010,14 @@ class Query:
                 LEFT JOIN CREDITS_LISTREPORTS L ON L.ID = R.REPORT_ID
                 WHERE R.REPORT_ID = %s
                 GROUP BY UNIQUE_CODE
-                HAVING NVL(MAX(DAYS),0) > 90 
-                   AND NVL(MAX(ARREAR_DAYS),0) > 90 
+                HAVING UNIQUE_CODE not in (
+                                select CREDITS_EXCLUDED_NPLS.UNIQUE_CODE 
+                                from CREDITS_EXCLUDED_NPLS 
+                                where END_DATE is null) 
+                    AND (NVL(MAX(DAYS),0) > 90 
+                    AND NVL(MAX(ARREAR_DAYS),0) > 90 
                     OR SUM(OSTATOK_SUDEB) IS NOT NULL 
-                    OR SUM(OSTATOK_VNEB_PROSR) IS NOT NULL
+                    OR SUM(OSTATOK_VNEB_PROSR) IS NOT NULL)
                 )
             GROUP BY GEOCODE
             ORDER BY BALANCE
@@ -982,7 +1041,11 @@ class Query:
                 LEFT JOIN CREDITS_LISTREPORTS L ON L.ID = R.REPORT_ID
                 WHERE R.REPORT_ID = %s
                 GROUP BY UNIQUE_CODE
-                HAVING NVL(MAX(DAYS),0) <= 90 
+                HAVING UNIQUE_CODE not in (
+                                select CREDITS_EXCLUDED_NPLS.UNIQUE_CODE 
+                                from CREDITS_EXCLUDED_NPLS 
+                                where END_DATE is null) AND
+                    NVL(MAX(DAYS),0) <= 90 
                    AND NVL(MAX(ARREAR_DAYS),0) <= 90 
                     AND SUM(OSTATOK_SUDEB) IS  NULL 
                     AND SUM(OSTATOK_VNEB_PROSR) IS  NULL

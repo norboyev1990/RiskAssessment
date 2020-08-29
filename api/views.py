@@ -36,10 +36,17 @@ def clients_list(request):
                 sum(ostatok_vneb_prosr),sum(ostatok_peresm)) AS StatusClient,
             GET_RESERVE(CLIENT_STATUS(nvl(max(days), 0),nvl(max(arrear_days),0),sum(ostatok_sudeb),
                 sum(ostatok_vneb_prosr),sum(ostatok_peresm)), 
-                SUM(VSEGO_ZADOLJENNOST), SUM(OSTATOK_REZERV)) AS Reserve
+                SUM(VSEGO_ZADOLJENNOST), SUM(OSTATOK_REZERV)) AS Reserve,
+            NVL(SUM(OSTATOK_SUDEB),0) AS SummaSudeb,
+            NVL(SUM(OSTATOK_VNEB_PROSR),0) AS SummaVneb,
+            NVL(SUM(OSTATOK_PERESM),0) AS SummaPeresm,
+            NVL(SUM(OSTATOK_PROSR),0) as Overdue,
+            MAX(DAYS) as OverdueDays,
+            NVL(SUM(OSTATOK_NACH_PROSR_PRCNT),0) as NachPercent,
+            MAX(ARREAR_DAYS) as ArrearDays
         from credits
         left join CREDITS_BRANCH CB on CREDITS.MFO = CB.CODE
-        WHERE REPORT_id = %s and CLIENT_TYPE = 'J'
+        WHERE REPORT_id = %s
         GROUP BY UNIQUE_CODE
     """
 
@@ -128,6 +135,21 @@ def get_data_subjects(request):
 
     return JsonResponse(result)
 
+def get_data_subjects_npl(request):
+    month = pd.to_datetime(request.current_month)
+    report = ListReports.objects.get(REPORT_MONTH=month.month, REPORT_YEAR=month.year)
+
+    query = Query.subjects_by_npl()
+    cursor = connection.cursor()
+    cursor.execute(query, [report.id])
+    data = dictfetchall(cursor)
+
+    result = {"result":{
+        "data":list(data)
+    }}
+
+    return JsonResponse(result)
+
 def get_data_branches(request):
     month = pd.to_datetime(request.current_month)
     report = ListReports.objects.get(REPORT_MONTH=month.month, REPORT_YEAR=month.year)
@@ -137,8 +159,49 @@ def get_data_branches(request):
     cursor.execute(query, [report.id])
     data = dictfetchall(cursor)
 
+    df = pd.DataFrame(data)
+    df['PORBALANS'] = df['PORBALANS'].astype('float').round(1)
+    df = df.sort_values(by='PORBALANS', ascending=False)
+    df['delta'] = df['PORBALANS'] - df['PORBALANS'].shift(-1)
+    df['max'] = df['PORBALANS'] - df['delta'] * 0.05
+    df['min'] = df['PORBALANS'] - df['delta'] * 0.95
+    df = df.fillna(0)
+    df = df.sort_values(by='delta', ascending=False)
+    r = df.iloc[0]
+
     result = {"result":{
-        "data":list(data)
+        "data":list(data),
+        "max":r['max'],
+        "min":r['min'],
+        "max_value":r['PORBALANS']*1.01,
+    }}
+
+    return JsonResponse(result)
+
+def get_data_branches_npl(request):
+    month = pd.to_datetime(request.current_month)
+    report = ListReports.objects.get(REPORT_MONTH=month.month, REPORT_YEAR=month.year)
+
+    query = Query.branches_by_npl()
+    cursor = connection.cursor()
+    cursor.execute(query, [report.id])
+    data = dictfetchall(cursor)
+
+    df = pd.DataFrame(data)
+    df['BALANCE'] = df['BALANCE'].astype('float').round(1)
+    df = df.sort_values(by='BALANCE', ascending=False)
+    df['delta'] = df['BALANCE'] - df['BALANCE'].shift(-1)
+    df['max'] = df['BALANCE'] - df['delta'] * 0.05
+    df['min'] = df['BALANCE'] - df['delta'] * 0.95
+    df = df.fillna(0)
+    df = df.sort_values(by='delta', ascending=False)
+    r = df.iloc[0]
+
+    result = {"result":{
+        "data":list(data),
+        "max": r['max'],
+        "min": r['min'],
+        "max_value": df['BALANCE'].max()*1.01,
     }}
 
     return JsonResponse(result)
@@ -164,6 +227,27 @@ def get_data_average(request):
 
     return JsonResponse(result)
 
+def get_data_products(request):
+    month = pd.to_datetime(request.current_month)
+    report = ListReports.objects.get(REPORT_MONTH=month.month, REPORT_YEAR=month.year)
+
+    query = CreditsQuery.orcl_byretailproduct()
+    cursor = connection.cursor()
+    cursor.execute(query, [report.id])
+    data = dictfetchall(cursor)
+
+    for idx in range(len(data)):
+        data[idx]['breakdown'] = {'percent': '{:.1%}'.format(data[idx]['NPLWEIGHT'])}
+        if (data[idx]['TITLE'] == 'Овердрафт по пластиковым карточкам физических лиц'):
+            data[idx]['TITLE'] = 'Овердрафт'
+
+
+    result = {"result":{
+        "data":list(data)
+    }}
+
+    return JsonResponse(result)
+
 def get_data_average_juridical(request):
     month = pd.to_datetime(request.current_month)
     report = ListReports.objects.get(REPORT_MONTH=month.month, REPORT_YEAR=month.year)
@@ -175,6 +259,53 @@ def get_data_average_juridical(request):
         group by SROK, CODE_VAL
         order by SROK, CODE_VAL
     '''
+    cursor = connection.cursor()
+    cursor.execute(query, [report.id])
+    data = dictfetchall(cursor)
+
+    types = [
+        {
+            'type': 'Краткосрочный',
+            'percent': data[0]['BALANCE']+data[1]['BALANCE']+data[2]['BALANCE'],
+            'subs': [{
+                'type': "UZS",
+                'percent': data[0]['BALANCE']
+            }, {
+                'type': "USD",
+                'percent': data[1]['BALANCE']
+            }, {
+                'type': "EUR",
+                'percent': data[2]['BALANCE']
+            }]
+        }, {
+            'type': 'Долгосрочный',
+            'percent': data[3]['BALANCE']+data[4]['BALANCE']+data[5]['BALANCE'],
+            'subs': [{
+                'type': "UZS",
+                'percent': data[3]['BALANCE']
+            }, {
+                'type': "USD",
+                'percent': data[4]['BALANCE']
+            }, {
+                'type': "EUR",
+                'percent': data[5]['BALANCE']
+            }, {
+                'type': "JPY",
+                'percent': data[6]['BALANCE']
+            }]
+        }]
+
+    result = {"result":{
+        "data":types
+    }}
+
+    return JsonResponse(result)
+
+def get_data_average_juridical_npl(request):
+    month = pd.to_datetime(request.current_month)
+    report = ListReports.objects.get(REPORT_MONTH=month.month, REPORT_YEAR=month.year)
+
+    query = Query.average_juridical_by_npl()
     cursor = connection.cursor()
     cursor.execute(query, [report.id])
     data = dictfetchall(cursor)

@@ -20,7 +20,7 @@ attrs_table_style = {
 
 attrs_scroll_table_style = {
     "id": "scroll-vertical-datatable",
-    "class": "table table-centered table-striped",
+    "class": "table table-centered table-striped table-responsive",
     "thead": {"class": "text-truncate"},
     "tfoot": {"class": "bg-light"}}
 
@@ -99,7 +99,7 @@ class NplClientsTable(tables.Table):
         model = NplClients
         template_name = "django_tables2/bootstrap4.html"
         orderable = False
-        attrs = attrs_table_style
+        attrs = attrs_scroll_table_style
         exclude = ('id',)
 
 

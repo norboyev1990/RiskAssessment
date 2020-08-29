@@ -73,6 +73,7 @@ class Query():
                 VSEGO_ZADOLJENNOST as BalanceCredit,
                 VID_KREDITOVANIYA as TypeCredit,
                 PURPOSE_CREDIT as PurposeCredit,
+                NVL(OSTATOK_NACH_PROSR_PRCNT,0) as NachPercent,
                 NVL(OSTATOK_PROSR,0) as SummaOverdue,
                 NVL(DAYS,0) as DaysOverdue,
                 NVL(ARREAR_DAYS,0) as DaysOverduePercent,

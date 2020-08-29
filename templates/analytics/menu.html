@@ -6,7 +6,7 @@
     <nav class="nav btn-group">
         <a href="{{ general_analytics_url }}" class="btn
             {% if request.path == general_analytics_url %} btn-primary active {% else %} btn-light {%endif%}">
-            Общая аналитика
+            Анализ NPL кредитов
         </a>
 {#        <a href="{{ line_chart_portfolio_url }}" class="btn#}
 {#            {% if request.path == line_chart_portfolio_url %} btn-primary active {% else %} btn-light {%endif%}">#}
@@ -14,7 +14,7 @@
 {#        </a>#}
         <a href="{{ vector_map_portfolio_url }}" class="btn
             {% if request.path == vector_map_portfolio_url %} btn-primary active {% else %} btn-light {%endif%}">
-            Распределение КП по регионам
+            Анализ по классификациям
         </a>
     </nav>
 </div>
