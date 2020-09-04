@@ -1,20 +1,61 @@
 import pandas as pd
+import tablib
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.utils.translation import gettext as _
+from django_tables2 import tables
+from django_tables2.export import TableExport
 
 from credits.models import ListReports
+from .forms import FilterForm
 from .models import Clients, Credits, Contracts
 from .queries import Query
-from .tables import CreditsListTable, ContractsListTable
+from .tables import CreditsListTable, ContractsListTable, ClientsListTable, ExportClientsTable
 
 
 @login_required
 def index(request):
     title = _("Clients")
+    month = pd.to_datetime(request.current_month)
+    report = ListReports.objects.get(REPORT_MONTH=month.month, REPORT_YEAR=month.year)
+
+    form = FilterForm(request.GET)
+    if form.is_valid():
+        Branch = form.cleaned_data['branch']
+        ClType = form.cleaned_data['type']
+        ClStat = form.cleaned_data['status']
+        Search = request.GET.get('search') if 'search' in request.GET else ''
+        branch_code = Branch.CODE if Branch is not None else ''
+
+    query = Query.findClients()
+    if 'sort' in request.GET:
+        query += ' order by %s' % request.GET.get('sort')
+
+    model = Clients.objects.raw(query, [report.id,
+        '%'+branch_code+'%',
+        '%'+ClType+'%',
+        '%'+ClStat+'%',
+        '%'+Search+'%',
+        '%'+Search+'%'
+    ])
+
+    export_format = request.GET.get("_export", None)
+    if TableExport.is_valid_format(export_format):
+        exp_table = ExportClientsTable(model)
+        exporter = TableExport(export_format, exp_table, dataset_kwargs={"title": title})
+        return exporter.response("clients.{}".format(export_format))
+
+    table = ClientsListTable(model)
+    # table.order_by = request.GET.get('sort')
+    table.paginate(page=request.GET.get("page", 1), per_page=10)
+
+
+
     context = {
-        "page_title": title
+        "page_title": title,
+        "data_table": table,
+        "filtr_form": form
     }
     return render(request, 'clients/index.html', context)
 

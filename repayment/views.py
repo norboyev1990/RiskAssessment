@@ -20,7 +20,7 @@ class CursorByName(object):
 
 
 def repayments_top(request):
-    title = "Выдачи по топ 25 клиента"
+    title = "Погашения по топ 25 клиента"
     month = pd.to_datetime(request.current_month)
     cursor = connection.cursor()
     cursor.execute(Query.report_top())
@@ -56,7 +56,7 @@ def repayments_top(request):
 
 
 def repayments_all(request):
-    title = "Выдачи по тип клиента"
+    title = "Погашения по тип клиента"
     month = pd.to_datetime(request.current_month)
     cursor = connection.cursor()
     cursor.execute(Query.report_all())
@@ -90,7 +90,7 @@ def repayments_all(request):
 
 
 def repayments_by_subjects(request):
-    title = "Выдачи по субъектам"
+    title = "Погашения по субъектам"
     month = pd.to_datetime(request.current_month)
     cursor = connection.cursor()
     cursor.execute(Query.report_by_client())
@@ -126,7 +126,7 @@ def repayments_by_subjects(request):
 
 
 def repayments_by_currency(request, crncy='000'):
-    title = "Выдачи по валютам"
+    title = "Погашения по валютам"
     month = pd.to_datetime(request.current_month)
     cursor = connection.cursor()
     cursor.execute(Query.report_by_currency(), [crncy])
