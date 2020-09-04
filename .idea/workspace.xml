@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="BRANCH:master" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </select>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="2c1beae8-27fe-4da6-b0f4-fa32b437919d" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/RiskAssessment.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/70648098-ab60-4450-b44e-8c9757703c2c.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/70648098-ab60-4450-b44e-8c9757703c2c/storage_v2/_src_/schema/IBS.WhoBAA.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/70648098-ab60-4450-b44e-8c9757703c2c/storage_v2/_src_/schema/IBS.WhoBAA.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/70648098-ab60-4450-b44e-8c9757703c2c/storage_v2/_src_/schema/PUBLIC.aaZQjQ.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/70648098-ab60-4450-b44e-8c9757703c2c/storage_v2/_src_/schema/SYS.rUIBAA.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/70648098-ab60-4450-b44e-8c9757703c2c/storage_v2/_src_/schema/SYSTEM.L2avkg.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Django_Lib.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/views.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DjangoConsoleOptions" custom-start-script="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)" module-name="RiskAssessment" is-module-sdk="true">
+    <option name="myCustomStartScript" value="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)" />
+    <option name="myUseModuleSdk" value="true" />
+    <option name="myModuleName" value="RiskAssessment" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JavaScript File" />
+        <option value="package.json" />
+        <option value="HTML File" />
+        <option value="CSS File" />
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="Abdullobek" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="JupyterTrust" id="c5f4e9c5-8d70-4ea4-91a6-b2b5eba1aceb" />
+  <component name="ProjectId" id="1fxKjskwRZgrW6knKGyiBwGn7on" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="DatabaseDriversLRU" value="oracle" />
+    <property name="DefaultHtmlFileTemplate" value="HTML File" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="database.data.extractors.current.export.id" value="Excel (xlsx)" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="list.type.of.created.stylesheet" value="CSS" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="PyConsoleOptionsProvider">
+    <option name="myPythonConsoleState">
+      <console-settings module-name="RiskAssessment" is-module-sdk="true">
+        <option name="myUseModuleSdk" value="true" />
+        <option name="myModuleName" value="RiskAssessment" />
+      </console-settings>
+    </option>
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\RiskAssessment\static\spark\js\pages" />
+      <recent name="C:\RiskAssessment\templates\uploads" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\RiskAssessment\uploads" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="RiskAssessment" type="Python.DjangoServer" factoryName="Django server">
+      <module name="RiskAssessment" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+        <env name="DJANGO_SETTINGS_MODULE" value="RiskAssessment.settings" />
+      </envs>
+      <option name="SDK_HOME" value="C:\RiskAssessment\venv\Scripts\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="launchJavascriptDebuger" value="false" />
+      <option name="port" value="8000" />
+      <option name="host" value="" />
+      <option name="additionalOptions" value="" />
+      <option name="browserUrl" value="" />
+      <option name="runTestServer" value="false" />
+      <option name="runNoReload" value="false" />
+      <option name="useCustomRunCommand" value="false" />
+      <option name="customRunCommand" value="" />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" BundledDictionaries="0" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" Dictionaries="0" CorrectionsLimit="5" DefaultDictionary="application-level" UseSingleDictionary="true" />
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="2c1beae8-27fe-4da6-b0f4-fa32b437919d" name="Default Changelist" comment="" />
+      <created>1597154441857</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1597154441857</updated>
+      <workItem from="1597154442892" duration="569000" />
+      <workItem from="1597155208556" duration="612000" />
+      <workItem from="1597156572949" duration="4000" />
+      <workItem from="1597158394751" duration="9388000" />
+      <workItem from="1597243970813" duration="23384000" />
+      <workItem from="1597430280663" duration="1827000" />
+      <workItem from="1597518842279" duration="12562000" />
+      <workItem from="1597643439599" duration="2750000" />
+      <workItem from="1597646199946" duration="15816000" />
+      <workItem from="1597665609698" duration="31511000" />
+      <workItem from="1597741872586" duration="171000" />
+      <workItem from="1597742047897" duration="12478000" />
+      <workItem from="1597819258999" duration="4409000" />
+      <workItem from="1597824637656" duration="36000" />
+      <workItem from="1597824675870" duration="6940000" />
+      <workItem from="1597841525568" duration="2539000" />
+      <workItem from="1597898502742" duration="54841000" />
+      <workItem from="1598247178284" duration="145687000" />
+      <workItem from="1599028859280" duration="26298000" />
+      <workItem from="1599118973972" duration="45000" />
+      <workItem from="1599119143191" duration="2952000" />
+      <workItem from="1599131602016" duration="9840000" />
+      <workItem from="1599193187914" duration="14297000" />
+      <workItem from="1599216677582" duration="125000" />
+      <workItem from="1599216833858" duration="9000" />
+      <workItem from="1599216877002" duration="62000" />
+      <workItem from="1599216962805" duration="716000" />
+      <workItem from="1599218967762" duration="334000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="2" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="master" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="519" y="149" key="#RiskAssessment" timestamp="1599218939544">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="519" y="149" key="#RiskAssessment/0.0.1920.1040@0.0.1920.1040" timestamp="1599218939544" />
+    <state x="414" y="174" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1599216935800">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="414" y="174" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1599216935800" />
+    <state x="715" y="321" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1599133794288">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="715" y="321" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1599133794288" />
+    <state x="625" y="274" width="824" height="490" key="EnvironmentVariablesDialog" timestamp="1597160140323">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="625" y="274" width="824" height="490" key="EnvironmentVariablesDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1597160140323" />
+    <state x="589" y="317" key="FileChooserDialogImpl" timestamp="1599216930198">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="589" y="317" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1599216930198" />
+    <state width="1877" height="266" key="GridCell.Tab.0.bottom" timestamp="1599216674406">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="266" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1599216674406" />
+    <state width="1877" height="266" key="GridCell.Tab.0.center" timestamp="1599216674405">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="266" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1599216674405" />
+    <state width="1877" height="266" key="GridCell.Tab.0.left" timestamp="1599216674405">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="266" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1599216674405" />
+    <state width="1877" height="266" key="GridCell.Tab.0.right" timestamp="1599216674405">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="266" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1599216674405" />
+    <state width="196" height="457" key="HiddenNamespacesPopup" timestamp="1599132615741">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="196" height="457" key="HiddenNamespacesPopup/0.0.1920.1040@0.0.1920.1040" timestamp="1599132615741" />
+    <state x="461" y="164" key="SettingsEditor" timestamp="1599218994013">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="461" y="164" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1599218994013" />
+    <state x="770" y="396" key="com.intellij.database.actions.DdlActions$DeleteProvider2$1" timestamp="1597986864158">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="770" y="396" key="com.intellij.database.actions.DdlActions$DeleteProvider2$1/0.0.1920.1040@0.0.1920.1040" timestamp="1597986864158" />
+    <state x="859" y="461" key="com.intellij.database.run.ParametersPanel.Standalone" timestamp="1599201809980">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="859" y="461" key="com.intellij.database.run.ParametersPanel.Standalone/0.0.1920.1040@0.0.1920.1040" timestamp="1599201809980" />
+    <state x="796" y="296" width="670" height="639" key="com.intellij.database.view.ui.AbstractDbRefactoringDialog" timestamp="1597657410772">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="796" y="296" width="670" height="639" key="com.intellij.database.view.ui.AbstractDbRefactoringDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1597657410772" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/templates/credits/index.html</url>
+          <line>296</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>
