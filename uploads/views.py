@@ -20,7 +20,7 @@ def credits(request):
                 REPORT_MONTH=form.cleaned_data['DataMonth']
             ).first()
 
-            if modelList is None:
+            if modelList is None: 
                 modelList = ListReports.objects.create(
                     REPORT_TITLE=form.cleaned_data['DataTitle'],
                     REPORT_YEAR=form.cleaned_data['DataYear'],
