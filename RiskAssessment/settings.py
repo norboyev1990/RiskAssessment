@@ -116,9 +116,9 @@ DATABASESX = {
 DATABASES = {
     'default': {
     'ENGINE':   'django.db.backends.oracle',
-    'NAME':     'localhost/orclpdb',
-    'USER':     'ibs',
-    'PASSWORD': 'asaka',
+    'NAME':     'localhost/pdb12c',
+    'USER':     'root',
+    'PASSWORD': '123456',
   }
 }
 

@@ -7,7 +7,162 @@
 
 {% block pagecontent %}
 
-    <div class="container-fluid">
+<style>
+    .progress-circle-dashboard {
+    height: 9.375rem;
+    width: 9.375rem;
+}
+.progress-circle {
+    height: 15.625rem;
+    position: relative;
+    font-family: Poppins,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+}
+svg {
+    overflow: hidden;
+    vertical-align: middle;
+}
+.progress-circle svg {
+    height: 100%;
+    display: block;
+}
+.progress-circle-dashboard .progressbar-text .value {
+    font-size: 1.728rem;
+    font-weight: 500!important;
+}
+.progress-circle-dashboard .progressbar-text {
+    color: #9da9bb!important;
+}
+.progress-circle .progressbar-text {
+    text-align: center;
+    color: #0b1727!important;
+    margin-bottom: 0;
+    line-height: 1;
+}
+.progress-circle-dashboard .progressbar-text .value b {
+    font-size: 1.728rem;
+}
+.text-center {
+    text-align: center!important;
+}
+.mt-4, .my-4 {
+    margin-top: 1.8rem!important;
+}
+.fs-0 {
+    font-size: 1rem;
+}
+.mb-1, .my-1 {
+    margin-bottom: .25rem!important;
+}
+.fs--1 {
+    font-size: .83333rem;
+}
+.mb-0, .my-0 {
+    margin-bottom: 0!important;
+}
+
+.borderless  td {
+    border: none;
+    border-top: none !important;
+    
+}
+.borderless  th {
+    border: none;
+    border-top: none !important;
+    
+}
+.nav-link active {
+    color: #fff;
+    background-color: #3b7ddd;
+    border-color: #3b7ddd;
+
+}
+.progress {
+  width: 130px;
+  height: 130px;
+  background: none;
+  position: relative;
+}
+
+.progress::after {
+  content: "";
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 6px solid #eee;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.progress>span {
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  z-index: 1;
+}
+
+.progress .progress-left {
+  left: 0;
+}
+
+.progress .progress-bar {
+  width: 100%;
+  height: 100%;
+  background: none;
+  border-width: 6px;
+  border-style: solid;
+  position: absolute;
+  top: 0;
+}
+
+.progress .progress-left .progress-bar {
+  left: 100%;
+  border-top-right-radius: 100px;
+  border-bottom-right-radius: 100px;
+  border-left: 0;
+  -webkit-transform-origin: center left;
+  transform-origin: center left;
+}
+
+.progress .progress-right {
+  right: 0;
+}
+
+.progress .progress-right .progress-bar {
+  left: -100%;
+  border-top-left-radius: 80px;
+  border-bottom-left-radius: 80px;
+  border-right: 0;
+  -webkit-transform-origin: center right;
+  transform-origin: center right;
+}
+
+.progress .progress-value {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.rounded-lg {
+  border-radius: 1rem;
+}
+
+.text-gray {
+  color: #aaa;
+}
+
+div.h4 {
+  line-height: 1rem;
+}
+.bg-nav-pills {
+    background-color: #fff;
+}
+
+
+
+</style>
+    <div class="container-fluid" style="">
 
         <div class="header">
             <h1 class="header-title">
@@ -22,23 +177,368 @@
                 </ol>
             </nav>
         </div>
+
         <div class="row">
-						<div class="col-12">
-							<div class="card">
-								<div class="card-header">
-									<h5 class="card-title mb-0">Список платежей</h5>
-								</div>
-								<div class="card-body">
-                                    {% render_table data_table %}
-								</div>
-							</div>
-						</div>
-					</div>
+            <div class="col-md-3 col-xl-2">
+
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Меню</h5>
+                    </div>
+
+                    <div class="list-group list-group-flush" role="tablist">
+                        <a class="list-group-item list-group-item-action active" data-toggle="list" href="#account" role="tab" aria-selected="true">
+                            Контракт
+                        </a>
+                        <a class="list-group-item list-group-item-action" data-toggle="list" href="#password" role="tab" aria-selected="false">
+                            Финансовая информация
+                        </a>
+                        <a class="list-group-item list-group-item-action" data-toggle="list" href="#" role="tab" aria-selected="false">
+                            История статусов
+                        </a>
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-9 col-xl-10">
+                <div class="tab-content">
+                    <div class="tab-pane fade active show" id="account" role="tabpanel">
+                        <div class="row">
+                            <div class="col-md-4 col-xl-9">
+                                <div class="card" style="margin-bottom: 0.4rem !important; ">
+                                    <div class="card-header mb-0">
+                                        <div class="card-actions float-right">
+                                            <a href="#" class="mr-1">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-refresh-cw align-middle"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                                            </a>
+                                            <div class="d-inline-block dropdown show">
+                                                <a href="#" data-toggle="dropdown" data-display="static">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical align-middle"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+                                                </a>
+    
+                                                <div class="dropdown-menu dropdown-menu-right">
+                                                    <a class="dropdown-item" href="#">Action</a>
+                                                    <a class="dropdown-item" href="#">Another action</a>
+                                                    <a class="dropdown-item" href="#">Something else here</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <h5 class="card-title mb-0">Основные данные</h5>
+                                    </div>
+                                    <div class="card-body mt-0">
+                                        <div class="row">
+                                            <div class="col-md-6 col-xl-6">
+                                                <table class="borderless table table-sm my-2">
+                                                    <tbody>
+                                                        <tr>
+                                                            <th>Наименование</th>
+                                                            <td>XONOV AZIZJON TUROBOVICH</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>Филиал</th>
+                                                            <td>Асакинский</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>Дата договора</th>
+                                                            <td>22.02.2019</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>Срок кредита</th>
+                                                            <td>4 года</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>Сумма кредита</th>
+                                                            <td>30 000 000</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>Класс качества</th>
+                                                            <td><span class="badge badge-success">Стандарт</span></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div class="col-md-3 col-xl-3">
+                                                <div>
+                                                    <h5 class="card-title mb-0">Просрочка</h5>
+                                                    <h3 class="mt-0" style="font-size: 1.5rem; font-weight: 300; line-height: 1.2;">2.562</h3>
+                                                    <div class="mb-0">
+                                                        <span class="text-danger"> <i class="mdi mdi-arrow-bottom-right"></i> 130  </span>
+                                                        дней 
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <h5 class="card-title mb-0 mt-4">Остаток внеб</h5>
+                                                    <h3 class="mt-0" style="font-size: 1.5rem; font-weight: 300; line-height: 1.2;">2.562</h3>
+                                                    <div class="mb-0">
+                                                        <span class="text-danger"> <i class="mdi mdi-arrow-bottom-right"></i> 130 </span>
+                                                        дней 
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 col-xl-3">
+                                                <div>
+                                                    <h5 class="card-title mb-0" >Просроченные %</h5>
+                                                    <h3 class="mt-0" style="font-size: 1.5rem; font-weight: 300; line-height: 1.2;"> 2.562</h3>
+                                                    <div class="mb-0">
+                                                        <span class="text-danger"> <i class="mdi mdi-arrow-bottom-right"></i>130 </span>
+                                                        дней 
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <h5 class="card-title mb-0 mt-4">Остаок пересм</h5>
+                                                    <h3 class="mt-0" style="font-size: 1.5rem; font-weight: 300; line-height: 1.2;">2.562</h3>
+                                                    <div class="mb-0">
+                                                        <span class="text-danger"> <i class="mdi mdi-arrow-bottom-right"></i> 130 </span>
+                                                        дней 
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+
+                               
+                                    <div class="tab">
+                                        <ul class="nav nav-pills bg-nav-pills nav-justified mb-3" role="tablist">
+                                            <li class="nav-item"><a class="nav-link rounded-0 active" href="#tab-1" data-toggle="tab" role="tab" aria-selected="true">Запрос</a></li>
+                                            <li class="nav-item"><a class="nav-link" href="#tab-2" data-toggle="tab" role="tab" aria-selected="false">Кредитный продукт</a></li>
+                                            <li class="nav-item"><a class="nav-link" href="#tab-3" data-toggle="tab" role="tab" aria-selected="false">Обеспечение</a></li>
+                                            <li class="nav-item"><a class="nav-link" href="#tab-4" data-toggle="tab" role="tab" aria-selected="false">Дополнительно</a></li>
+                                        </ul>
+                                        <div class="tab-content">
+                                            <div class="tab-pane active" id="tab-1" role="tabpanel">
+                                                <h4 class="tab-title">Default tabs</h4>
+                                                <table class="table table-sm">
+                                                    <!-- <thead>
+                                                        <tr>
+                                                            <th>Description</th>
+                                                            <th>Quantity</th>
+                                                            <th class="text-right">Amount</th>
+                                                        </tr>
+                                                    </thead> -->
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>Филиал</td>
+                                                            <td>Асака</td>
+                                                            <td>Район подачи заявки</td>
+                                                            <td>Асакинский</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Адрес клиента</td>
+                                                            <td>And sh Maxmudiy,943803100</td>
+                                                            <td class="ml-4">ИНН/Паспорт</td>
+                                                            <td>509293827,AA4631129</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Код договора</td>
+                                                            <td>202145</td>
+                                                            <td>Кредитный счет</td>
+                                                            <td>12501000099036287002</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Сумма договора(ном)</td>
+                                                            <td>30000</td>
+                                                            <td>Сумма договора(сум)</td>
+                                                            <td>300000000</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Дата договора</td>
+                                                            <td>22.02.2020</td>
+                                                            <td>Дата закрытия</td>
+                                                            <td>22.02.2027</td>
+                                                        </tr>
+                                                        
+                                                        <tr>
+                                                            <td>Валюта</td>
+                                                            <td>UZS</td>
+                                                            <td>Срок</td>
+                                                            <td>1-Краткосрочный</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Отрасль кредита</td>
+                                                            <td>99950-Другие отрасли для физических лиц</td>
+                                                            <td>Отрасль клиента</td>
+                                                            <td>99950- Другие отрасли для физических лиц</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div class="tab-pane" id="tab-2" role="tabpanel">
+                                                <h4 class="tab-title">Another one</h4>
+                                                <table class="table table-sm">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>Вид кредитования</td>
+                                                            <td>32-Микрозаем</td>
+                                                            <td class="ml-4">Цель кредитования</td>
+                                                            <td>060024-Микрозаймы, выданные физическим лицам на личные нужды</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th style="font-weight: 400;">Процент кредита</th>
+                                                            <th style="font-weight: 400;">30 </th>
+                                                            <td>Процент просрочки</td>
+                                                            <td>25</td>
+                                                        </tr>
+                                                        
+                                                        <tr>
+                                                            <td>Отрасль кредита</td>
+                                                            <td>99950-Другие отрасли для физических лиц</td>
+                                                            <td>Председатель КБ</td>
+                                                            <td>З.К.Парпиев</td>
+                                                        </tr>
+                                                       
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div class="tab-pane" id="tab-3" role="tabpanel">
+                                                <h4 class="tab-title"></h4>
+                                                <table class="table table-sm">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>Оценка обеспечения</td>
+                                                            <td>8750000</td>
+                                                            <td class="ml-4">Обеспечение</td>
+                                                            <td>060024-Микрозаймы, выданные физическим лицам на личные нужды</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th style="font-weight: 400;">Описание обеспечения</th>
+                                                            <th style="font-weight: 400;">30 </th>
+                                                            <td>Источник средств</td>
+                                                            <td>25</td>
+                                                        </tr>
+                                                        
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div class="tab-pane" id="tab-4" role="tabpanel">
+                                                <h4 class="tab-title"></h4>
+                                                <table class="table table-sm">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>Оценка обеспечения</td>
+                                                            <td>8750000</td>
+                                                            <td class="ml-4">Обеспечение</td>
+                                                            <td>060024-Микрозаймы, выданные физическим лицам на личные нужды</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th style="font-weight: 400;">Описание обеспечения</th>
+                                                            <th style="font-weight: 400;">30 </th>
+                                                            <td>Источник средств</td>
+                                                            <td>25</td>
+                                                        </tr>
+                                                        
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                               
+                            </div>
+                                
+                            </div>
+                            
+                            <div class="col-md-4 col-xl-3">
+                                <div class="card">
+                                    
+                                    <div class="card-body mt-3">
+                                        <div class="text-center">
+                                            <div class="progress mx-auto" data-value='80'>
+                                                <span class="progress-left">
+                                                              <span class="progress-bar border-primary"></span>
+                                                </span>
+                                                <span class="progress-right">
+                                                              <span class="progress-bar border-primary"></span>
+                                                </span>
+                                                <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                                  <div class=" h2 font-weight-bold" style=" margin: 0px; font-size: 1.64062rem; font-family: Jost,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica Neue,Arial,sans-serif; font-weight: 500;line-height: 1.2; color: #203a45;">80<sup class="small">%</sup>  <br>
+                                                    <span style="font-size: 12px; text-transform: uppercase; width: 50%; height: 100%; overflow: hidden; top: 0; z-index: 1;">погашены</span></div>
+                                                </div>
+                                            </div>
+                                            <table class="table mb-0 mt-2">
+                                                <tbody>
+                                                    <tr >
+                                                        <td class="text-left ml-0" style="font-size: 13px; font-weight: 400; "><i class="fas fa-circle text-primary fa-fw"></i> Остаток кредита:</td>
+                                                        <td class="text-right" style="font-size: 13px; font-weight: 400;">1 520 000</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-left ml-0" style="font-size: 14px; font-weight: 400;"><i class="fas fa-circle text-warning fa-fw"></i> Остаток резерва:</td>
+                                                        <td class="text-right" style="font-size: 13px; font-weight: 400;">1 520 000</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-left ml-0" style="font-size: 13px; font-weight: 400;"> <i class="fas fa-circle text-danger fa-fw"></i> Необход. резерв:</td>
+                                                        <td class="text-right" style="font-size: 13px; font-weight: 400;">3 500 000</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <!-- <div class="mt-3">
+                                                <span class=""> Остаток кредита: 1 520 000</span>
+                                            </div>
+                                            <small>Сумма кредита: 3 500 000</small>
+                                            <div class="mt-1">
+                                                <span class=""> Остаток резерва: 1 520 000</span>
+                                            </div>
+                                            <small>Необход. резервы: 3 500 000</small> -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                           
+                        </div>
+                        <div class="row">
+                            
+                        </div>
+                        
+                        
+                    </div>
+                    <div class="tab-pane fade" id="password" role="tabpanel">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Платежи  </h5>
+
+                                {% render_table data_table %}
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        
     </div>
 {% endblock %}
 
 {% block scriptcontent %}
 <script>
+    $(function() {
+
+$(".progress").each(function() {
+
+  var value = $(this).attr('data-value');
+  var left = $(this).find('.progress-left .progress-bar');
+  var right = $(this).find('.progress-right .progress-bar');
+
+  if (value > 0) {
+    if (value <= 50) {
+      right.css('transform', 'rotate(' + percentageToDegrees(value) + 'deg)')
+    } else {
+      right.css('transform', 'rotate(180deg)')
+      left.css('transform', 'rotate(' + percentageToDegrees(value - 50) + 'deg)')
+    }
+  }
+
+})
+
+function percentageToDegrees(percentage) {
+
+  return percentage / 100 * 360
+
+}
+
+});
+
 
 </script>
 {% endblock %}

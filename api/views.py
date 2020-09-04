@@ -22,6 +22,7 @@ def dictfetchall(cursor):
 
 def clients_list(request):
     month = pd.to_datetime(request.current_month)
+    report = ListReports.objects.get(REPORT_MONTH=month.month, REPORT_YEAR=month.year)
     MAX_OBJECTS = 20
     sql = """
         SELECT 
@@ -51,9 +52,9 @@ def clients_list(request):
     """
 
     cursor = connection.cursor()
-    cursor.execute(sql, [month.month])
+    cursor.execute(sql, [report.id])
     results = dictfetchall(cursor)
-    data = {"results": list(results)}
+    data = {"results":results}
     return JsonResponse(data)
 
 def clients_detail(request, pk):
