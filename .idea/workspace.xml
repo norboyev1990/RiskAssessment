@@ -29,21 +29,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2c1beae8-27fe-4da6-b0f4-fa32b437919d" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/RiskAssessment.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/70648098-ab60-4450-b44e-8c9757703c2c.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/70648098-ab60-4450-b44e-8c9757703c2c/storage_v2/_src_/schema/IBS.WhoBAA.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/70648098-ab60-4450-b44e-8c9757703c2c/storage_v2/_src_/schema/IBS.WhoBAA.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/70648098-ab60-4450-b44e-8c9757703c2c/storage_v2/_src_/schema/PUBLIC.aaZQjQ.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/70648098-ab60-4450-b44e-8c9757703c2c/storage_v2/_src_/schema/SYS.rUIBAA.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/70648098-ab60-4450-b44e-8c9757703c2c/storage_v2/_src_/schema/SYSTEM.L2avkg.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Django_Lib.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RiskAssessment/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/RiskAssessment/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clients/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/clients/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clients/queries.py" beforeDir="false" afterPath="$PROJECT_DIR$/clients/queries.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clients/tables.py" beforeDir="false" afterPath="$PROJECT_DIR$/clients/tables.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clients/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/clients/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/clients/client_detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/clients/client_detail.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/navbar.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/navbar.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,8 +54,8 @@
         <option value="JavaScript File" />
         <option value="package.json" />
         <option value="HTML File" />
-        <option value="CSS File" />
         <option value="Python Script" />
+        <option value="CSS File" />
       </list>
     </option>
   </component>
@@ -122,8 +115,8 @@
         <env name="PYTHONUNBUFFERED" value="1" />
         <env name="DJANGO_SETTINGS_MODULE" value="RiskAssessment.settings" />
       </envs>
-      <option name="SDK_HOME" value="C:\RiskAssessment\venv\Scripts\python.exe" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
@@ -177,7 +170,8 @@
       <workItem from="1599216833858" duration="9000" />
       <workItem from="1599216877002" duration="62000" />
       <workItem from="1599216962805" duration="716000" />
-      <workItem from="1599218967762" duration="334000" />
+      <workItem from="1599218967762" duration="392000" />
+      <workItem from="1599219362573" duration="6634000" />
     </task>
     <servers />
   </component>

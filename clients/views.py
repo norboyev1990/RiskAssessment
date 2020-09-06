@@ -30,7 +30,7 @@ def index(request):
 
     query = Query.findClients()
     if 'sort' in request.GET:
-        query += ' order by %s' % request.GET.get('sort')
+        query += ' order by -%s' % request.GET.get('sort')
 
     model = Clients.objects.raw(query, [report.id,
         '%'+branch_code+'%',
@@ -78,7 +78,7 @@ def client_detail(request, client_id):
     param = {
         'report_id': report.id,
         'unique_code': client_id,
-        'client_status': client.Status
+        'client_status': client.ClientStatus
     }
     query = Query.findCredits()
     credits = Credits.objects.raw(query, param)
@@ -100,7 +100,7 @@ def client_detail(request, client_id):
         "client": client,
         "status_client": status_client,
         "credits_table": table,
-        "total": client.OstatokReserve + client.Reserve
+        "total": client.TotalReserve + client.NeededReserve
     }
     return render(request, 'clients/client_detail.html', context)
 

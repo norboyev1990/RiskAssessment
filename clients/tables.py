@@ -1,4 +1,5 @@
 import django_tables2 as tables
+from django.db.models import F
 from django.utils.formats import localize
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
@@ -105,20 +106,23 @@ class ClientsListTable(tables.Table):
     TotalLoans = SummingColumn(verbose_name="Остаток кредита")
     ClientStatus = tables.Column(accessor="get_status", verbose_name="Статус", attrs=attrs_text_center)
     ClientType = ClientTypeImageColumn(verbose_name="")
-    NeededReserve = TotalReserveColumn(accessor="get_reserve", verbose_name="Резервы/Необход. ", initial_sort_descending=True)
+    NeededReserve = TotalReserveColumn(accessor="get_reserve", verbose_name="Резервы/Необход. ")
     TotalOverdue = tables.Column(accessor="get_overdues", verbose_name="Просрочки", attrs=attrs_text_right)
     NachPercent = tables.Column(accessor="get_nach_percent", verbose_name="Нач. проср. процент", attrs=attrs_text_right)
     SummaSudeb = SummingColumn(verbose_name="Остаток судеб.")
     SummaVneb = SummingColumn(verbose_name="Остаток вне баланс.")
     SummaPeresm = SummingColumn("Остаток пересм.")
+
     class Meta:
         model = Clients
         template_name = "django_tables2/bootstrap4.html"
         attrs = attrs_scroll_table_style
         orderable = True
         exclude = ('Subject', 'Passport','Address','ClientID',
-                   'CountLoans','BranchName','TotalReserve','OverdueDays',
+                   'CountLoans','BranchName','OverdueDays','TotalReserve',
                    'ArrearDays')
+
+
 
 class CreditsListTable(tables.Table):
 

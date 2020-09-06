@@ -1,3 +1,4 @@
+from django.conf.urls import url
 from django.db import models
 from django.utils.formats import localize
 from django.utils.safestring import mark_safe
@@ -28,7 +29,10 @@ class Clients(models.Model):
         managed = False
 
     def get_name(self):
-        return mark_safe('<div>{}</div><div class="text-muted" style="font-size: 14px">{} филиал</div>'.format(self.ClientName, self.BranchName))
+        return mark_safe('''
+                <div><a href="/clients/{}">{}</a></div>
+                <div class="text-muted" style="font-size: 14px">{} филиал</div>'''
+            .format(self.ClientID, self.ClientName, self.BranchName))
 
     def get_reserve(self):
         if self.NeededReserve > 0:

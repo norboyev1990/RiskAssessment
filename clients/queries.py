@@ -46,12 +46,12 @@ class Query():
                 SUM(VSEGO_ZADOLJENNOST)  AS TotalLoans,
                 MAX(substr(ADRESS_CLIENT, 1, pos-1)) AS Address,
                 MAX(substr(ADRESS_CLIENT, pos+1)) AS Phone,
-                CLIENT_STATUS(nvl(max(days), 0),nvl(max(arrear_days),0),sum(ostatok_sudeb),
-                sum(ostatok_vneb_prosr),sum(ostatok_peresm)) AS Status,
-                GET_RESERVE(CLIENT_STATUS(nvl(max(days), 0),nvl(max(arrear_days),0),sum(ostatok_sudeb),
-                sum(ostatok_vneb_prosr),sum(ostatok_peresm)), 
-                SUM(VSEGO_ZADOLJENNOST), SUM(OSTATOK_REZERV)) AS Reserve,
-                NVL(SUM(OSTATOK_REZERV), 0) AS OstatokReserve
+                CLIENT_STATUS_2(nvl(max(days), 0),nvl(max(arrear_days),0),sum(ostatok_sudeb),
+                sum(ostatok_vneb_prosr),sum(ostatok_peresm), ClientID) AS ClientStatus,
+                GET_RESERVE(CLIENT_STATUS_2(nvl(max(days), 0),nvl(max(arrear_days),0),sum(ostatok_sudeb),
+                sum(ostatok_vneb_prosr),sum(ostatok_peresm), ClientID), 
+                SUM(VSEGO_ZADOLJENNOST), SUM(OSTATOK_REZERV)) AS NeededReserve,
+                NVL(SUM(OSTATOK_REZERV), 0) AS TotalReserve
             FROM (
                 SELECT 
                     UNIQUE_CODE AS ClientID,
