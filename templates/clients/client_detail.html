@@ -101,11 +101,11 @@
                             <tbody>
                                 <tr>
                                     <th>Текущий</th>
-                                    <td>{{client.OstatokReserve}}</td>
+                                    <td>{{client.TotalReserve}}</td>
                                 </tr>
                                 <tr>
                                     <th>Необходимо</th>
-                                    <td>{{client.Reserve}}</td>
+                                    <td>{{client.NeededReserve}}</td>
                                 </tr>
                                 <tr>
                                     <th>Итого:</th>
@@ -164,7 +164,7 @@ var chartMax = 100;
 
 
 var data = {
-  score: {{ client.Status }},
+  score: {{ client.ClientStatus }},
   gradingData: [
     {
       title: "Безнадежный",

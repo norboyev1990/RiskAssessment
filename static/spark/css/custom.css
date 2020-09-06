@@ -1,0 +1,47 @@
+a:-webkit-any-link:focus{
+    outline: none;
+}
+
+.table-filter{
+    /*padding: 5px 0 15px;*/
+    margin-bottom: 5px;
+    padding: 10px;
+    background: #153d77;
+    color: #d2e4fd;
+    border-radius: 5px;
+}
+
+.filter-icon {
+    float: left;
+    margin-top: 6px;
+}
+
+.table-filter .form-group {
+    float: left;
+    margin-left: 15px;
+}
+
+.table-filter label {
+    font-weight: normal;
+    margin-left: 10px;
+    font-size: 13px;
+}
+
+.table-filter select, .table-filter input {
+
+    display: inline-block;
+    margin-left: 5px;
+}
+
+.table-filter .form-group select.form-control {
+    width: auto;
+}
+
+.tx-ellipsis{
+    max-width: 200px;
+    text-overflow: ellipsis;
+    word-break: break-word;
+    white-space: nowrap;
+    overflow: hidden;
+    padding: 8px !important;
+}

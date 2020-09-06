@@ -6,13 +6,32 @@ class Query():
             SELECT 
                 UNIQUE_CODE AS ClientID,
                 MAX(NAME_CLIENT) AS ClientName,
-                MAX(SUBJECT) AS ClientType,
-                SUM(VSEGO_ZADOLJENNOST) AS TotalLoans,
-                MAX(ADRESS_CLIENT) AS Address
+                MAX(SUBJECT) AS Subject,
+                MAX(CLIENT_TYPE)  AS ClientType,
+                MAX(CB.NAME) AS BranchName,
+                NVL(SUM(VSEGO_ZADOLJENNOST),0) AS TotalLoans,
+                NVL(SUM(OSTATOK_REZERV),0) AS TotalReserve,
+                MAX(ADRESS_CLIENT) AS Address,
+                CLIENT_STATUS_2(nvl(max(days), 0),nvl(max(arrear_days),0),sum(ostatok_sudeb),
+                    sum(ostatok_vneb_prosr),sum(ostatok_peresm), UNIQUE_CODE) AS ClientStatus,
+                NVL(GET_RESERVE(CLIENT_STATUS_2(nvl(max(days), 0),nvl(max(arrear_days),0),sum(ostatok_sudeb),
+                    sum(ostatok_vneb_prosr),sum(ostatok_peresm),UNIQUE_CODE), 
+                    SUM(VSEGO_ZADOLJENNOST), SUM(OSTATOK_REZERV)),0) AS NeededReserve,
+                NVL(SUM(OSTATOK_SUDEB),0) AS SummaSudeb,
+                NVL(SUM(OSTATOK_VNEB_PROSR),0) AS SummaVneb,
+                NVL(SUM(OSTATOK_PERESM),0) AS SummaPeresm,
+                NVL(SUM(OSTATOK_PROSR),0) as TotalOverdue,
+                MAX(DAYS) as OverdueDays,
+                NVL(SUM(OSTATOK_NACH_PROSR_PRCNT),0) as NachPercent,
+                MAX(ARREAR_DAYS) as ArrearDays
             from credits
-            WHERE REPORT_id = %s AND CLIENT_TYPE = 'J'
+            left join CREDITS_BRANCH CB on CREDITS.MFO = CB.CODE
+            WHERE REPORT_id = %s and MFO like %s and CLIENT_TYPE LIKE %s
             GROUP BY UNIQUE_CODE
-
+            having CLIENT_STATUS_2(nvl(max(days), 0),nvl(max(arrear_days),0),sum(ostatok_sudeb),
+                    sum(ostatok_vneb_prosr),sum(ostatok_peresm), UNIQUE_CODE) like %s
+                and (LOWER(MAX(NAME_CLIENT)) like LOWER(%s) or UNIQUE_CODE like %s)
+             
         '''
 
     @staticmethod
@@ -27,12 +46,12 @@ class Query():
                 SUM(VSEGO_ZADOLJENNOST)  AS TotalLoans,
                 MAX(substr(ADRESS_CLIENT, 1, pos-1)) AS Address,
                 MAX(substr(ADRESS_CLIENT, pos+1)) AS Phone,
-                CLIENT_STATUS(nvl(max(days), 0),nvl(max(arrear_days),0),sum(ostatok_sudeb),
-                sum(ostatok_vneb_prosr),sum(ostatok_peresm)) AS Status,
-                GET_RESERVE(CLIENT_STATUS(nvl(max(days), 0),nvl(max(arrear_days),0),sum(ostatok_sudeb),
-                sum(ostatok_vneb_prosr),sum(ostatok_peresm)), 
-                SUM(VSEGO_ZADOLJENNOST), SUM(OSTATOK_REZERV)) AS Reserve,
-                NVL(SUM(OSTATOK_REZERV), 0) AS OstatokReserve
+                CLIENT_STATUS_2(nvl(max(days), 0),nvl(max(arrear_days),0),sum(ostatok_sudeb),
+                sum(ostatok_vneb_prosr),sum(ostatok_peresm), ClientID) AS ClientStatus,
+                GET_RESERVE(CLIENT_STATUS_2(nvl(max(days), 0),nvl(max(arrear_days),0),sum(ostatok_sudeb),
+                sum(ostatok_vneb_prosr),sum(ostatok_peresm), ClientID), 
+                SUM(VSEGO_ZADOLJENNOST), SUM(OSTATOK_REZERV)) AS NeededReserve,
+                NVL(SUM(OSTATOK_REZERV), 0) AS TotalReserve
             FROM (
                 SELECT 
                     UNIQUE_CODE AS ClientID,
