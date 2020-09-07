@@ -1,5 +1,6 @@
 import datetime
 import pandas as pd
+from django.contrib.auth.decorators import login_required
 from django.db import connection
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse
@@ -13,6 +14,7 @@ def ask_float(str):
 def ask_date(str):
     return str if str!='' else None
 
+@login_required
 def upload(request):
     title = "Загрузить выдачи"
 

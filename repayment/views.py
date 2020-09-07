@@ -1,6 +1,8 @@
+from django.contrib.auth.decorators import login_required
 from django.db import connection
 from django.shortcuts import render
 import pandas as pd
+from django.views.decorators.cache import cache_page
 from django_tables2.export import TableExport
 
 from repayment.queries import Query
@@ -18,7 +20,8 @@ class CursorByName(object):
         row = self._cursor.__next__()
         return {description[0]: row[col] for col, description in enumerate(self._cursor.description)}
 
-
+@login_required
+@cache_page(60 * 60 * 24)
 def repayments_top(request):
     title = "Погашения по топ 25 клиента"
     month = pd.to_datetime(request.current_month)
@@ -55,6 +58,8 @@ def repayments_top(request):
     return render(request, 'repayment/view.html', context)
 
 
+@login_required
+@cache_page(60 * 60 * 24)
 def repayments_all(request):
     title = "Погашения по тип клиента"
     month = pd.to_datetime(request.current_month)
@@ -89,6 +94,8 @@ def repayments_all(request):
     return render(request, 'repayment/view.html', context)
 
 
+@login_required
+@cache_page(60 * 60 * 24)
 def repayments_by_subjects(request):
     title = "Погашения по субъектам"
     month = pd.to_datetime(request.current_month)
@@ -125,6 +132,8 @@ def repayments_by_subjects(request):
     return render(request, 'repayment/view.html', context)
 
 
+@login_required
+@cache_page(60 * 60 * 24)
 def repayments_by_currency(request, crncy='000'):
     title = "Погашения по валютам"
     month = pd.to_datetime(request.current_month)

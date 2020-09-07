@@ -48,7 +48,7 @@ class Clients(models.Model):
 
     def get_status(self):
         if self.ClientStatus == 10:
-            return mark_safe('<span class="badge badge-danger">Безнажежный</span>')
+            return mark_safe('<span class="badge badge-danger">Безнадежный</span>')
         elif self.ClientStatus == 30:
             return mark_safe('<span class="badge badge-danger">Сомнительный</span>')
         elif self.ClientStatus == 50:
@@ -63,7 +63,7 @@ class Clients(models.Model):
             return mark_safe('<div>{}</div><div class="text-muted" style="font-size: 14px">{} дней</div>'
                          .format(localize(self.TotalOverdue), self.OverdueDays))
         else:
-            return '—'
+            return None
 
     def get_nach_percent(self):
         if self.NachPercent:
@@ -96,7 +96,7 @@ class Credits(models.Model):
     class Meta:
         managed = False
 
-class Contracts(models.Model):
+class Payments(models.Model):
     DatePogash = models.DateField(verbose_name="Дата погашения")
     PrognozPogash = models.FloatField(verbose_name="Прогноз погашения")
     OstatokPercent = models.FloatField(verbose_name="Остаток нач. процент")

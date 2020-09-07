@@ -1,5 +1,6 @@
 from datetime import datetime
 import pandas as pd
+from django.contrib.auth.decorators import login_required
 from django.db import connection
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse
@@ -8,6 +9,7 @@ from credits.models import ListReports, ReportData, OverduePercents, Payments
 from .forms import UploadForm, UploadRepaymentForm
 
 
+@login_required
 def credits(request):
     title = "Загрузить кредитный портфел"
 
@@ -61,6 +63,7 @@ def credits(request):
     return render(request, "uploads/upload.html", context)
 
 
+@login_required
 def repayment(request):
     title = "Загрузить пред. платежи"
 
@@ -109,6 +112,7 @@ def repayment(request):
     return render(request, "uploads/upload.html", context)
 
 
+@login_required
 def issuances(request):
 
     title = "Загрузить выдачи"
@@ -158,6 +162,7 @@ def issuances(request):
     return render(request, "uploads/upload.html", context)
 
 
+@login_required
 def overdues(request):
     title = "Загрузить просрочки"
 
@@ -203,5 +208,6 @@ def overdues(request):
     return render(request, "uploads/upload.html", context)
 
 
+@login_required
 def success(request):
     return render(request, 'uploads/success.html', {"page_title": "Result"})

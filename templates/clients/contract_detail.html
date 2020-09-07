@@ -179,7 +179,7 @@ div.h4 {
         </div>
 
         <div class="row">
-            <div class="col-md-3 col-xl-2">
+            <div class="col-md-3 col-xl-3">
 
                 <div class="card">
                     <div class="card-header">
@@ -199,18 +199,63 @@ div.h4 {
                         
                     </div>
                 </div>
+
+                <div class="card">
+
+                                    <div class="card-body mt-3">
+                                        <div class="text-center">
+                                            <div class="progress mx-auto" data-value='{{ c_percent|floatformat:0 }}'>
+                                                <span class="progress-left">
+                                                              <span class="progress-bar border-primary"></span>
+                                                </span>
+                                                <span class="progress-right">
+                                                              <span class="progress-bar border-primary"></span>
+                                                </span>
+                                                <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                                  <div class=" h2 font-weight-bold" style=" margin: 0px; font-size: 1.64062rem; font-family: Jost,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica Neue,Arial,sans-serif; font-weight: 500;line-height: 1.2; color: #203a45;">
+                                                      {{ c_percent|floatformat:1 }}<sup class="small">%</sup>  <br>
+                                                    <span style="font-size: 12px; text-transform: uppercase; width: 50%; height: 100%; overflow: hidden; top: 0; z-index: 1;">погашены</span></div>
+                                                </div>
+                                            </div>
+                                            <table class="table mb-0 mt-2">
+                                                <tbody>
+                                                    <tr >
+                                                        <td class="text-left ml-0" style="font-size: 13px; font-weight: 400; "><i class="fas fa-circle text-primary fa-fw"></i> Остаток кредита:</td>
+                                                        <td class="text-right" style="font-size: 13px; font-weight: 400;">{{ contract.VSEGO_ZADOLJENNOST }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-left ml-0" style="font-size: 14px; font-weight: 400;"><i class="fas fa-circle text-warning fa-fw"></i> Остаток резерва:</td>
+                                                        <td class="text-right" style="font-size: 13px; font-weight: 400;">
+                                                            {% if contract.OSTATOK_REZERV is not None %}
+                                                            {{ contract.OSTATOK_REZERV }}
+                                                            {% else %}
+                                                                —
+                                                            {% endif %}
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <!-- <div class="mt-3">
+                                                <span class=""> Остаток кредита: 1 520 000</span>
+                                            </div>
+                                            <small>Сумма кредита: 3 500 000</small>
+                                            <div class="mt-1">
+                                                <span class=""> Остаток резерва: 1 520 000</span>
+                                            </div>
+                                            <small>Необход. резервы: 3 500 000</small> -->
+                                        </div>
+                                    </div>
+                                </div>
+
             </div>
-            <div class="col-md-9 col-xl-10">
+            <div class="col-md-9 col-xl-9">
                 <div class="tab-content">
                     <div class="tab-pane fade active show" id="account" role="tabpanel">
                         <div class="row">
-                            <div class="col-md-4 col-xl-9">
-                                <div class="card" style="margin-bottom: 0.4rem !important; ">
+                            <div class="col-md-12 col-xl-12">
+                                <div class="card">
                                     <div class="card-header mb-0">
                                         <div class="card-actions float-right">
-                                            <a href="#" class="mr-1">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-refresh-cw align-middle"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
-                                            </a>
                                             <div class="d-inline-block dropdown show">
                                                 <a href="#" data-toggle="dropdown" data-display="static">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical align-middle"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
@@ -232,265 +277,220 @@ div.h4 {
                                                     <tbody>
                                                         <tr>
                                                             <th>Наименование</th>
-                                                            <td>XONOV AZIZJON TUROBOVICH</td>
+                                                            <td>{{ contract.NAME_CLIENT }}</td>
                                                         </tr>
                                                         <tr>
                                                             <th>Филиал</th>
-                                                            <td>Асакинский</td>
+                                                            <td>{{ contract.BRANCH_NAME }}</td>
                                                         </tr>
                                                         <tr>
                                                             <th>Дата договора</th>
-                                                            <td>22.02.2019</td>
+                                                            <td>{{ contract.DATE_DOGOVOR|date:"d.m.Y" }}</td>
                                                         </tr>
                                                         <tr>
                                                             <th>Срок кредита</th>
-                                                            <td>4 года</td>
+                                                            <td>
+                                                                {{ contract.TERM|floatformat:0 }}
+                                                                {% if contract.TERM < 5 %} года {% else %} лет {% endif %}
+                                                            </td>
                                                         </tr>
                                                         <tr>
                                                             <th>Сумма кредита</th>
-                                                            <td>30 000 000</td>
+                                                            <td>{{ contract.SUM_DOG_EKV }}</td>
                                                         </tr>
-                                                        <tr>
-                                                            <th>Класс качества</th>
-                                                            <td><span class="badge badge-success">Стандарт</span></td>
-                                                        </tr>
+{#                                                        <tr>#}
+{#                                                            <th>Класс качества</th>#}
+{#                                                            <td><span class="badge badge-success">Стандарт</span></td>#}
+{#                                                        </tr>#}
                                                     </tbody>
                                                 </table>
                                             </div>
-                                            <div class="col-md-3 col-xl-3">
-                                                <div>
-                                                    <h5 class="card-title mb-0">Просрочка</h5>
-                                                    <h3 class="mt-0" style="font-size: 1.5rem; font-weight: 300; line-height: 1.2;">2.562</h3>
-                                                    <div class="mb-0">
-                                                        <span class="text-danger"> <i class="mdi mdi-arrow-bottom-right"></i> 130  </span>
-                                                        дней 
+                                            <div class="col-md-6 col-xl-6">
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <h5 class="card-title mb-0">Просрочка</h5>
+                                                        {% if contract.OSTATOK_PROSR is not None %}
+                                                            <h3 class="mt-0" style="font-size: 1.5rem; font-weight: 300; line-height: 1.2;">
+                                                                {{ contract.OSTATOK_PROSR }}
+                                                            </h3>
+                                                            <div class="mb-0">
+                                                                <span class="text-danger">
+                                                                    <i class="mdi mdi-arrow-bottom-right"></i>
+                                                                    {{ contract.DAYS }}
+                                                                </span>
+                                                                дней
+                                                            </div>
+                                                        {% else %}
+                                                            <h3 class="mt-0" style="font-size: 1.5rem; font-weight: 300; line-height: 1.2;">—</h3>
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <h5 class="card-title mb-0" >Просроченные %</h5>
+                                                        {% if contract.OSTATOK_NACH_PROSR_PRCNT is not None %}
+                                                            <h3 class="mt-0" style="font-size: 1.5rem; font-weight: 300; line-height: 1.2;"> {{ contract.OSTATOK_NACH_PROSR_PRCNT }}</h3>
+                                                            <div class="mb-0">
+                                                                <span class="text-danger">
+                                                                    <i class="mdi mdi-arrow-bottom-right"></i>
+                                                                    {{ contract.ARREAR_DAYS }}
+                                                                </span>
+                                                                дней
+                                                            </div>
+                                                        {% else %}
+                                                            <h3 class="mt-0" style="font-size: 1.5rem; font-weight: 300; line-height: 1.2;">—</h3>
+                                                        {% endif %}
                                                     </div>
                                                 </div>
-                                                <div>
-                                                    <h5 class="card-title mb-0 mt-4">Остаток внеб</h5>
-                                                    <h3 class="mt-0" style="font-size: 1.5rem; font-weight: 300; line-height: 1.2;">2.562</h3>
-                                                    <div class="mb-0">
-                                                        <span class="text-danger"> <i class="mdi mdi-arrow-bottom-right"></i> 130 </span>
-                                                        дней 
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <h5 class="card-title mb-0 mt-4">Остаток внеб</h5>
+                                                        {% if contract.OSTATOK_VNEB_PROSR is not None %}
+                                                            <h3 class="mt-0" style="font-size: 1.5rem; font-weight: 300; line-height: 1.2;">{{ contract.OSTATOK_VNEB_PROSR }}</h3>
+                                                        {% else %}
+                                                            <h3 class="mt-0" style="font-size: 1.5rem; font-weight: 300; line-height: 1.2;">—</h3>
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <h5 class="card-title mb-0 mt-4">Остаок пересм</h5>
+                                                        {% if contract.OSTATOK_VNEB_PROSR is not None %}
+                                                            <h3 class="mt-0" style="font-size: 1.5rem; font-weight: 300; line-height: 1.2;">{{ contract.OSTATOK_PERESM }}</h3>
+                                                        {% else %}
+                                                            <h3 class="mt-0" style="font-size: 1.5rem; font-weight: 300; line-height: 1.2;">—</h3>
+                                                        {% endif %}
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-md-3 col-xl-3">
-                                                <div>
-                                                    <h5 class="card-title mb-0" >Просроченные %</h5>
-                                                    <h3 class="mt-0" style="font-size: 1.5rem; font-weight: 300; line-height: 1.2;"> 2.562</h3>
-                                                    <div class="mb-0">
-                                                        <span class="text-danger"> <i class="mdi mdi-arrow-bottom-right"></i>130 </span>
-                                                        дней 
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <h5 class="card-title mb-0 mt-4">Остаок пересм</h5>
-                                                    <h3 class="mt-0" style="font-size: 1.5rem; font-weight: 300; line-height: 1.2;">2.562</h3>
-                                                    <div class="mb-0">
-                                                        <span class="text-danger"> <i class="mdi mdi-arrow-bottom-right"></i> 130 </span>
-                                                        дней 
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            
-                                            
                                         </div>
-                                        
                                     </div>
                                 </div>
-
-                               
-                                    <div class="tab">
-                                        <ul class="nav nav-pills bg-nav-pills nav-justified mb-3" role="tablist">
-                                            <li class="nav-item"><a class="nav-link rounded-0 active" href="#tab-1" data-toggle="tab" role="tab" aria-selected="true">Запрос</a></li>
-                                            <li class="nav-item"><a class="nav-link" href="#tab-2" data-toggle="tab" role="tab" aria-selected="false">Кредитный продукт</a></li>
-                                            <li class="nav-item"><a class="nav-link" href="#tab-3" data-toggle="tab" role="tab" aria-selected="false">Обеспечение</a></li>
-                                            <li class="nav-item"><a class="nav-link" href="#tab-4" data-toggle="tab" role="tab" aria-selected="false">Дополнительно</a></li>
-                                        </ul>
-                                        <div class="tab-content">
-                                            <div class="tab-pane active" id="tab-1" role="tabpanel">
-                                                <h4 class="tab-title">Default tabs</h4>
-                                                <table class="table table-sm">
-                                                    <!-- <thead>
-                                                        <tr>
-                                                            <th>Description</th>
-                                                            <th>Quantity</th>
-                                                            <th class="text-right">Amount</th>
-                                                        </tr>
-                                                    </thead> -->
-                                                    <tbody>
-                                                        <tr>
-                                                            <td>Филиал</td>
-                                                            <td>Асака</td>
-                                                            <td>Район подачи заявки</td>
-                                                            <td>Асакинский</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Адрес клиента</td>
-                                                            <td>And sh Maxmudiy,943803100</td>
-                                                            <td class="ml-4">ИНН/Паспорт</td>
-                                                            <td>509293827,AA4631129</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Код договора</td>
-                                                            <td>202145</td>
-                                                            <td>Кредитный счет</td>
-                                                            <td>12501000099036287002</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Сумма договора(ном)</td>
-                                                            <td>30000</td>
-                                                            <td>Сумма договора(сум)</td>
-                                                            <td>300000000</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Дата договора</td>
-                                                            <td>22.02.2020</td>
-                                                            <td>Дата закрытия</td>
-                                                            <td>22.02.2027</td>
-                                                        </tr>
-                                                        
-                                                        <tr>
-                                                            <td>Валюта</td>
-                                                            <td>UZS</td>
-                                                            <td>Срок</td>
-                                                            <td>1-Краткосрочный</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Отрасль кредита</td>
-                                                            <td>99950-Другие отрасли для физических лиц</td>
-                                                            <td>Отрасль клиента</td>
-                                                            <td>99950- Другие отрасли для физических лиц</td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                            <div class="tab-pane" id="tab-2" role="tabpanel">
-                                                <h4 class="tab-title">Another one</h4>
-                                                <table class="table table-sm">
-                                                    <tbody>
-                                                        <tr>
-                                                            <td>Вид кредитования</td>
-                                                            <td>32-Микрозаем</td>
-                                                            <td class="ml-4">Цель кредитования</td>
-                                                            <td>060024-Микрозаймы, выданные физическим лицам на личные нужды</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th style="font-weight: 400;">Процент кредита</th>
-                                                            <th style="font-weight: 400;">30 </th>
-                                                            <td>Процент просрочки</td>
-                                                            <td>25</td>
-                                                        </tr>
-                                                        
-                                                        <tr>
-                                                            <td>Отрасль кредита</td>
-                                                            <td>99950-Другие отрасли для физических лиц</td>
-                                                            <td>Председатель КБ</td>
-                                                            <td>З.К.Парпиев</td>
-                                                        </tr>
-                                                       
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                            <div class="tab-pane" id="tab-3" role="tabpanel">
-                                                <h4 class="tab-title"></h4>
-                                                <table class="table table-sm">
-                                                    <tbody>
-                                                        <tr>
-                                                            <td>Оценка обеспечения</td>
-                                                            <td>8750000</td>
-                                                            <td class="ml-4">Обеспечение</td>
-                                                            <td>060024-Микрозаймы, выданные физическим лицам на личные нужды</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th style="font-weight: 400;">Описание обеспечения</th>
-                                                            <th style="font-weight: 400;">30 </th>
-                                                            <td>Источник средств</td>
-                                                            <td>25</td>
-                                                        </tr>
-                                                        
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                            <div class="tab-pane" id="tab-4" role="tabpanel">
-                                                <h4 class="tab-title"></h4>
-                                                <table class="table table-sm">
-                                                    <tbody>
-                                                        <tr>
-                                                            <td>Оценка обеспечения</td>
-                                                            <td>8750000</td>
-                                                            <td class="ml-4">Обеспечение</td>
-                                                            <td>060024-Микрозаймы, выданные физическим лицам на личные нужды</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th style="font-weight: 400;">Описание обеспечения</th>
-                                                            <th style="font-weight: 400;">30 </th>
-                                                            <td>Источник средств</td>
-                                                            <td>25</td>
-                                                        </tr>
-                                                        
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                               
-                            </div>
-                                
-                            </div>
-                            
-                            <div class="col-md-4 col-xl-3">
                                 <div class="card">
-                                    
-                                    <div class="card-body mt-3">
-                                        <div class="text-center">
-                                            <div class="progress mx-auto" data-value='80'>
-                                                <span class="progress-left">
-                                                              <span class="progress-bar border-primary"></span>
-                                                </span>
-                                                <span class="progress-right">
-                                                              <span class="progress-bar border-primary"></span>
-                                                </span>
-                                                <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
-                                                  <div class=" h2 font-weight-bold" style=" margin: 0px; font-size: 1.64062rem; font-family: Jost,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica Neue,Arial,sans-serif; font-weight: 500;line-height: 1.2; color: #203a45;">80<sup class="small">%</sup>  <br>
-                                                    <span style="font-size: 12px; text-transform: uppercase; width: 50%; height: 100%; overflow: hidden; top: 0; z-index: 1;">погашены</span></div>
+                                    <div class="card-body">
+                                        <div class="tab">
+                                            <nav class="nav btn-group">
+                                                <a href="#tab-1" class="btn btn-light active" data-toggle="tab">Запрос</a>
+                                                <a href="#tab-2" class="btn btn-light" data-toggle="tab">Кредитный продукт</a>
+                                                <a href="#tab-3" class="btn btn-light" data-toggle="tab">Обеспечение</a>
+                                                <a href="#tab-4" class="btn btn-light" data-toggle="tab">Дополнительно</a>
+                                            </nav>
+                                            <div class="tab-content" style="box-shadow: none">
+                                                <div class="tab-pane active" id="tab-1" role="tabpanel">
+                                                    <table class="table table-sm">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>Филиал</td>
+                                                                <td>{{ contract.BRANCH_NAME }} филиал</td>
+                                                                <td>Район подачи заявки</td>
+                                                                <td>{{ contract.RAYON_PODACHI }} </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Адрес клиента</td>
+                                                                <td>{{ contract.ADRESS_CLIENT }}</td>
+                                                                <td class="ml-4">ИНН/Паспорт</td>
+                                                                <td>{{ contract.INN_PASSPORT }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Код договора</td>
+                                                                <td>{{ contract.CODE_CONTRACT }}</td>
+                                                                <td>Кредитный счет</td>
+                                                                <td>{{ contract.CREDIT_SCHET }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Сумма договора(ном)</td>
+                                                                <td>{{ contract.SUM_DOG_NOM }}</td>
+                                                                <td>Сумма договора(сум)</td>
+                                                                <td>{{ contract.SUM_DOG_EKV }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Дата договора</td>
+                                                                <td>{{ contract.DATE_DOGOVOR|date:"Y-m-d" }}</td>
+                                                                <td>Дата закрытия</td>
+                                                                <td>{{ contract.DATE_POGASH|date:"Y-m-d" }}</td>
+                                                            </tr>
+
+                                                            <tr>
+                                                                <td>Валюта</td>
+                                                                <td>{{ contract.CURRENCY_NAME }}</td>
+                                                                <td>Срок</td>
+                                                                <td>{{ contract.SROK }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Отрасль кредита</td>
+                                                                <td>{{ contract.OTRASL_KREDITOVANIYA }}</td>
+                                                                <td>Отрасль клиента</td>
+                                                                <td>{{ contract.OTRASL_CLIENTA }}</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <div class="tab-pane" id="tab-2" role="tabpanel">
+                                                    <table class="table table-sm">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>Вид кредитования</td>
+                                                                <td>{{ contract.VID_KREDITOVANIYA }}</td>
+                                                                <td class="ml-4">Цель кредитования</td>
+                                                                <td>{{ contract.PURPOSE_CREDIT }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th style="font-weight: 400;">Процент кредита</th>
+                                                                <th style="font-weight: 400;">{{ contract.CREDIT_PROCENT }}</th>
+                                                                <td>Процент просрочки</td>
+                                                                <td>{{ contract.PROSR_PROCENT }}</td>
+                                                            </tr>
+
+                                                            <tr>
+                                                                <td>Отрасль кредита</td>
+                                                                <td>{{ contract.OTRASL_KREDITOVANIYA }}</td>
+                                                                <td>Председатель КБ</td>
+                                                                <td>{{ contract.PREDSEDATEL_KB }}</td>
+                                                            </tr>
+
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <div class="tab-pane" id="tab-3" role="tabpanel">
+                                                    <table class="table table-sm">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>Оценка обеспечения</td>
+                                                                <td>{{ contract.OCENKA_OBESPECHENIYA }}</td>
+                                                                <td class="ml-4">Обеспечение</td>
+                                                                <td>{{ contract.OBESPECHENIE }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th style="font-weight: 400;">Описание обеспечения</th>
+                                                                <th style="font-weight: 400;">{{ contract.OPISANIE_OBESPECHENIE }} </th>
+                                                                <td>Источник средств</td>
+                                                                <td>{{ contract.ISTOCHNIK_SREDSTVO }}</td>
+                                                            </tr>
+
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <div class="tab-pane" id="tab-4" role="tabpanel">
+                                                    <table class="table table-sm">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>Оценка обеспечения</td>
+                                                                <td>{{ contract.OCENKA_OBESPECHENIYA }}</td>
+                                                                <td class="ml-4">Обеспечение</td>
+                                                                <td>{{ contract.OBESPECHENIE }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th style="font-weight: 400;">Описание обеспечения</th>
+                                                                <th style="font-weight: 400;">30 </th>
+                                                                <td>Источник средств</td>
+                                                                <td>25</td>
+                                                            </tr>
+
+                                                        </tbody>
+                                                    </table>
                                                 </div>
                                             </div>
-                                            <table class="table mb-0 mt-2">
-                                                <tbody>
-                                                    <tr >
-                                                        <td class="text-left ml-0" style="font-size: 13px; font-weight: 400; "><i class="fas fa-circle text-primary fa-fw"></i> Остаток кредита:</td>
-                                                        <td class="text-right" style="font-size: 13px; font-weight: 400;">1 520 000</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="text-left ml-0" style="font-size: 14px; font-weight: 400;"><i class="fas fa-circle text-warning fa-fw"></i> Остаток резерва:</td>
-                                                        <td class="text-right" style="font-size: 13px; font-weight: 400;">1 520 000</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="text-left ml-0" style="font-size: 13px; font-weight: 400;"> <i class="fas fa-circle text-danger fa-fw"></i> Необход. резерв:</td>
-                                                        <td class="text-right" style="font-size: 13px; font-weight: 400;">3 500 000</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                            <!-- <div class="mt-3">
-                                                <span class=""> Остаток кредита: 1 520 000</span>
-                                            </div>
-                                            <small>Сумма кредита: 3 500 000</small>
-                                            <div class="mt-1">
-                                                <span class=""> Остаток резерва: 1 520 000</span>
-                                            </div>
-                                            <small>Необход. резервы: 3 500 000</small> -->
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                           
                         </div>
-                        <div class="row">
-                            
-                        </div>
-                        
-                        
                     </div>
                     <div class="tab-pane fade" id="password" role="tabpanel">
                         <div class="card">

@@ -108,7 +108,7 @@ class Query():
 
 
     @staticmethod
-    def findContracts():
+    def findPayments():
         return '''
             select
                 CP.ID as id,
@@ -120,4 +120,17 @@ class Query():
             left join CREDITS_CURRENCY CY on CY.CODE = CP.CODE_VAL
             where UNIQUE_NIKI = %s
             order by DATE_POGASH
+        '''
+
+
+    @staticmethod
+    def fetch_contract_by_code():
+        return '''
+            select cr.*, 
+                br.NAME as BRANCH_NAME
+            from CREDITS cr
+            left join CREDITS_BRANCH br on br.CODE = cr.MFO
+            where cr.REPORT_ID = %s
+            and cr.CODE_CONTRACT = %s
+            
         '''

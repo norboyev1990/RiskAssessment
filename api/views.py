@@ -1,10 +1,12 @@
 import json
 
 import pandas as pd
+from django.contrib.auth.decorators import login_required
 from django.db import connection
 from django.db.models.expressions import RawSQL
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
+from django.views.decorators.cache import cache_page
 
 from credits.models import DataByGeocode, ListReports, ByTerms
 from credits.queries import Query as Qry
@@ -20,6 +22,7 @@ def dictfetchall(cursor):
         for row in cursor.fetchall()
     ]
 
+@login_required
 def clients_list(request):
     month = pd.to_datetime(request.current_month)
     report = ListReports.objects.get(REPORT_MONTH=month.month, REPORT_YEAR=month.year)
@@ -60,6 +63,7 @@ def clients_list(request):
 def clients_detail(request, pk):
     pass
 
+@login_required
 def get_stat_data(request):
     month = pd.to_datetime(request.current_month)
     model = InfoCredits.objects.raw('SELECT ROWNUM as id, T.* FROM TABLE(GET_INDS(%s)) T', [month])
@@ -72,6 +76,8 @@ def get_stat_data(request):
     }}
     return JsonResponse(data)
 
+
+@login_required
 def get_gdp_data(request):
     month = pd.to_datetime(request.current_month)
     model = InfoCredits.objects.raw('SELECT ROWNUM as id, T.* FROM TABLE(GET_INDS(%s)) T', [month])
@@ -89,6 +95,7 @@ def get_gdp_data(request):
     }}
     return JsonResponse(data)
 
+@login_required
 def get_krp_by_month(request, type):
     month = pd.to_datetime(request.current_month)
 
@@ -121,6 +128,8 @@ def get_krp_by_month(request, type):
 
     return JsonResponse(result)
 
+
+@login_required
 def get_data_subjects(request):
     month = pd.to_datetime(request.current_month)
     report = ListReports.objects.get(REPORT_MONTH=month.month, REPORT_YEAR=month.year)
@@ -136,6 +145,8 @@ def get_data_subjects(request):
 
     return JsonResponse(result)
 
+
+@login_required
 def get_data_subjects_npl(request):
     month = pd.to_datetime(request.current_month)
     report = ListReports.objects.get(REPORT_MONTH=month.month, REPORT_YEAR=month.year)
@@ -151,6 +162,8 @@ def get_data_subjects_npl(request):
 
     return JsonResponse(result)
 
+
+@login_required
 def get_data_branches(request):
     month = pd.to_datetime(request.current_month)
     report = ListReports.objects.get(REPORT_MONTH=month.month, REPORT_YEAR=month.year)
@@ -179,6 +192,8 @@ def get_data_branches(request):
 
     return JsonResponse(result)
 
+
+@login_required
 def get_data_branches_npl(request):
     month = pd.to_datetime(request.current_month)
     report = ListReports.objects.get(REPORT_MONTH=month.month, REPORT_YEAR=month.year)
@@ -207,6 +222,8 @@ def get_data_branches_npl(request):
 
     return JsonResponse(result)
 
+
+@login_required
 def get_data_average(request):
     month = pd.to_datetime(request.current_month)
     report = ListReports.objects.get(REPORT_MONTH=month.month, REPORT_YEAR=month.year)
@@ -228,6 +245,8 @@ def get_data_average(request):
 
     return JsonResponse(result)
 
+
+@login_required
 def get_data_products(request):
     month = pd.to_datetime(request.current_month)
     report = ListReports.objects.get(REPORT_MONTH=month.month, REPORT_YEAR=month.year)
@@ -249,6 +268,8 @@ def get_data_products(request):
 
     return JsonResponse(result)
 
+
+@login_required
 def get_data_average_juridical(request):
     month = pd.to_datetime(request.current_month)
     report = ListReports.objects.get(REPORT_MONTH=month.month, REPORT_YEAR=month.year)
@@ -302,6 +323,8 @@ def get_data_average_juridical(request):
 
     return JsonResponse(result)
 
+
+@login_required
 def get_data_average_juridical_npl(request):
     month = pd.to_datetime(request.current_month)
     report = ListReports.objects.get(REPORT_MONTH=month.month, REPORT_YEAR=month.year)

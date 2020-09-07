@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.db import connection
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
+from django.views.decorators.cache import cache_page
 from django_tables2.export.export import TableExport
 from credits.models import ListReports, NplClients, ToxicCredits, OverdueCredits, InfoCredits, ByTerms, ByRetailProduct, \
     ByPercentage, ByPercentageUL, ByAverageUl, ByAverageFl, ByOverdueBranch
@@ -30,6 +31,7 @@ from RiskAssessment.settings import BASE_DIR
 
 
 @login_required
+@cache_page(60 * 60 * 24)
 def index(request):
     month = pd.to_datetime(request.current_month)
     report = ListReports.objects.get(REPORT_MONTH=month.month, REPORT_YEAR=month.year)
@@ -45,6 +47,7 @@ def index(request):
 
 
 @login_required
+@cache_page(60 * 60 * 24)
 def general_info(request):
     title = _("General info")
     month = pd.to_datetime(request.current_month)
@@ -71,6 +74,7 @@ def general_info(request):
 
 
 @login_required
+@cache_page(60 * 60 * 24)
 def npl_clients(request):
     title = _("NPL clients")
     month = pd.to_datetime(request.current_month)
@@ -98,6 +102,7 @@ def npl_clients(request):
 
 
 @login_required
+@cache_page(60 * 60 * 24)
 def toxic_loans(request):
     title = _("Toxic loans")
     month = pd.to_datetime(request.current_month)
@@ -125,6 +130,7 @@ def toxic_loans(request):
 
 
 @login_required
+@cache_page(60 * 60 * 24)
 def overdue_loans(request):
     title = _("Overdue loans")
     month = pd.to_datetime(request.current_month)
@@ -152,6 +158,7 @@ def overdue_loans(request):
 
 
 @login_required
+@cache_page(60 * 60 * 24)
 def by_terms(request):
     title = _("Disaggregated by terms")
     month = pd.to_datetime(request.current_month)
@@ -178,6 +185,7 @@ def by_terms(request):
 
 
 @login_required
+@cache_page(60 * 60 * 24)
 def by_subjects(request):
     title = _("Disaggregated by subjects")
     month = pd.to_datetime(request.current_month)
@@ -204,6 +212,7 @@ def by_subjects(request):
 
 
 @login_required
+@cache_page(60 * 60 * 24)
 def by_segments(request):
     title = _("Disaggregated by segments")
     month = pd.to_datetime(request.current_month)
@@ -229,6 +238,7 @@ def by_segments(request):
 
 
 @login_required
+@cache_page(60 * 60 * 24)
 def by_currency(request):
     title = _("Disaggregated by currency")
     month = pd.to_datetime(request.current_month)
@@ -254,6 +264,7 @@ def by_currency(request):
 
 
 @login_required
+@cache_page(60 * 60 * 24)
 def by_branches(request):
     title = _("Disaggregated by branches")
     month = pd.to_datetime(request.current_month)
@@ -280,6 +291,7 @@ def by_branches(request):
 
 
 @login_required
+@cache_page(60 * 60 * 24)
 def by_products(request):
     title = _("Disaggregated by products retail business")
     month = pd.to_datetime(request.current_month)
@@ -305,6 +317,7 @@ def by_products(request):
 
 
 @login_required
+@cache_page(60 * 60 * 24)
 def by_percents(request, sts):
     title = _("Disaggregated by percents rate ")
     month = pd.to_datetime(request.current_month)
@@ -349,6 +362,7 @@ def by_percents(request, sts):
 
 
 @login_required
+@cache_page(60 * 60 * 24)
 def by_averages(request, sts):
     title = _("Disaggregated by average percents rate ")
     month = pd.to_datetime(request.current_month)
@@ -384,6 +398,7 @@ def by_averages(request, sts):
 
 
 @login_required
+@cache_page(60 * 60 * 24)
 def issued_overdues(request):
     title = _("Issued overdues by branches") #Выданные | просрочка
     month = pd.to_datetime(request.current_month)
@@ -423,6 +438,7 @@ class CursorByName():
         return {description[0]: row[col] for col, description in enumerate(self._cursor.description)}
 
 @login_required
+@cache_page(60 * 60 * 24)
 def export_all_tables(request):
     sMonth = pd.to_datetime(request.session['data_month'])
     report = ListReports.objects.get(REPORT_MONTH=sMonth.month, REPORT_YEAR=sMonth.year)
@@ -873,6 +889,7 @@ def export_all_tables(request):
         response["Content-Disposition"] = 'attachment; filename="all_reports.xlsx"'
         return response
 
+@cache_page(60 * 15)
 def shade_cells(cells, shade):
     for cell in cells:
         tcPr = cell._tc.get_or_add_tcPr()
@@ -880,7 +897,7 @@ def shade_cells(cells, shade):
         tcVAlign.set(qn("w:fill"), shade)
         tcPr.append(tcVAlign)
 
-
+@cache_page(60 * 60 * 24)
 def export_all_docx(request):
     sMonth = pd.to_datetime(request.session['data_month'])
     last_month = pd.to_datetime(request.session['data_month']) - pd.DateOffset(months=1)

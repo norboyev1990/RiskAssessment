@@ -19,6 +19,6 @@ class FilterForm(forms.Form):
 
     branches = Branch.objects.all()
 
-    type = forms.ChoiceField(widget=forms.Select(attrs={'onchange': 'submit();'}), choices=CHOICES_TYPE, label="Тип клиента", required=False)
-    branch = forms.ModelChoiceField(widget=forms.Select(attrs={'onchange': 'submit();'}), queryset=branches, label="Филиал", required=False)
-    status = forms.ChoiceField(widget=forms.Select(attrs={'onchange': 'submit();'}), choices=CHOICES_STATUS, label="Статус", required=False)
+    type = forms.ChoiceField(widget=forms.Select(attrs={'onchange': 'submit();'}), initial='J', choices=CHOICES_TYPE, label="Тип клиента", required=False)
+    branch = forms.ModelChoiceField(widget=forms.Select(attrs={'onchange': 'submit();'}), initial='', queryset=branches, label="Филиал", required=False)
+    status = forms.ChoiceField(widget=forms.Select(attrs={'onchange': 'submit();'}), initial='', choices=CHOICES_STATUS, label="Статус", required=False)

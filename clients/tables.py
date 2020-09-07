@@ -32,7 +32,7 @@ attrs_table_style2 = {
 
 attrs_scroll_table_style = {
     "id": "scroll-vertical-datatable",
-    "class": "table table-centered table-striped table-responsive",
+    "class": "table table-centered table-responsive",
     "thead": {"class": "text-truncate"},
     "tfoot": {"class": "bg-light"}}
 
@@ -137,7 +137,7 @@ class CreditsListTable(tables.Table):
 class ContractsListTable(tables.Table):
 
     class Meta:
-        model = Contracts
+        model = Payments
         template_name = "django_tables2/bootstrap4.html"
         attrs = attrs_table_style
         orderable = False

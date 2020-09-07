@@ -1,25 +1,38 @@
 import pandas as pd
 import tablib
 from django.contrib.auth.decorators import login_required
+from django.db import connection
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.utils.translation import gettext as _
+from django.views.decorators.cache import cache_page
 from django_tables2 import tables
 from django_tables2.export import TableExport
 
-from credits.models import ListReports
+from credits.models import ListReports, ReportData
 from .forms import FilterForm
-from .models import Clients, Credits, Contracts
+from .models import Clients, Credits, Payments
 from .queries import Query
 from .tables import CreditsListTable, ContractsListTable, ClientsListTable, ExportClientsTable
 
 
+def dictfetchall(cursor):
+    "Return all rows from a cursor as a dict"
+    columns = [col[0] for col in cursor.description]
+    return [
+        dict(zip(columns, row))
+        for row in cursor.fetchall()
+    ]
+
+
 @login_required
+@cache_page(60 * 60 * 24)
 def index(request):
     title = _("Clients")
     month = pd.to_datetime(request.current_month)
     report = ListReports.objects.get(REPORT_MONTH=month.month, REPORT_YEAR=month.year)
 
+    # if 'type' in request.GET:
     form = FilterForm(request.GET)
     if form.is_valid():
         Branch = form.cleaned_data['branch']
@@ -27,6 +40,15 @@ def index(request):
         ClStat = form.cleaned_data['status']
         Search = request.GET.get('search') if 'search' in request.GET else ''
         branch_code = Branch.CODE if Branch is not None else ''
+    # else:
+    #     form = FilterForm(initial={
+    #         'type': 'J'
+    #     })
+    #     ClType = 'J'
+    #     ClStat = ''
+    #     Search = ''
+    #     branch_code = ''
+
 
     query = Query.findClients()
     if 'sort' in request.GET:
@@ -61,6 +83,7 @@ def index(request):
 
 
 @login_required
+@cache_page(60 * 60 * 24)
 def client_detail(request, client_id):
     title = _("Профиль клиента")
     month = pd.to_datetime(request.current_month)
@@ -105,19 +128,32 @@ def client_detail(request, client_id):
     return render(request, 'clients/client_detail.html', context)
 
 
+@login_required
+@cache_page(60 * 60 * 24)
 def contract_detail(request, client_id, contract_id):
     title = "Договор №{}".format(contract_id)
     month = pd.to_datetime(request.current_month)
     report = ListReports.objects.get(REPORT_MONTH=month.month, REPORT_YEAR=month.year)
 
-    query = Query.findContracts()
-    model = Contracts.objects.raw(query, [contract_id])
+    # get contract
+    query = Query.fetch_contract_by_code()
+    cursor = connection.cursor()
+    cursor.execute(query, [report.id, contract_id])
+    contract = dictfetchall(cursor)[0]
+
+    # get payment list
+    query = Query.findPayments()
+    model = Payments.objects.raw(query, [contract_id])
     table = ContractsListTable(model)
+
+    percent = (contract['SUM_DOG_EKV'] - contract['VSEGO_ZADOLJENNOST'])*100/contract['SUM_DOG_EKV']
 
 
     context = {
         "page_title": title,
+        "contract": contract,
         "data_table": table,
-        "client_id": client_id
+        "client_id": client_id,
+        "c_percent": percent
     }
     return render(request, 'clients/contract_detail.html', context)
