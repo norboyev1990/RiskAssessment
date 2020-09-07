@@ -131,18 +131,18 @@
             <li class="sidebar-item {% if menu_block == 'repayment' %} active {%endif%}">
                 <a href="#issue-and-repayment" data-toggle="collapse" class="sidebar-link collapsed">
                     <i class="align-middle mr-2 fas fa-fw fa-folder-open"></i>
-                    <span class="align-middle">{% trans 'Выдача и погашния' %}</span>
+                    <span class="align-middle">{% trans 'Выдача и погашения' %}</span>
                 </a>
 
                 <ul id="issue-and-repayment" class="sidebar-dropdown list-unstyled collapse " data-parent="#sidebar">
                     <li class="sidebar-item {% if request.path == repayments_top_url %} active {%endif%}">
-                        <a class="sidebar-link" href="{{ repayments_top_url }}">{% trans 'Выдачи по топ 25 клиента' %}</a></li>
+                        <a class="sidebar-link" href="{{ repayments_top_url }}">{% trans 'Погашения по топ 25 клиента' %}</a></li>
                     <li class="sidebar-item {% if request.path == repayments_all_url %} active {%endif%}">
-                        <a class="sidebar-link" href="{{ repayments_all_url }}">{% trans 'Выдачи по тип клиента' %}</a></li>
+                        <a class="sidebar-link" href="{{ repayments_all_url }}">{% trans 'Погашения по тип клиента' %}</a></li>
                     <li class="sidebar-item {% if request.path == repayments_by_subjects_url %} active {%endif%}">
-                        <a class="sidebar-link" href="{{ repayments_by_subjects_url }}">{% trans 'Выдачи по субъектам' %}</a></li>
+                        <a class="sidebar-link" href="{{ repayments_by_subjects_url }}">{% trans 'Погашения по субъектам' %}</a></li>
                     <li class="sidebar-item {% if request.path == repayments_by_currency_url %} active {%endif%}">
-                        <a class="sidebar-link" href="{{ repayments_by_currency_url }}">{% trans 'Выдачи по валютам' %}</a></li>
+                        <a class="sidebar-link" href="{{ repayments_by_currency_url }}">{% trans 'Погашения по валютам' %}</a></li>
                 </ul>
             </li>
 
