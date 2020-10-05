@@ -528,7 +528,7 @@ class Query:
         return '''
                 WITH 
                     REPORT_DATA_TABLE (GROUPS, UNIQUE_CODE, DAYS, ARREAR_DAYS, OSTATOK_SUDEB, OSTATOK_VNEB_PROSR, 
-                        OSTATOK_PERESM, OSTATOK_REZERV, VSEGO_ZADOLJENNOST, OSTATOK_PROSR, OSTATOK_NACH_PRCNT) AS 
+                        OSTATOK_PERESM, OSTATOK_REZERV, VSEGO_ZADOLJENNOST, OSTATOK_PROSR, OSTATOK_NACH_PROSR_PRCNT) AS 
                     (
                         SELECT
                             VID_KREDITOVANIYA, 
@@ -541,7 +541,7 @@ class Query:
                             OSTATOK_REZERV,
                             VSEGO_ZADOLJENNOST,
                             OSTATOK_PROSR,
-                            OSTATOK_NACH_PRCNT
+                            OSTATOK_NACH_PROSR_PRCNT
                         FROM CREDITS
                         WHERE REPORT_ID = %s 
                           AND VID_KREDITOVANIYA IN (
@@ -553,8 +553,8 @@ class Query:
                           )
                     ),
 
-                    PORTFOLIO_TABLE (GROUPS, BALANS, PROSR, NACHPRCNT) AS (
-                        SELECT GROUPS, SUM(VSEGO_ZADOLJENNOST), SUM(OSTATOK_PROSR), SUM(OSTATOK_NACH_PRCNT)
+                    PORTFOLIO_TABLE (GROUPS, BALANS, PROSR, NACHPROSRPRCNT) AS (
+                        SELECT GROUPS, SUM(VSEGO_ZADOLJENNOST), SUM(OSTATOK_PROSR), SUM(OSTATOK_NACH_PROSR_PRCNT)
                         FROM REPORT_DATA_TABLE
                         GROUP BY GROUPS
                     ),
@@ -588,7 +588,7 @@ class Query:
                     NVL(P.PROSR,0)/1000000 as PrsBalans,
                     NVL(N.BALANS,0)/1000000 as NplBalans,
                     NVL(N.BALANS,0)/P.BALANS as NplWeight,
-                    NVL(P.NACHPRCNT,0)/1000000 as NachBalans
+                    NVL(P.NACHPROSRPRCNT,0)/1000000 as NachBalans
                 FROM PORTFOLIO_TABLE P
                 LEFT JOIN NPL_TABLE N  ON N.GROUPS = P.GROUPS,
                 (SELECT SUM(BALANS) as Totals FROM PORTFOLIO_TABLE) X

@@ -21,7 +21,7 @@ class Query:
                 MAX(NAME_CLIENT) AS NAME,
                 SUM(VSEGO_ZADOLJENNOST) TOTAL_LOAN
             FROM CREDITS
-            WHERE REPORT_ID = 7
+            WHERE REPORT_ID = 9
             GROUP BY UNIQUE_CODE, MFO
             HAVING SUM(VSEGO_ZADOLJENNOST) IS NOT NULL
             ORDER BY TOTAL_LOAN DESC

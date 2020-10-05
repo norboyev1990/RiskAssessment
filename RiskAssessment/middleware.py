@@ -8,7 +8,7 @@ class CurrentAppMiddleware(MiddlewareMixin):
             HttpResponseRedirect(request.path_info)
 
         if request.user.is_authenticated and 'data_month' not in request.session:
-            request.session['data_month'] = "2020-08"
+            request.session['data_month'] = "2020-09"
 
         namespace = request.resolver_match.namespace
         request.current_app = namespace if namespace else None

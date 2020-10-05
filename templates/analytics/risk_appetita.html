@@ -1,0 +1,277 @@
+{% extends 'layout.html' %}
+{% load static %}
+{% load humanize %}
+{% load i18n %}
+{% load render_table from django_tables2 %}
+{% load querystring from django_tables2 %}
+
+{% block pagecontent %}
+
+    <div class="container-fluid">
+
+        <div class="header">
+            <h1 class="header-title">
+                {{ page_title }}
+            </h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">{% trans 'Home' %}</a></li>
+                    <li class="breadcrumb-item"><a href="#">Аналитика</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Аналитика проблемных кредитов</li>
+                </ol>
+            </nav>
+            <div class="row mt-3 mb-2">
+                {% include 'analytics/menu.app.html' %}
+            </div>
+        </div>
+
+
+        <div id="finance-bank" class="row mt-n4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">[[ header ]]</h5>
+                        <h6 class="card-subtitle text-muted">Количественные плановые фин. показатели банка за 2019-2021
+                            гг., млрд. сум</h6>
+                    </div>
+                    <div class="card-body">
+
+                        <table class="table table-striped table-sm table-bordered">
+                            <thead>
+                                <tr>
+                                    <th style="width: 300px"></th>
+                                    <th class="text-center">2018</th>
+                                    <th colspan="3" class="text-center">2019</th>
+                                    <th class="text-center">2020</th>
+                                    <th class="text-center">2021</th>
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <th class="text-center">факт</th>
+                                    <th class="text-center">план</th>
+                                    <th class="text-center">*факт</th>
+                                    <th class="text-center">%</th>
+                                    <th class="text-center">план</th>
+                                    <th class="text-center">план</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="item in items">
+                                    <td>[[ item.label ]]</td>
+                                    <td class="text-right">[[ item.fk_18 ]]</td>
+                                    <td class="text-right">[[ item.pl_19 ]]</td>
+                                    <td class="text-right">[[ item.fk_19 ]]</td>
+                                    <td class="text-right">[[ item.pr_19 ]]</td>
+                                    <td class="text-right">[[ item.pl_20 ]]</td>
+                                    <td class="text-right">[[ item.pl_21 ]]</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <br>
+                        <br>
+                        <br>
+                        <table class="table table-striped table-sm table-bordered">
+                            <thead>
+                            <tr>
+                                <th style="width: 300px"></th>
+                                <th class="text-center">2018</th>
+                                <th colspan="3" class="text-center">2019</th>
+                                <th class="text-center">2020</th>
+                                <th class="text-center">2021</th>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <th class="text-center">факт</th>
+                                <th class="text-center">план</th>
+                                <th class="text-center">*факт</th>
+                                <th class="text-center">%</th>
+                                <th class="text-center">план</th>
+                                <th class="text-center">план</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>ROE</td>
+                                <td class="text-right"><input type="text" value="4"></td>
+                                <td class="text-right">5%</td>
+                                <td class="text-right">4%</td>
+                                <td class="text-right table-danger">-19%</td>
+                                <td class="text-right">6%</td>
+                                <td class="text-right">8%</td>
+
+                            </tr>
+                            <tr>
+                                <td>ROA</td>
+                                <td class="text-right">0%</td>
+                                <td class="text-right">0%</td>
+                                <td class="text-right">0%</td>
+                                <td class="text-right table-danger">-3%</td>
+                                <td class="text-right">1%</td>
+                                <td class="text-right">1%</td>
+                            </tr>
+                            <tr>
+                                <td>Активы</td>
+                                <td class="text-right table-warning">30 361</td>
+                                <td class="text-right table-warning">34 314</td>
+                                <td class="text-right table-warning">34 698</td>
+                                <td class="text-right table-success">1%</td>
+                                <td class="text-right table-warning">37 695</td>
+                                <td class="text-right table-warning">42 070</td>
+                            </tr>
+                            <tr>
+                                <td class="text-right">в том числе КП</td>
+                                <td class="text-right">24 421</td>
+                                <td class="text-right">28 084</td>
+                                <td class="text-right">26 322</td>
+                                <td class="text-right table-danger">-6%</td>
+                                <td class="text-right">30 800</td>
+                                <td class="text-right">35 500</td>
+                            </tr>
+                            <tr>
+                                <td class="text-right">ЮЛ</td>
+                                <td class="text-right">22 882</td>
+                                <td class="text-right"></td>
+                                <td class="text-right">3 341</td>
+                                <td class="text-right"></td>
+                                <td class="text-right">24 780</td>
+                                <td class="text-right"></td>
+                            </tr>
+                            <tr>
+                                <td class="text-right">ФЛ</td>
+                                <td class="text-right">1 539</td>
+                                <td class="text-right"></td>
+                                <td class="text-right">22 981</td>
+                                <td class="text-right"></td>
+                                <td class="text-right">6 020</td>
+                                <td class="text-right"></td>
+                            </tr>
+                            <tr>
+                                <td>Капитал</td>
+                                <td class="text-right">1.331</td>
+                                <td class="text-right">1.331</td>
+                                <td class="text-right">1.331</td>
+                                <td class="text-right table-success">15%</td>
+                                <td class="text-right">8.232</td>
+                                <td class="text-right">8.232</td>
+                            </tr>
+                            <tr>
+                                <td>Плановые процентные/непроц. доходы</td>
+                                <td class="text-right">2.301</td>
+                                <td class="text-right">2.301</td>
+                                <td class="text-right">2.301</td>
+                                <td class="text-right table-success">20%</td>
+                                <td class="text-right">8.232</td>
+                                <td class="text-right">8.232</td>
+                            </tr>
+                            <tr>
+                                <td>Прибыль</td>
+                                <td class="text-right">1.162</td>
+                                <td class="text-right">1.162</td>
+                                <td class="text-right">1.162</td>
+                                <td class="text-right table-success">14%</td>
+                                <td class="text-right">8.232</td>
+                                <td class="text-right">8.232</td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+
+                        <table>
+                            <tr class="font-italic">
+                                <td style="width: 91%">Среднемесячное значение капитала за 2019</td>
+                                <td style="font-weight: bold">4 265</td>
+                            </tr>
+                            <tr class="font-italic">
+                                <td>Среднемесячное значение активов за 2019</td>
+                                <td style="font-weight: bold">35 709</td>
+                            </tr>
+                            <tr class="font-italic">
+                                <td>Средний валовый доход банка (за последние три года)</td>
+                                <td style="font-weight: bold">892</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <svg width="*" height="360">
+                            <polygon points="5,356 54,278 186,278 132,356"
+                                     fill="#17a2b8" stroke="#3e4676" stroke-width="2"/>
+                            <polygon points="136,356 190,278 258,278 312,356"
+                                     fill="#17a2b8" stroke="#3e4676" stroke-width="2"/>
+                            <polygon points="316,356 262,278 394,278 443,356"
+                                     fill="#17a2b8" stroke="#3e4676" stroke-width="2"/>
+                            <polygon points="56,275 126,162 322,162 392,275"
+                                     fill="#17a2b8" stroke="#3e4676" stroke-width="2"/>
+                            <polygon points="128,159 224,5 320,159"
+                                     fill="#17a2b8" stroke="#3e4676" stroke-width="2"/>
+                            <text x="224" y="105" text-anchor="middle" fill="white">Допустимый
+                                <tspan x="224" y="125">уровен риска</tspan>
+                            </text>
+                            <text x="224" y="225" text-anchor="middle" fill="white" font-size="18" font-weight="bold">
+                                Риск-аппетит
+                            </text>
+                            <text x="90" y="320" text-anchor="middle" fill="white" font-size="10">
+                                Кредитные риски
+                            </text>
+                            <text x="224" y="320" text-anchor="middle" fill="white" font-size="10">
+                                Рыночные риски
+                            </text>
+                            <text x="353" y="320" text-anchor="middle" fill="white" font-size="10">
+                                Операционные риски
+                            </text>
+                            <line x1="266" y1="72" x2="311" y2="42" style="stroke:rgb(255,0,0);stroke-width:2"/>
+                            <polygon points="312,45 308,40 315,39"
+                                     fill="rgb(255,0,0)" stroke="rgb(255,0,0)" stroke-width="2"/>
+                            <line x1="353" y1="210" x2="400" y2="210" style="stroke:rgb(255,0,0);stroke-width:2"/>
+                            <polygon points="400,207 400,213 406,210"
+                                     fill="rgb(255,0,0)" stroke="rgb(255,0,0)" stroke-width="2"/>
+                            <text x="330" y="20" font-size="14">
+                                Допустимый уровень риска
+                                <tspan x="330" y="40">(запас капитала, которое делаем для КУАПА)</tspan>
+                                <tspan x="330" y="60" fill="blue" font-weight="bold">[[ total ]]</tspan>
+                            </text>
+                        </svg>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block scriptcontent %}
+
+    <script src="https://unpkg.com/vue"></script>
+    <script>
+        var appetita = new Vue({
+            el: "#finance-bank",
+            delimiters: ['[[', ']]'],
+            data: {
+                header: 'Финансовый показатели банка',
+                allowed_level_risk: 1985,
+                count_years: 2,
+                total_risk_appetit: 900,
+
+                items: [
+                    {label: 'ROE', fk_18: 4, pl_19: 5, fk_19: 4, pr_19: -19, pl_20: 6, pl_21: 8,},
+                    {label: 'ROA', fk_18: 0, pl_19: 0, fk_19: 0, pr_19: -3, pl_20: 1, pl_21: 1,},
+                    {label: 'Активы', fk_18: 30361, pl_19: 34314, fk_19: 34698, pr_19: 1, pl_20: 37695, pl_21: 42070,},
+                    {label: 'в том числе КП', fk_18: 24421, pl_19: 28084, fk_19: 26322, pr_19: -6, pl_20: 30800, pl_21: 35500,},
+                    {label: 'ЮЛ', fk_18: 22882, fk_19: 3341, pl_20: 24780},
+                    {label: 'ФЛ', fk_18: 1539, fk_19: 22981, pl_20: 6020},
+                    {label: 'Капитал', fk_18: 0, pl_19: 0, fk_19: 0, pr_19: 0, pl_20: 1, pl_21: 1,},
+                    {label: 'Плановые процентные/непроц. доходы', fk_18: 0, pl_19: 0, fk_19: 0, pr_19: 0, pl_20: 1, pl_21: 1,},
+                    {label: 'Прибыль', fk_18: 0, pl_19: 0, fk_19: 0, pr_19: 0, pl_20: 1, pl_21: 1,},
+                ],
+
+            }
+        })
+
+    </script>
+
+{% endblock %}

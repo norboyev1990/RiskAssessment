@@ -405,6 +405,12 @@ div.h4 {
                                                                 <td>Дата закрытия</td>
                                                                 <td>{{ contract.DATE_POGASH|date:"Y-m-d" }}</td>
                                                             </tr>
+                                                            <tr>
+                                                                <td>Дата продления</td>
+                                                                <td>{{ contract.DATE_PRODL }}</td>
+                                                                <td>Дата погашения после продления</td>
+                                                                <td>{{ contract.DATE_POGASH_POSLE_PRODL|date:"Y-m-d" }}</td>
+                                                            </tr>
 
                                                             <tr>
                                                                 <td>Валюта</td>

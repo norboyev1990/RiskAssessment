@@ -16,4 +16,5 @@ urlpatterns = [
     path('credits/get_data_products/', views.get_data_products, name='get_data_products'),
     path('credits/get_data_average_juridical/', views.get_data_average_juridical, name='get_data_average_juridical'),
     path('credits/get_data_average_juridical_npl/', views.get_data_average_juridical_npl, name='get_data_average_juridical_npl'),
+    path('credits/get_big_data/', views.get_big_data, name='get_big_data')
 ]

@@ -14,7 +14,8 @@ def general_analytics(request):
     title = "Общая аналитика"
     context = {
         "page_title": title,
-        "menu_block": "analytics"
+        "menu_block": 'analytics',
+        "menu_group": 'bad_credits',
     }
     return render(request, 'analytics/general_analytics.html', context)
 
@@ -22,7 +23,8 @@ def line_chart_portfolio(request):
     title = "Диаграмма КП по месяцам"
     context = {
         "page_title": title,
-        "menu_block": "analytics"
+        "menu_block": 'analytics',
+        "menu_group": 'bad_credits',
     }
     return render(request, 'analytics/line_chart_portfolio.html', context)
 
@@ -57,9 +59,19 @@ def vector_map_portfolio(request):
         "page_title": title,
         "data_table": table,
         "data_dlist": dlist,
-        "menu_group": "analytics",
+        "menu_block": 'analytics',
+        "menu_group": 'bad_credits',
         "max": r['max'],
         "min": r['min'],
         "max_value": df['value'].max() * 1.1,
     }
     return render(request, 'analytics/vector_map_portfolio.html', context)
+
+def risk_appetita(request):
+    title = "Расчет риск-аппетита в разрезе риск-компонентов"
+    context = {
+        "page_title": title,
+        "menu_block": 'analytics',
+        "menu_group": 'risk_appetita',
+    }
+    return render(request, 'analytics/risk_appetita.html', context)

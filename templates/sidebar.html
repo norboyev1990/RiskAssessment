@@ -28,6 +28,7 @@
 {% url 'general_analytics' as general_analytics_url %}
 {% url 'line_chart_portfolio' as line_chart_portfolio_url %}
 {% url 'vector_map_portfolio' as vector_map_portfolio_url %}
+{% url 'risk_appetita' as risk_appetita_url %}
 
 
 
@@ -86,8 +87,10 @@
                 </a>
 
                 <ul id="analytics" class="sidebar-dropdown list-unstyled collapse " data-parent="#sidebar">
-                    <li class="sidebar-item {% if menu_block == 'analytics' %} active {%endif%}">
+                    <li class="sidebar-item {% if menu_group == 'bad_credits' %} active {%endif%}">
                         <a class="sidebar-link" href="{{ general_analytics_url }}">{% trans 'Проблемных кредитов' %}</a></li>
+                    <li class="sidebar-item {% if menu_group == 'risk_appetita' %} active {%endif%}">
+                        <a class="sidebar-link" href="{{ risk_appetita_url }}">{% trans 'Расчет риск-аппетита' %}</a></li>
                 </ul>
             </li>
 

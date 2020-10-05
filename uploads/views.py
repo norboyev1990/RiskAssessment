@@ -104,6 +104,20 @@ def repayment(request):
             'DataMonth': cur_date.month
         })
 
+    query = '''
+        select 
+          cl.report_year ReportYear, 
+          cl.report_month ReportMonth, 
+          max(cb.name) BranchName, 
+          count(cp.id) CountPayments 
+        from credits_payments cp
+        left join credits_branch cb on cb.code = cp.mfo 
+        left join credits_listreports cl on cl.id = cp.report_id
+        group by cl.report_year, cl.report_month, cp.branch_id
+        order by max(cb.sort)
+    '''
+    list_report = ListRepayment.objects.raw(query)
+
     context = {
         "page_title": title,
         "menu_block": "uploads",

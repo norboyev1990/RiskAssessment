@@ -96,6 +96,7 @@ def client_detail(request, client_id):
 
     # get client details
     query = Query.findClientByID()
+
     client = Clients.objects.raw(query, param)[0]
     # get all credits for client
     param = {

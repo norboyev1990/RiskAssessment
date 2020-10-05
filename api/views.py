@@ -371,3 +371,13 @@ def get_data_average_juridical_npl(request):
     }}
 
     return JsonResponse(result)
+
+
+def get_big_data(request):
+    cursor = connection.cursor()
+    cursor.execute('select * from CREDITS_REPORTDATA where REPORT_ID = 9')
+    data = dictfetchall(cursor)
+    result = {"result": {"data": data}}
+    return  JsonResponse(result)
+
+

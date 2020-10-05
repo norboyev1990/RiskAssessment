@@ -928,6 +928,7 @@ def export_all_docx(request):
     npls_df.drop(['ID', 'NUMERAL'], axis=1, inplace=True)
     npls_df.rename(columns={"NAME": "Наименование клиента", "BRANCH": "Филиал", "BALANS": "Остаток кредита"},
                    inplace=True)
+    npls_df = npls_df[["Наименование клиента", "Филиал", "Остаток кредита"]]
 
     # TOXIC
     cursor.execute(Query.orcl_toxics(), [report.id])
