@@ -1105,3 +1105,19 @@ class Query:
 
             ORDER BY B.SORT
         '''
+
+    @staticmethod
+    def orcl_byissuedandrepayment():
+        return '''
+            select
+                lr.START_MONTH,
+                CLIENT_TYPE,
+                SUBSTR(SROK, 1, 1) as TERM_TYPE ,
+                CURRENCY,
+                SUM(VSEGO_ZADOLJENNOST) as TOTAL
+            from CREDITS cr
+            left join CREDITS_LISTREPORTS lr on lr.ID = cr.REPORT_ID
+            where lr.START_MONTH in (DATE '2020-07-01', DATE '2020-04-01')
+            group by lr.START_MONTH, CLIENT_TYPE, SUBSTR(SROK, 1, 1), CURRENCY
+            order by lr.START_MONTH, CLIENT_TYPE, SUBSTR(SROK, 1, 1), CURRENCY
+        '''
