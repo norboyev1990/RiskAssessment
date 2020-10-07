@@ -333,13 +333,12 @@ class Query:
                     G.TITLE as Title, 
                     P.BALANS/1000000 as PorBalans,
                     P.BALANS/X.TOTALS as PorPercent,
-                    NVL(N.BALANS,0)/1000000+1 as NplBalans,
-                    NVL(T.BALANS,0)/1000000+1 as ToxBalans,
+                    NVL(N.BALANS,0)/1000000 as NplBalans,
+                    NVL(T.BALANS,0)/1000000 as ToxBalans,
                     (NVL(N.BALANS,0)+NVL(T.BALANS,0))/1000000 as AmountNTK,
                     (NVL(N.BALANS,0)+NVL(T.BALANS,0))/P.BALANS as WeightNTK,
                     NVL(P.RESERVE,0)/1000000 as ResBalans,
-                    --NVL(P.RESERVE,0)/(NVL(N.BALANS,0)+NVL(T.BALANS,0)) as ResCovers
-                    1.0 as ResCovers
+                    NVL(P.RESERVE,0)/NULLIF(NVL(N.BALANS,0)+NVL(T.BALANS,0),0) as ResCovers
                 FROM PORTFOLIO_TABLE P
                 LEFT JOIN NPL_TABLE N  ON N.GROUPS = P.GROUPS
                 LEFT JOIN TOX_TABLE T  ON T.GROUPS = P.GROUPS
@@ -1110,15 +1109,45 @@ class Query:
     @staticmethod
     def orcl_byissuedandrepayment():
         return '''
-            select
-                lr.START_MONTH,
-                CLIENT_TYPE,
-                SUBSTR(SROK, 1, 1) as TERM_TYPE ,
-                CURRENCY,
-                SUM(VSEGO_ZADOLJENNOST) as TOTAL
-            from CREDITS cr
-            left join CREDITS_LISTREPORTS lr on lr.ID = cr.REPORT_ID
-            where lr.START_MONTH in (DATE '2020-10-01', DATE '2020-07-01')
-            group by lr.START_MONTH, CLIENT_TYPE, SUBSTR(SROK, 1, 1), CURRENCY
-            order by lr.START_MONTH, CLIENT_TYPE, SUBSTR(SROK, 1, 1), CURRENCY
+            SELECT * FROM (
+                select CLIENT_TYPE || '0' || SUBSTR(SROK, 1, 1) as CODE,
+                       TO_CHAR(lr.START_MONTH, 'YYYY-MM-DD')    as SDATE,
+                       SUM(VSEGO_ZADOLJENNOST)                  as TOTAL
+                from CREDITS cr left join CREDITS_LISTREPORTS lr on lr.ID = cr.REPORT_ID
+                where lr.START_MONTH in (DATE '2020-07-01', DATE '2020-04-01')
+                group by lr.START_MONTH, CLIENT_TYPE, SUBSTR(SROK, 1, 1)
+            ) PIVOT (MAX(TOTAL) FOR SDATE IN ('2020-04-01', '2020-07-01'))
+            
+            UNION ALL
+            SELECT * FROM (
+                select CLIENT_TYPE || '00' as CODE,
+                       TO_CHAR(lr.START_MONTH, 'YYYY-MM-DD')    as SDATE,
+                       SUM(VSEGO_ZADOLJENNOST)                  as TOTAL
+                from CREDITS cr left join CREDITS_LISTREPORTS lr on lr.ID = cr.REPORT_ID
+                where lr.START_MONTH in (DATE '2020-07-01', DATE '2020-04-01')
+                group by lr.START_MONTH, CLIENT_TYPE
+            )  PIVOT (MAX(TOTAL) FOR SDATE IN ('2020-04-01', '2020-07-01'))
+            
+            UNION ALL
+            SELECT * FROM (
+                select CLIENT_TYPE || CURRENCY || SUBSTR(SROK, 1, 1) as CODE,
+                       TO_CHAR(lr.START_MONTH, 'YYYY-MM-DD')         as SDATE,
+                       SUM(VSEGO_ZADOLJENNOST)                       as TOTAL
+                from CREDITS cr left join CREDITS_LISTREPORTS lr on lr.ID = cr.REPORT_ID
+                where lr.START_MONTH in (DATE '2020-07-01', DATE '2020-04-01')
+                  and CLIENT_TYPE = 'J'
+                group by lr.START_MONTH, CLIENT_TYPE, SUBSTR(SROK, 1, 1), CURRENCY)
+                PIVOT (MAX(TOTAL) FOR SDATE IN ('2020-04-01', '2020-07-01'))
+            
+            UNION ALL
+            SELECT * FROM (
+                select CLIENT_TYPE || CURRENCY || '0' as CODE,
+                       TO_CHAR(lr.START_MONTH, 'YYYY-MM-DD')         as SDATE,
+                       SUM(VSEGO_ZADOLJENNOST)                       as TOTAL
+                from CREDITS cr left join CREDITS_LISTREPORTS lr on lr.ID = cr.REPORT_ID
+                where lr.START_MONTH in (DATE '2020-07-01', DATE '2020-04-01')
+                  and CLIENT_TYPE = 'J'
+                group by lr.START_MONTH, CLIENT_TYPE, CURRENCY)
+                PIVOT (MAX(TOTAL) FOR SDATE IN ('2020-04-01', '2020-07-01'))
+            ORDER BY 1
         '''
