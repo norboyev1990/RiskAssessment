@@ -333,12 +333,13 @@ class Query:
                     G.TITLE as Title, 
                     P.BALANS/1000000 as PorBalans,
                     P.BALANS/X.TOTALS as PorPercent,
-                    NVL(N.BALANS,0)/1000000 as NplBalans,
-                    NVL(T.BALANS,0)/1000000 as ToxBalans,
+                    NVL(N.BALANS,0)/1000000+1 as NplBalans,
+                    NVL(T.BALANS,0)/1000000+1 as ToxBalans,
                     (NVL(N.BALANS,0)+NVL(T.BALANS,0))/1000000 as AmountNTK,
                     (NVL(N.BALANS,0)+NVL(T.BALANS,0))/P.BALANS as WeightNTK,
                     NVL(P.RESERVE,0)/1000000 as ResBalans,
-                    NVL(P.RESERVE,0)/(NVL(N.BALANS,0)+NVL(T.BALANS,0)) as ResCovers
+                    --NVL(P.RESERVE,0)/(NVL(N.BALANS,0)+NVL(T.BALANS,0)) as ResCovers
+                    1.0 as ResCovers
                 FROM PORTFOLIO_TABLE P
                 LEFT JOIN NPL_TABLE N  ON N.GROUPS = P.GROUPS
                 LEFT JOIN TOX_TABLE T  ON T.GROUPS = P.GROUPS
@@ -1117,7 +1118,7 @@ class Query:
                 SUM(VSEGO_ZADOLJENNOST) as TOTAL
             from CREDITS cr
             left join CREDITS_LISTREPORTS lr on lr.ID = cr.REPORT_ID
-            where lr.START_MONTH in (DATE '2020-07-01', DATE '2020-04-01')
+            where lr.START_MONTH in (DATE '2020-10-01', DATE '2020-07-01')
             group by lr.START_MONTH, CLIENT_TYPE, SUBSTR(SROK, 1, 1), CURRENCY
             order by lr.START_MONTH, CLIENT_TYPE, SUBSTR(SROK, 1, 1), CURRENCY
         '''

@@ -27,6 +27,7 @@ from docx.enum.table import WD_ALIGN_VERTICAL
 from docx.enum.style import WD_STYLE_TYPE
 import os
 from RiskAssessment.settings import BASE_DIR
+import numpy as np
 
 
 @login_required
@@ -545,13 +546,13 @@ def export_all_tables(request):
     for row in CursorByName(cursor):
         bysegments.append(row)
     bysegments_df = pd.DataFrame(bysegments)
-    bysegments_df.drop(['ID'], axis=1, inplace=True)
-    bysegments_df = bysegments_df.pivot_table(index='TITLE',
-                                              margins=True,
-                                              margins_name='total',  # defaults to 'All'
-                                              aggfunc=sum)
-    bysegments_df = bysegments_df.reset_index()
 
+    bysegments_df.drop(['ID'], axis=1, inplace=True)
+
+    #bysegments_df = bysegments_df.pivot_table(index='TITLE', margins=True, margins_name='total', aggfunc=sum)
+
+    #bysegments_df = bysegments_df.reset_index()
+    #
     bysegments_df.rename(
         columns={"TITLE": "Сегмент", "AMOUNTNTK": "ТК+NPL", "NPLBALANS": "NPL", "PORBALANS": "Кредитный портфель",
                  "PORPERCENT": "Доля %",
@@ -559,8 +560,11 @@ def export_all_tables(request):
                  "WEIGHTNTK": "Удельный вес к своему портфелю"}, inplace=True)
 
     bysegments_df = bysegments_df.set_index('Сегмент')
+
     bysegments_df = bysegments_df.rename({'total': 'Итого:'}, axis='index')
+
     bysegments_df = bysegments_df.reset_index()
+
     bysegments_df['Доля %'] = (bysegments_df['Доля %'].astype('float64') * 100).round(1).astype('str') + '%'
     bysegments_df['Покрытие ТК+NPL резервами'] = (bysegments_df['Покрытие ТК+NPL резервами'].astype(
         'float64') * 100).round(1).astype('str') + '%'
@@ -841,6 +845,8 @@ def export_all_tables(request):
     byaverageweight_fl_df.drop(['total'], axis=1, inplace=True)
     byaverageweight_fl_df["UZS"] = byaverageweight_fl_df["UZS"].astype('float64').round(2)
 
+
+
     dfs = {'Показатели': ind_df, 'Топ NPL': npls_df, 'Топ ТК': toxic_df, 'Топ проср': overdues_df,
            'В разбивке по срокам': byterm_df,
            'В разбивке по субъектам': bysubjects_df, 'В разбивке по сегментам': bysegments_df,
@@ -849,7 +855,8 @@ def export_all_tables(request):
            'В разбивке по проц став инстр.в': bypercentage_foreign_df,
            'В национальной валюте по ЮЛ': bypercentage_national_ul_df,
            'В иностранной валюте по ЮЛ': bypercentage_foreign_ul_df, 'В разбивке по срднвзв прц ЮЛ': by_sred_vzv,
-           'В разбивке по срднвзв прц ФЛ': byaverageweight_fl_df}
+           'В разбивке по срднвзв прц ФЛ': byaverageweight_fl_df
+           }
 
     with BytesIO() as b:
         # Use the StringIO object as the filehandle.
@@ -921,13 +928,26 @@ def export_all_docx(request):
 
     npls_df = pd.DataFrame(npl_data)
     npls_df = npls_df.head(10)
-    npls_df.drop(['ID', 'NUMERAL'], axis=1, inplace=True)
-    npls_df.rename(columns={"NAME": "Наименование клиента", "BRANCH": "Филиал", "BALANS": "Остаток кредита"},
-                   inplace=True)
-    npls_df = npls_df[["Наименование клиента", "Филиал", "Остаток кредита"]]
-    npls_df = npls_df['Остаток кредита'] / 1000000
+    #npls_df.drop(['ID', 'NUMERAL'], axis=1, inplace=True)
+    #npls_df.rename(columns={"NAME": "Наименование клиента", "BRANCH": "Филиал", "BALANS": "Остаток кредита"},
+                   #inplace=True)
+    npls_df = npls_df[["NAME", "BRANCH", "BALANS"]]
 
-    npls_df = npls_df.apply(delim)
+    npls_df['BALANS'] = npls_df['BALANS'].astype('float64')
+    npls_df = npls_df.append(npls_df.sum(numeric_only=True), ignore_index=True)
+    npls_df['BALANS'] = npls_df['BALANS'] / 1000000
+    npls_df = npls_df.fillna('')
+
+    def delim2(val):
+        if type(val) != str:
+            val = '{:,.0f}'.format(val).replace(',', ' ')
+        return val
+
+    npls_df['BALANS'] = npls_df['BALANS'].apply(delim2)
+    npls_df.insert(0, 'number', range(1, 1 + len(npls_df)))
+    npls_df = npls_df.fillna('')
+    npls_df.iloc[10, 1] = 'Итого:'
+    npls_df.iloc[10, 0] = ''
 
 
 
@@ -952,6 +972,14 @@ def export_all_docx(request):
     overdues_df.drop(['ID', 'NUMERAL'], axis=1, inplace=True)
     overdues_df.rename(columns={"NAME": "Наименование клиента", "BRANCH": "Филиал", "BALANS": "Остаток кредита"},
                        inplace=True)
+
+    overdues_df['Остаток кредита'] = overdues_df['Остаток кредита'].astype('float64')
+    overdues_df = overdues_df.append(overdues_df.sum(numeric_only=True), ignore_index=True)
+    overdues_df.insert(0, 'number', range(1, 1 + len(overdues_df)))
+    overdues_df = overdues_df.fillna('')
+    overdues_df.iloc[10, 1] = 'Итого:'
+    overdues_df.iloc[10, 0] = ''
+    overdues_df['Остаток кредита'] = overdues_df['Остаток кредита'].apply(delim2)
 
     # BYTERM
     cursor.execute(Query.orcl_byterms(), [report.id])
@@ -1024,11 +1052,7 @@ def export_all_docx(request):
         bysegments.append(row)
     bysegments_df = pd.DataFrame(bysegments)
     bysegments_df.drop(['ID'], axis=1, inplace=True)
-    bysegments_df = bysegments_df.pivot_table(index='TITLE',
-                                              margins=True,
-                                              margins_name='total',  # defaults to 'All'
-                                              aggfunc=sum)
-    bysegments_df = bysegments_df.reset_index()
+
 
     bysegments_df.rename(
         columns={"TITLE": "Сегмент", "AMOUNTNTK": "ТК+NPL", "NPLBALANS": "NPL", "PORBALANS": "Кредитный портфель",
@@ -1517,16 +1541,6 @@ def export_all_docx(request):
     table2.cell(0, 3).text = "Остаток кредита"
     table2.cell(11, 1).text = "Итого:"
 
-    npls_df['Остаток кредита'] = npls_df['Остаток кредита'].astype('float64')
-    npls_df = npls_df.append(npls_df.sum(numeric_only=True), ignore_index=True)
-    npls_df.insert(0, 'number', range(1, 1 + len(npls_df)))
-    npls_df = npls_df.fillna('')
-    npls_df.iloc[10, 1] = 'Итого:'
-    npls_df.iloc[10, 0] = ''
-
-    # npls_df['Остаток кредита'] = npls_df['Остаток кредита'].apply(lambda x: '{:,}'.format(int(float(x))," "))
-    # npls_df['Остаток кредита'] = npls_df['Остаток кредита'].str.replace(',', ' ')
-
     for i in range(npls_df.shape[0]):
         for j in range(npls_df.shape[-1]):
             table2.cell(i + 1, j).text = str(npls_df.values[i, j])
@@ -1539,6 +1553,8 @@ def export_all_docx(request):
 
     for cell in table2.columns[3].cells:
         cell.paragraphs[0].paragraph_format.alignment = WD_TABLE_ALIGNMENT.CENTER
+
+
 
     for cell in table2.rows[0].cells:
         cell.paragraphs[0].paragraph_format.alignment = WD_TABLE_ALIGNMENT.CENTER
@@ -1597,18 +1613,7 @@ def export_all_docx(request):
     table3.cell(0, 3).text = "Остаток р/с 16377"
     table3.cell(11, 1).text = "Итого:"
 
-    for i, cell in list(enumerate(table2.columns[0].cells))[1:11]:
-        cell.text = "%s" % (i)
 
-    table2.cell(11, 1).text = "Итого:"
-
-    overdues_df = overdues_df.append(overdues_df.sum(numeric_only=True), ignore_index=True)
-    overdues_df.insert(0, 'number', range(1, 1 + len(overdues_df)))
-    overdues_df = overdues_df.fillna('')
-    overdues_df.iloc[10, 1] = 'Итого:'
-    overdues_df.iloc[10, 0] = ''
-    # overdues_df['Остаток кредита'] = overdues_df['Остаток кредита'].apply(lambda x: '{:,}'.format(int(x)," "))
-    # overdues_df['Остаток кредита'] = overdues_df['Остаток кредита'].str.replace(',', ' ')
 
     for i in range(overdues_df.shape[0]):
         for j in range(overdues_df.shape[-1]):
