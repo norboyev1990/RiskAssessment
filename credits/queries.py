@@ -338,7 +338,7 @@ class Query:
                     (NVL(N.BALANS,0)+NVL(T.BALANS,0))/1000000 as AmountNTK,
                     (NVL(N.BALANS,0)+NVL(T.BALANS,0))/P.BALANS as WeightNTK,
                     NVL(P.RESERVE,0)/1000000 as ResBalans,
-                    NVL(P.RESERVE,0)/(NVL(N.BALANS,0)+NVL(T.BALANS,0)) as ResCovers
+                    NVL(P.RESERVE,0)/NULLIF(NVL(N.BALANS,0)+NVL(T.BALANS,0),0) as ResCovers
                 FROM PORTFOLIO_TABLE P
                 LEFT JOIN NPL_TABLE N  ON N.GROUPS = P.GROUPS
                 LEFT JOIN TOX_TABLE T  ON T.GROUPS = P.GROUPS
