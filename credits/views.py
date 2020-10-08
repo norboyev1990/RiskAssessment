@@ -549,10 +549,10 @@ def export_all_tables(request):
 
     bysegments_df.drop(['ID'], axis=1, inplace=True)
 
-    #bysegments_df = bysegments_df.pivot_table(index='TITLE', margins=True, margins_name='total', aggfunc=sum)
+    bysegments_df = bysegments_df.pivot_table(index='TITLE', margins=True, margins_name='total', aggfunc=sum)
 
-    #bysegments_df = bysegments_df.reset_index()
-    #
+    bysegments_df = bysegments_df.reset_index()
+
     bysegments_df.rename(
         columns={"TITLE": "Сегмент", "AMOUNTNTK": "ТК+NPL", "NPLBALANS": "NPL", "PORBALANS": "Кредитный портфель",
                  "PORPERCENT": "Доля %",
@@ -566,8 +566,10 @@ def export_all_tables(request):
     bysegments_df = bysegments_df.reset_index()
 
     bysegments_df['Доля %'] = (bysegments_df['Доля %'].astype('float64') * 100).round(1).astype('str') + '%'
+    bysegments_df['Покрытие ТК+NPL резервами'][3] = bysegments_df['Резервы'][3] / bysegments_df['ТК+NPL'][3]
     bysegments_df['Покрытие ТК+NPL резервами'] = (bysegments_df['Покрытие ТК+NPL резервами'].astype(
         'float64') * 100).round(1).astype('str') + '%'
+
     bysegments_df['Удельный вес к своему портфелю'] = (bysegments_df['Удельный вес к своему портфелю'].astype(
         'float64') * 100).round(1).astype('str') + '%'
     bysegments_df = bysegments_df[["Сегмент", 'Кредитный портфель', 'Доля %', 'NPL', 'Токсичные кредиты', 'ТК+NPL',
@@ -845,6 +847,12 @@ def export_all_tables(request):
     byaverageweight_fl_df.drop(['total'], axis=1, inplace=True)
     byaverageweight_fl_df["UZS"] = byaverageweight_fl_df["UZS"].astype('float64').round(2)
 
+    cursor.execute(Query.orcl_byissuedandrepayment())
+    byissuedandrepayment = []
+    for row in CursorByName(cursor):
+        byissuedandrepayment.append(row)
+    byissuedandrepayment_df = pd.DataFrame(byissuedandrepayment)
+    #byissuedandrepayment_df = byissuedandrepayment_df.drop(['ID'], axis=1)
 
 
     dfs = {'Показатели': ind_df, 'Топ NPL': npls_df, 'Топ ТК': toxic_df, 'Топ проср': overdues_df,
@@ -855,7 +863,8 @@ def export_all_tables(request):
            'В разбивке по проц став инстр.в': bypercentage_foreign_df,
            'В национальной валюте по ЮЛ': bypercentage_national_ul_df,
            'В иностранной валюте по ЮЛ': bypercentage_foreign_ul_df, 'В разбивке по срднвзв прц ЮЛ': by_sred_vzv,
-           'В разбивке по срднвзв прц ФЛ': byaverageweight_fl_df
+           'В разбивке по срднвзв прц ФЛ': byaverageweight_fl_df,
+           'В разбивке по выд.' : byissuedandrepayment_df
            }
 
     with BytesIO() as b:
@@ -1004,6 +1013,7 @@ def export_all_docx(request):
     byterm_df = byterm_df.rename({'total': 'Итого:'}, axis='index')
     byterm_df = byterm_df.reset_index()
     byterm_df['Доля %'] = (byterm_df['Доля %'].astype('float64') * 100).round(1).astype('str') + '%'
+    byterm_df['Покрытие ТК+NPL резервами'] = byterm_df['Резервы'] / byterm_df['ТК+NPL']
     byterm_df['Покрытие ТК+NPL резервами'] = (byterm_df['Покрытие ТК+NPL резервами'].astype('float64') * 100).round(
         1).astype('str') + '%'
     byterm_df['Удельный вес к своему портфелю'] = (byterm_df['Удельный вес к своему портфелю'].astype(
@@ -1036,6 +1046,7 @@ def export_all_docx(request):
     bysubjects_df = bysubjects_df.rename({'total': 'Итого:'}, axis='index')
     bysubjects_df = bysubjects_df.reset_index()
     bysubjects_df['Доля %'] = (bysubjects_df['Доля %'].astype('float64') * 100).round(1).astype('str') + '%'
+    bysubjects_df['Покрытие ТК+NPL резервами'] = bysubjects_df['Резервы'] / bysubjects_df['ТК+NPL']
     bysubjects_df['Покрытие ТК+NPL резервами'] = (bysubjects_df['Покрытие ТК+NPL резервами'].astype(
         'float64') * 100).round(1).astype('str') + '%'
     bysubjects_df['Удельный вес к своему портфелю'] = (bysubjects_df['Удельный вес к своему портфелю'].astype(
@@ -1052,7 +1063,11 @@ def export_all_docx(request):
         bysegments.append(row)
     bysegments_df = pd.DataFrame(bysegments)
     bysegments_df.drop(['ID'], axis=1, inplace=True)
-
+    bysegments_df = bysegments_df.pivot_table(index='TITLE',
+                                              margins=True,
+                                              margins_name='total',  # defaults to 'All'
+                                              aggfunc=sum)
+    bysegments_df = bysegments_df.reset_index()
 
     bysegments_df.rename(
         columns={"TITLE": "Сегмент", "AMOUNTNTK": "ТК+NPL", "NPLBALANS": "NPL", "PORBALANS": "Кредитный портфель",
@@ -1064,6 +1079,7 @@ def export_all_docx(request):
     bysegments_df = bysegments_df.rename({'total': 'Итого:'}, axis='index')
     bysegments_df = bysegments_df.reset_index()
     bysegments_df['Доля %'] = (bysegments_df['Доля %'].astype('float64') * 100).round(1).astype('str') + '%'
+    bysegments_df['Покрытие ТК+NPL резервами'][3] = bysegments_df['Резервы'][3] / bysegments_df['ТК+NPL'][3]
     bysegments_df['Покрытие ТК+NPL резервами'] = (bysegments_df['Покрытие ТК+NPL резервами'].astype(
         'float64') * 100).round(1).astype('str') + '%'
     bysegments_df['Удельный вес к своему портфелю'] = (bysegments_df['Удельный вес к своему портфелю'].astype(
@@ -1096,6 +1112,7 @@ def export_all_docx(request):
     bycurrency_df = bycurrency_df.rename({'total': 'Итого:'}, axis='index')
     bycurrency_df = bycurrency_df.reset_index()
     bycurrency_df['Доля %'] = (bycurrency_df['Доля %'].astype('float64') * 100).round(1).astype('str') + '%'
+    bycurrency_df['Покрытие ТК+NPL резервами'] = bycurrency_df['Резервы'] / bycurrency_df['ТК+NPL']
     bycurrency_df['Покрытие ТК+NPL резервами'] = (bycurrency_df['Покрытие ТК+NPL резервами'].astype(
         'float64') * 100).round(1).astype('str') + '%'
     bycurrency_df['Удельный вес к своему портфелю'] = (bycurrency_df['Удельный вес к своему портфелю'].astype(
@@ -1127,6 +1144,7 @@ def export_all_docx(request):
     bybranches_df = bybranches_df.rename({'total': 'Итого:'}, axis='index')
     bybranches_df = bybranches_df.reset_index()
     bybranches_df['Доля %'] = (bybranches_df['Доля %'].astype('float64') * 100).round(1).astype('str') + '%'
+    bybranches_df['Покрытие ТК+NPL резервами'] = bybranches_df['Резервы'] / bybranches_df['ТК+NPL']
     bybranches_df['Покрытие ТК+NPL резервами'] = (bybranches_df['Покрытие ТК+NPL резервами'].astype(
         'float64') * 100).round(1).astype('str') + '%'
     bybranches_df['Удельный вес к своему портфелю'] = (bybranches_df['Удельный вес к своему портфелю'].astype(
@@ -1344,6 +1362,46 @@ def export_all_docx(request):
     byaverageweight_fl_df.iloc[8, 1] = byaverageweight_fl_df.iloc[1, 2]
     byaverageweight_fl_df.drop(['total'], axis=1, inplace=True)
     byaverageweight_fl_df["UZS"] = byaverageweight_fl_df["UZS"].astype('float64').round(2)
+
+    cursor.execute(Query.orcl_byissuedandrepayment())
+    byissuedandrepayment = []
+    for row in CursorByName(cursor):
+        byissuedandrepayment.append(row)
+    byissuedandrepayment_df = pd.DataFrame(byissuedandrepayment)
+
+    def delim2(val):
+        if type(val) != str:
+            val = '{:,.0f}'.format(val).replace(',', ' ')
+        return val
+
+    new_row = byissuedandrepayment_df.loc[0] + byissuedandrepayment_df.loc[9]
+    new_row.name = 'КП'
+    byissuedandrepayment_df = byissuedandrepayment_df.append([new_row])
+    byissuedandrepayment_df = byissuedandrepayment_df.set_index('CODE')
+
+    byissuedandrepayment_df = byissuedandrepayment_df / 1000000
+
+    byissuedandrepayment_df = byissuedandrepayment_df.applymap(delim2)
+
+
+    byissuedandrepayment_df = byissuedandrepayment_df.rename(index = {
+         'J00P00': 'КП',
+        'J00': 'Юридические лица (всего)',
+        'J01': 'Долгосрочные ',
+        'J03': 'Краткосрочные',
+        'J10': 'из них в нац. валюте:',
+        'J11': 'Долгосрочные',
+        'J13': 'Краткосрочные',
+        'J20': 'из них в инвалюте (экв. в сумах):',
+        'J21': 'Долгосрочные',
+        'J23': 'Краткосрочные',
+        'P00': 'Физические лица (всего)',
+        'P01': 'Долгосрочные',
+        'P03': 'Краткосрочные'
+
+    })
+    byissuedandrepayment_df = byissuedandrepayment_df.reset_index()
+    byissuedandrepayment_df = byissuedandrepayment_df.apply(np.roll, shift=1)
 
     dfs = {'Топ NPL': npls_df, 'Топ ТК': toxic_df, 'Топ проср': overdues_df, 'В разбивке по срокам': byterm_df,
            'В разбивке по субъектам': bysubjects_df, 'В разбивке по сегментам': bysegments_df,
@@ -1708,6 +1766,17 @@ def export_all_docx(request):
     table4.cell(0, 0).paragraphs[0].paragraph_format.alignment = WD_TABLE_ALIGNMENT.CENTER
     table4.cell(0, 0).paragraphs[0].paragraph_format.space_before = Inches(0.07)
 
+    #byissuedandrepayment_df
+
+    byterm_df['ТК+NPL'] = byterm_df['ТК+NPL'].apply(lambda x: '{:,}'.format(int(x), " "))
+    byterm_df['ТК+NPL'] = byterm_df['ТК+NPL'].str.replace(',', ' ')
+    byterm_df['Резервы'] = byterm_df['Резервы'].apply(lambda x: '{:,}'.format(int(x), " "))
+    byterm_df['Резервы'] = byterm_df['Резервы'].str.replace(',', ' ')
+
+    for i in range(byissuedandrepayment_df.shape[0]):
+        for j in range(byissuedandrepayment_df.shape[-1]):
+            table4.cell(i + 1, j).text = str(byissuedandrepayment_df.values[i, j])
+
     for row in table4.rows:
         for cell in row.cells:
             cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
@@ -1827,10 +1896,10 @@ def export_all_docx(request):
     byterm_df['NPL'] = byterm_df['NPL'].str.replace(',', ' ')
     byterm_df['Токсичные кредиты'] = byterm_df['Токсичные кредиты'].apply(lambda x: '{:,}'.format(int(x), " "))
     byterm_df['Токсичные кредиты'] = byterm_df['Токсичные кредиты'].str.replace(',', ' ')
-    byterm_df['ТК+NPL'] = byterm_df['ТК+NPL'].apply(lambda x: '{:,}'.format(int(x), " "))
-    byterm_df['ТК+NPL'] = byterm_df['ТК+NPL'].str.replace(',', ' ')
-    byterm_df['Резервы'] = byterm_df['Резервы'].apply(lambda x: '{:,}'.format(int(x), " "))
-    byterm_df['Резервы'] = byterm_df['Резервы'].str.replace(',', ' ')
+    # byterm_df['ТК+NPL'] = byterm_df['ТК+NPL'].apply(lambda x: '{:,}'.format(int(x), " "))
+    # byterm_df['ТК+NPL'] = byterm_df['ТК+NPL'].str.replace(',', ' ')
+    # byterm_df['Резервы'] = byterm_df['Резервы'].apply(lambda x: '{:,}'.format(int(x), " "))
+    # byterm_df['Резервы'] = byterm_df['Резервы'].str.replace(',', ' ')
 
     for i in range(byterm_df.shape[0]):
         for j in range(byterm_df.shape[-1]):
