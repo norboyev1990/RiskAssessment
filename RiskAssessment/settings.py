@@ -116,13 +116,18 @@ DATABASESX = {
 DATABASES = {
     'default': {
     'ENGINE':   'django.db.backends.oracle',
-    'NAME':     'localhost/pdb12c',
-    'USER':     'root',
-    'PASSWORD': '123456',
+    'NAME':     'localhost/orclpdb',
+    'USER':     'ibs',
+    'PASSWORD': 'asaka',
   }
 }
 
-
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '127.0.0.1:21212',
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
