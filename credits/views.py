@@ -49,7 +49,7 @@ def index(request):
 def general_info(request):
     title = _("General info")
     month = pd.to_datetime(request.current_month)
-    last_month = pd.to_datetime(request.current_month) - pd.DateOffset(months=1)
+    last_month = pd.to_datetime(request.current_month) - pd.DateOffset(months=3)
 
     query = 'SELECT ROWNUM as id, T.* FROM TABLE(GET_INDS(%s)) T'
     model = InfoCredits.objects.raw(query, [month])
@@ -427,7 +427,7 @@ class CursorByName():
 def export_all_tables(request):
     sMonth = pd.to_datetime(request.session['data_month'])
     report = ListReports.objects.get(REPORT_MONTH=sMonth.month, REPORT_YEAR=sMonth.year)
-    last_month = pd.to_datetime(request.session['data_month']) - pd.DateOffset(months=1)
+    last_month = pd.to_datetime(request.session['data_month']) - pd.DateOffset(months=3)
     cursor = connection.cursor()
     # Indicators
     cursor.execute('''SELECT ROWNUM as id, T.* FROM TABLE(GET_INDS(%s)) T''', [sMonth])
@@ -900,7 +900,7 @@ def shade_cells(cells, shade):
 
 def export_all_docx(request):
     sMonth = pd.to_datetime(request.session['data_month'])
-    last_month = pd.to_datetime(request.session['data_month']) - pd.DateOffset(months=1)
+    last_month = pd.to_datetime(request.session['data_month']) - pd.DateOffset(months=3)
     report = ListReports.objects.get(REPORT_MONTH=sMonth.month, REPORT_YEAR=sMonth.year)
     cursor = connection.cursor()
 
