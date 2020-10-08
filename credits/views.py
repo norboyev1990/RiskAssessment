@@ -5,7 +5,6 @@ from django.contrib.auth.decorators import login_required
 from django.db import connection
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
-from django.views.decorators.cache import cache_page
 from django_tables2.export.export import TableExport
 from credits.models import ListReports, NplClients, ToxicCredits, OverdueCredits, InfoCredits, ByTerms, ByRetailProduct, \
     ByPercentage, ByPercentageUL, ByAverageUl, ByAverageFl, ByOverdueBranch
@@ -28,10 +27,10 @@ from docx.enum.table import WD_ALIGN_VERTICAL
 from docx.enum.style import WD_STYLE_TYPE
 import os
 from RiskAssessment.settings import BASE_DIR
+import numpy as np
 
 
 @login_required
-@cache_page(60 * 60 * 24)
 def index(request):
     month = pd.to_datetime(request.current_month)
     report = ListReports.objects.get(REPORT_MONTH=month.month, REPORT_YEAR=month.year)
@@ -47,7 +46,6 @@ def index(request):
 
 
 @login_required
-@cache_page(60 * 60 * 24)
 def general_info(request):
     title = _("General info")
     month = pd.to_datetime(request.current_month)
@@ -74,7 +72,6 @@ def general_info(request):
 
 
 @login_required
-@cache_page(60 * 60 * 24)
 def npl_clients(request):
     title = _("NPL clients")
     month = pd.to_datetime(request.current_month)
@@ -102,7 +99,6 @@ def npl_clients(request):
 
 
 @login_required
-@cache_page(60 * 60 * 24)
 def toxic_loans(request):
     title = _("Toxic loans")
     month = pd.to_datetime(request.current_month)
@@ -130,7 +126,6 @@ def toxic_loans(request):
 
 
 @login_required
-@cache_page(60 * 60 * 24)
 def overdue_loans(request):
     title = _("Overdue loans")
     month = pd.to_datetime(request.current_month)
@@ -158,7 +153,6 @@ def overdue_loans(request):
 
 
 @login_required
-@cache_page(60 * 60 * 24)
 def by_terms(request):
     title = _("Disaggregated by terms")
     month = pd.to_datetime(request.current_month)
@@ -185,7 +179,6 @@ def by_terms(request):
 
 
 @login_required
-@cache_page(60 * 60 * 24)
 def by_subjects(request):
     title = _("Disaggregated by subjects")
     month = pd.to_datetime(request.current_month)
@@ -212,7 +205,6 @@ def by_subjects(request):
 
 
 @login_required
-@cache_page(60 * 60 * 24)
 def by_segments(request):
     title = _("Disaggregated by segments")
     month = pd.to_datetime(request.current_month)
@@ -238,7 +230,6 @@ def by_segments(request):
 
 
 @login_required
-@cache_page(60 * 60 * 24)
 def by_currency(request):
     title = _("Disaggregated by currency")
     month = pd.to_datetime(request.current_month)
@@ -264,7 +255,6 @@ def by_currency(request):
 
 
 @login_required
-@cache_page(60 * 60 * 24)
 def by_branches(request):
     title = _("Disaggregated by branches")
     month = pd.to_datetime(request.current_month)
@@ -291,7 +281,6 @@ def by_branches(request):
 
 
 @login_required
-@cache_page(60 * 60 * 24)
 def by_products(request):
     title = _("Disaggregated by products retail business")
     month = pd.to_datetime(request.current_month)
@@ -317,7 +306,6 @@ def by_products(request):
 
 
 @login_required
-@cache_page(60 * 60 * 24)
 def by_percents(request, sts):
     title = _("Disaggregated by percents rate ")
     month = pd.to_datetime(request.current_month)
@@ -362,7 +350,6 @@ def by_percents(request, sts):
 
 
 @login_required
-@cache_page(60 * 60 * 24)
 def by_averages(request, sts):
     title = _("Disaggregated by average percents rate ")
     month = pd.to_datetime(request.current_month)
@@ -398,7 +385,6 @@ def by_averages(request, sts):
 
 
 @login_required
-@cache_page(60 * 60 * 24)
 def issued_overdues(request):
     title = _("Issued overdues by branches") #Выданные | просрочка
     month = pd.to_datetime(request.current_month)
@@ -438,7 +424,6 @@ class CursorByName():
         return {description[0]: row[col] for col, description in enumerate(self._cursor.description)}
 
 @login_required
-@cache_page(60 * 60 * 24)
 def export_all_tables(request):
     sMonth = pd.to_datetime(request.session['data_month'])
     report = ListReports.objects.get(REPORT_MONTH=sMonth.month, REPORT_YEAR=sMonth.year)
@@ -561,11 +546,11 @@ def export_all_tables(request):
     for row in CursorByName(cursor):
         bysegments.append(row)
     bysegments_df = pd.DataFrame(bysegments)
+
     bysegments_df.drop(['ID'], axis=1, inplace=True)
-    bysegments_df = bysegments_df.pivot_table(index='TITLE',
-                                              margins=True,
-                                              margins_name='total',  # defaults to 'All'
-                                              aggfunc=sum)
+
+    bysegments_df = bysegments_df.pivot_table(index='TITLE', margins=True, margins_name='total', aggfunc=sum)
+
     bysegments_df = bysegments_df.reset_index()
 
     bysegments_df.rename(
@@ -575,11 +560,16 @@ def export_all_tables(request):
                  "WEIGHTNTK": "Удельный вес к своему портфелю"}, inplace=True)
 
     bysegments_df = bysegments_df.set_index('Сегмент')
+
     bysegments_df = bysegments_df.rename({'total': 'Итого:'}, axis='index')
+
     bysegments_df = bysegments_df.reset_index()
+
     bysegments_df['Доля %'] = (bysegments_df['Доля %'].astype('float64') * 100).round(1).astype('str') + '%'
+    bysegments_df['Покрытие ТК+NPL резервами'][3] = bysegments_df['Резервы'][3] / bysegments_df['ТК+NPL'][3]
     bysegments_df['Покрытие ТК+NPL резервами'] = (bysegments_df['Покрытие ТК+NPL резервами'].astype(
         'float64') * 100).round(1).astype('str') + '%'
+
     bysegments_df['Удельный вес к своему портфелю'] = (bysegments_df['Удельный вес к своему портфелю'].astype(
         'float64') * 100).round(1).astype('str') + '%'
     bysegments_df = bysegments_df[["Сегмент", 'Кредитный портфель', 'Доля %', 'NPL', 'Токсичные кредиты', 'ТК+NPL',
@@ -857,6 +847,14 @@ def export_all_tables(request):
     byaverageweight_fl_df.drop(['total'], axis=1, inplace=True)
     byaverageweight_fl_df["UZS"] = byaverageweight_fl_df["UZS"].astype('float64').round(2)
 
+    cursor.execute(Query.orcl_byissuedandrepayment())
+    byissuedandrepayment = []
+    for row in CursorByName(cursor):
+        byissuedandrepayment.append(row)
+    byissuedandrepayment_df = pd.DataFrame(byissuedandrepayment)
+    #byissuedandrepayment_df = byissuedandrepayment_df.drop(['ID'], axis=1)
+
+
     dfs = {'Показатели': ind_df, 'Топ NPL': npls_df, 'Топ ТК': toxic_df, 'Топ проср': overdues_df,
            'В разбивке по срокам': byterm_df,
            'В разбивке по субъектам': bysubjects_df, 'В разбивке по сегментам': bysegments_df,
@@ -865,7 +863,9 @@ def export_all_tables(request):
            'В разбивке по проц став инстр.в': bypercentage_foreign_df,
            'В национальной валюте по ЮЛ': bypercentage_national_ul_df,
            'В иностранной валюте по ЮЛ': bypercentage_foreign_ul_df, 'В разбивке по срднвзв прц ЮЛ': by_sred_vzv,
-           'В разбивке по срднвзв прц ФЛ': byaverageweight_fl_df}
+           'В разбивке по срднвзв прц ФЛ': byaverageweight_fl_df,
+           'В разбивке по выд.' : byissuedandrepayment_df
+           }
 
     with BytesIO() as b:
         # Use the StringIO object as the filehandle.
@@ -889,7 +889,7 @@ def export_all_tables(request):
         response["Content-Disposition"] = 'attachment; filename="all_reports.xlsx"'
         return response
 
-@cache_page(60 * 15)
+
 def shade_cells(cells, shade):
     for cell in cells:
         tcPr = cell._tc.get_or_add_tcPr()
@@ -897,7 +897,7 @@ def shade_cells(cells, shade):
         tcVAlign.set(qn("w:fill"), shade)
         tcPr.append(tcVAlign)
 
-@cache_page(60 * 60 * 24)
+
 def export_all_docx(request):
     sMonth = pd.to_datetime(request.session['data_month'])
     last_month = pd.to_datetime(request.session['data_month']) - pd.DateOffset(months=1)
@@ -912,6 +912,18 @@ def export_all_docx(request):
 
     ind_df = pd.DataFrame(ind_data)
     ind_df.drop(['ID'], axis=1, inplace=True)
+
+    ind_df = ind_df.fillna('')
+
+    def delim(val):
+        if type(val) != str and 0 < val < 700:
+            val = str(val) + '%'
+        elif type(val) != str:
+            val = '{:,.0f}'.format(val).replace(',', ' ')
+        return val
+
+    ind_df = ind_df.applymap(delim)
+
     ind_df.rename(columns={"TITLE": "Показатели", "OLD_VALUE": last_month.strftime('%d.%m.%Y'),
                            "NEW_VALUE": sMonth.strftime('%d.%m.%Y'),
                            "UPDATES": "Изменение", "PERCENT": "Изменение, %"},
@@ -925,10 +937,28 @@ def export_all_docx(request):
 
     npls_df = pd.DataFrame(npl_data)
     npls_df = npls_df.head(10)
-    npls_df.drop(['ID', 'NUMERAL'], axis=1, inplace=True)
-    npls_df.rename(columns={"NAME": "Наименование клиента", "BRANCH": "Филиал", "BALANS": "Остаток кредита"},
-                   inplace=True)
-    npls_df = npls_df[["Наименование клиента", "Филиал", "Остаток кредита"]]
+    #npls_df.drop(['ID', 'NUMERAL'], axis=1, inplace=True)
+    #npls_df.rename(columns={"NAME": "Наименование клиента", "BRANCH": "Филиал", "BALANS": "Остаток кредита"},
+                   #inplace=True)
+    npls_df = npls_df[["NAME", "BRANCH", "BALANS"]]
+
+    npls_df['BALANS'] = npls_df['BALANS'].astype('float64')
+    npls_df = npls_df.append(npls_df.sum(numeric_only=True), ignore_index=True)
+    npls_df['BALANS'] = npls_df['BALANS'] / 1000000
+    npls_df = npls_df.fillna('')
+
+    def delim2(val):
+        if type(val) != str:
+            val = '{:,.0f}'.format(val).replace(',', ' ')
+        return val
+
+    npls_df['BALANS'] = npls_df['BALANS'].apply(delim2)
+    npls_df.insert(0, 'number', range(1, 1 + len(npls_df)))
+    npls_df = npls_df.fillna('')
+    npls_df.iloc[10, 1] = 'Итого:'
+    npls_df.iloc[10, 0] = ''
+
+
 
     # TOXIC
     cursor.execute(Query.orcl_toxics(), [report.id])
@@ -951,6 +981,14 @@ def export_all_docx(request):
     overdues_df.drop(['ID', 'NUMERAL'], axis=1, inplace=True)
     overdues_df.rename(columns={"NAME": "Наименование клиента", "BRANCH": "Филиал", "BALANS": "Остаток кредита"},
                        inplace=True)
+
+    overdues_df['Остаток кредита'] = overdues_df['Остаток кредита'].astype('float64')
+    overdues_df = overdues_df.append(overdues_df.sum(numeric_only=True), ignore_index=True)
+    overdues_df.insert(0, 'number', range(1, 1 + len(overdues_df)))
+    overdues_df = overdues_df.fillna('')
+    overdues_df.iloc[10, 1] = 'Итого:'
+    overdues_df.iloc[10, 0] = ''
+    overdues_df['Остаток кредита'] = overdues_df['Остаток кредита'].apply(delim2)
 
     # BYTERM
     cursor.execute(Query.orcl_byterms(), [report.id])
@@ -975,6 +1013,7 @@ def export_all_docx(request):
     byterm_df = byterm_df.rename({'total': 'Итого:'}, axis='index')
     byterm_df = byterm_df.reset_index()
     byterm_df['Доля %'] = (byterm_df['Доля %'].astype('float64') * 100).round(1).astype('str') + '%'
+    byterm_df['Покрытие ТК+NPL резервами'] = byterm_df['Резервы'] / byterm_df['ТК+NPL']
     byterm_df['Покрытие ТК+NPL резервами'] = (byterm_df['Покрытие ТК+NPL резервами'].astype('float64') * 100).round(
         1).astype('str') + '%'
     byterm_df['Удельный вес к своему портфелю'] = (byterm_df['Удельный вес к своему портфелю'].astype(
@@ -1007,6 +1046,7 @@ def export_all_docx(request):
     bysubjects_df = bysubjects_df.rename({'total': 'Итого:'}, axis='index')
     bysubjects_df = bysubjects_df.reset_index()
     bysubjects_df['Доля %'] = (bysubjects_df['Доля %'].astype('float64') * 100).round(1).astype('str') + '%'
+    bysubjects_df['Покрытие ТК+NPL резервами'] = bysubjects_df['Резервы'] / bysubjects_df['ТК+NPL']
     bysubjects_df['Покрытие ТК+NPL резервами'] = (bysubjects_df['Покрытие ТК+NPL резервами'].astype(
         'float64') * 100).round(1).astype('str') + '%'
     bysubjects_df['Удельный вес к своему портфелю'] = (bysubjects_df['Удельный вес к своему портфелю'].astype(
@@ -1039,6 +1079,7 @@ def export_all_docx(request):
     bysegments_df = bysegments_df.rename({'total': 'Итого:'}, axis='index')
     bysegments_df = bysegments_df.reset_index()
     bysegments_df['Доля %'] = (bysegments_df['Доля %'].astype('float64') * 100).round(1).astype('str') + '%'
+    bysegments_df['Покрытие ТК+NPL резервами'][3] = bysegments_df['Резервы'][3] / bysegments_df['ТК+NPL'][3]
     bysegments_df['Покрытие ТК+NPL резервами'] = (bysegments_df['Покрытие ТК+NPL резервами'].astype(
         'float64') * 100).round(1).astype('str') + '%'
     bysegments_df['Удельный вес к своему портфелю'] = (bysegments_df['Удельный вес к своему портфелю'].astype(
@@ -1071,6 +1112,7 @@ def export_all_docx(request):
     bycurrency_df = bycurrency_df.rename({'total': 'Итого:'}, axis='index')
     bycurrency_df = bycurrency_df.reset_index()
     bycurrency_df['Доля %'] = (bycurrency_df['Доля %'].astype('float64') * 100).round(1).astype('str') + '%'
+    bycurrency_df['Покрытие ТК+NPL резервами'] = bycurrency_df['Резервы'] / bycurrency_df['ТК+NPL']
     bycurrency_df['Покрытие ТК+NPL резервами'] = (bycurrency_df['Покрытие ТК+NPL резервами'].astype(
         'float64') * 100).round(1).astype('str') + '%'
     bycurrency_df['Удельный вес к своему портфелю'] = (bycurrency_df['Удельный вес к своему портфелю'].astype(
@@ -1102,6 +1144,7 @@ def export_all_docx(request):
     bybranches_df = bybranches_df.rename({'total': 'Итого:'}, axis='index')
     bybranches_df = bybranches_df.reset_index()
     bybranches_df['Доля %'] = (bybranches_df['Доля %'].astype('float64') * 100).round(1).astype('str') + '%'
+    bybranches_df['Покрытие ТК+NPL резервами'] = bybranches_df['Резервы'] / bybranches_df['ТК+NPL']
     bybranches_df['Покрытие ТК+NPL резервами'] = (bybranches_df['Покрытие ТК+NPL резервами'].astype(
         'float64') * 100).round(1).astype('str') + '%'
     bybranches_df['Удельный вес к своему портфелю'] = (bybranches_df['Удельный вес к своему портфелю'].astype(
@@ -1320,6 +1363,46 @@ def export_all_docx(request):
     byaverageweight_fl_df.drop(['total'], axis=1, inplace=True)
     byaverageweight_fl_df["UZS"] = byaverageweight_fl_df["UZS"].astype('float64').round(2)
 
+    cursor.execute(Query.orcl_byissuedandrepayment())
+    byissuedandrepayment = []
+    for row in CursorByName(cursor):
+        byissuedandrepayment.append(row)
+    byissuedandrepayment_df = pd.DataFrame(byissuedandrepayment)
+
+    def delim2(val):
+        if type(val) != str:
+            val = '{:,.0f}'.format(val).replace(',', ' ')
+        return val
+
+    new_row = byissuedandrepayment_df.loc[0] + byissuedandrepayment_df.loc[9]
+    new_row.name = 'КП'
+    byissuedandrepayment_df = byissuedandrepayment_df.append([new_row])
+    byissuedandrepayment_df = byissuedandrepayment_df.set_index('CODE')
+
+    byissuedandrepayment_df = byissuedandrepayment_df / 1000000
+
+    byissuedandrepayment_df = byissuedandrepayment_df.applymap(delim2)
+
+
+    byissuedandrepayment_df = byissuedandrepayment_df.rename(index = {
+         'J00P00': 'КП',
+        'J00': 'Юридические лица (всего)',
+        'J01': 'Долгосрочные ',
+        'J03': 'Краткосрочные',
+        'J10': 'из них в нац. валюте:',
+        'J11': 'Долгосрочные',
+        'J13': 'Краткосрочные',
+        'J20': 'из них в инвалюте (экв. в сумах):',
+        'J21': 'Долгосрочные',
+        'J23': 'Краткосрочные',
+        'P00': 'Физические лица (всего)',
+        'P01': 'Долгосрочные',
+        'P03': 'Краткосрочные'
+
+    })
+    byissuedandrepayment_df = byissuedandrepayment_df.reset_index()
+    byissuedandrepayment_df = byissuedandrepayment_df.apply(np.roll, shift=1)
+
     dfs = {'Топ NPL': npls_df, 'Топ ТК': toxic_df, 'Топ проср': overdues_df, 'В разбивке по срокам': byterm_df,
            'В разбивке по субъектам': bysubjects_df, 'В разбивке по сегментам': bysegments_df,
            'В разбивке по валютам': bycurrency_df,
@@ -1427,6 +1510,10 @@ def export_all_docx(request):
     table.cell(0, 3).text = "Изменение"
     table.cell(0, 4).text = "Изменение, %"
 
+
+
+
+
     ind_df = ind_df.fillna('')
     for i in range(ind_df.shape[0]):
         for j in range(ind_df.shape[-1]):
@@ -1512,16 +1599,6 @@ def export_all_docx(request):
     table2.cell(0, 3).text = "Остаток кредита"
     table2.cell(11, 1).text = "Итого:"
 
-    npls_df['Остаток кредита'] = npls_df['Остаток кредита'].astype('float64')
-    npls_df = npls_df.append(npls_df.sum(numeric_only=True), ignore_index=True)
-    npls_df.insert(0, 'number', range(1, 1 + len(npls_df)))
-    npls_df = npls_df.fillna('')
-    npls_df.iloc[10, 1] = 'Итого:'
-    npls_df.iloc[10, 0] = ''
-
-    # npls_df['Остаток кредита'] = npls_df['Остаток кредита'].apply(lambda x: '{:,}'.format(int(float(x))," "))
-    # npls_df['Остаток кредита'] = npls_df['Остаток кредита'].str.replace(',', ' ')
-
     for i in range(npls_df.shape[0]):
         for j in range(npls_df.shape[-1]):
             table2.cell(i + 1, j).text = str(npls_df.values[i, j])
@@ -1534,6 +1611,8 @@ def export_all_docx(request):
 
     for cell in table2.columns[3].cells:
         cell.paragraphs[0].paragraph_format.alignment = WD_TABLE_ALIGNMENT.CENTER
+
+
 
     for cell in table2.rows[0].cells:
         cell.paragraphs[0].paragraph_format.alignment = WD_TABLE_ALIGNMENT.CENTER
@@ -1592,18 +1671,7 @@ def export_all_docx(request):
     table3.cell(0, 3).text = "Остаток р/с 16377"
     table3.cell(11, 1).text = "Итого:"
 
-    for i, cell in list(enumerate(table2.columns[0].cells))[1:11]:
-        cell.text = "%s" % (i)
 
-    table2.cell(11, 1).text = "Итого:"
-
-    overdues_df = overdues_df.append(overdues_df.sum(numeric_only=True), ignore_index=True)
-    overdues_df.insert(0, 'number', range(1, 1 + len(overdues_df)))
-    overdues_df = overdues_df.fillna('')
-    overdues_df.iloc[10, 1] = 'Итого:'
-    overdues_df.iloc[10, 0] = ''
-    # overdues_df['Остаток кредита'] = overdues_df['Остаток кредита'].apply(lambda x: '{:,}'.format(int(x)," "))
-    # overdues_df['Остаток кредита'] = overdues_df['Остаток кредита'].str.replace(',', ' ')
 
     for i in range(overdues_df.shape[0]):
         for j in range(overdues_df.shape[-1]):
@@ -1697,6 +1765,17 @@ def export_all_docx(request):
 
     table4.cell(0, 0).paragraphs[0].paragraph_format.alignment = WD_TABLE_ALIGNMENT.CENTER
     table4.cell(0, 0).paragraphs[0].paragraph_format.space_before = Inches(0.07)
+
+    #byissuedandrepayment_df
+
+    byterm_df['ТК+NPL'] = byterm_df['ТК+NPL'].apply(lambda x: '{:,}'.format(int(x), " "))
+    byterm_df['ТК+NPL'] = byterm_df['ТК+NPL'].str.replace(',', ' ')
+    byterm_df['Резервы'] = byterm_df['Резервы'].apply(lambda x: '{:,}'.format(int(x), " "))
+    byterm_df['Резервы'] = byterm_df['Резервы'].str.replace(',', ' ')
+
+    for i in range(byissuedandrepayment_df.shape[0]):
+        for j in range(byissuedandrepayment_df.shape[-1]):
+            table4.cell(i + 1, j).text = str(byissuedandrepayment_df.values[i, j])
 
     for row in table4.rows:
         for cell in row.cells:
@@ -1817,10 +1896,10 @@ def export_all_docx(request):
     byterm_df['NPL'] = byterm_df['NPL'].str.replace(',', ' ')
     byterm_df['Токсичные кредиты'] = byterm_df['Токсичные кредиты'].apply(lambda x: '{:,}'.format(int(x), " "))
     byterm_df['Токсичные кредиты'] = byterm_df['Токсичные кредиты'].str.replace(',', ' ')
-    byterm_df['ТК+NPL'] = byterm_df['ТК+NPL'].apply(lambda x: '{:,}'.format(int(x), " "))
-    byterm_df['ТК+NPL'] = byterm_df['ТК+NPL'].str.replace(',', ' ')
-    byterm_df['Резервы'] = byterm_df['Резервы'].apply(lambda x: '{:,}'.format(int(x), " "))
-    byterm_df['Резервы'] = byterm_df['Резервы'].str.replace(',', ' ')
+    # byterm_df['ТК+NPL'] = byterm_df['ТК+NPL'].apply(lambda x: '{:,}'.format(int(x), " "))
+    # byterm_df['ТК+NPL'] = byterm_df['ТК+NPL'].str.replace(',', ' ')
+    # byterm_df['Резервы'] = byterm_df['Резервы'].apply(lambda x: '{:,}'.format(int(x), " "))
+    # byterm_df['Резервы'] = byterm_df['Резервы'].str.replace(',', ' ')
 
     for i in range(byterm_df.shape[0]):
         for j in range(byterm_df.shape[-1]):
