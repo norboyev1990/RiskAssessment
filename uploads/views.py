@@ -189,6 +189,8 @@ def overdues(request):
             Report = ListReports.objects.filter(REPORT_MONTH=DataMonth, REPORT_YEAR=DataYear).first()
 
             if Report is not None:
+                OverduePercents.objects.filter(REPORT=Report).delete()
+
                 data = pd.read_excel(request.FILES['DataFile'])
                 data = data.fillna('')
 
