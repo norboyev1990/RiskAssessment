@@ -22,8 +22,10 @@ class Query:
             HAVING UNIQUE_CODE not in (
                                 select CREDITS_EXCLUDED_NPLS.UNIQUE_CODE 
                                 from CREDITS_EXCLUDED_NPLS 
-                                where END_DATE is null) and
-                (MAX(C.DAYS) > 90 
+                                where EXCLUDE_DATE <= MAX(C.START_MONTH) 
+                                and (END_DATE is null or END_DATE > MAX(C.START_MONTH))
+            ) and (
+                MAX(C.DAYS) > 90 
                 OR MAX(C.ARREAR_DAYS) > 90
                 OR SUM(C.OSTATOK_SUDEB) IS NOT NULL
                 OR SUM(C.OSTATOK_VNEB_PROSR) IS NOT NULL)
@@ -48,7 +50,9 @@ class Query:
             HAVING UNIQUE_CODE not in (
                                 select CREDITS_EXCLUDED_NPLS.UNIQUE_CODE 
                                 from CREDITS_EXCLUDED_NPLS 
-                                where END_DATE is null) and
+                                where EXCLUDE_DATE <= MAX(C.START_MONTH) 
+                                and (END_DATE is null or END_DATE > MAX(C.START_MONTH))
+                ) and
                 (NVL(MAX(C.DAYS),0) <= 90 
                 AND NVL(MAX(C.ARREAR_DAYS),0) <= 90
                 AND SUM(OSTATOK_SUDEB) IS NULL
@@ -81,7 +85,7 @@ class Query:
         return '''
             WITH 
                 REPORT_DATA_TABLE (GROUPS, UNIQUE_CODE, DAYS, ARREAR_DAYS, OSTATOK_SUDEB, 
-                OSTATOK_VNEB_PROSR, OSTATOK_PERESM, OSTATOK_REZERV, VSEGO_ZADOLJENNOST) AS 
+                OSTATOK_VNEB_PROSR, OSTATOK_PERESM, OSTATOK_REZERV, VSEGO_ZADOLJENNOST, START_MONTH) AS 
                 (
                     SELECT
                         CASE WHEN TERM > 10 THEN 1
@@ -96,7 +100,8 @@ class Query:
                         OSTATOK_VNEB_PROSR,
                         OSTATOK_PERESM,
                         OSTATOK_REZERV,
-                        VSEGO_ZADOLJENNOST
+                        VSEGO_ZADOLJENNOST,
+                        START_MONTH
                     FROM CREDITS
                     WHERE REPORT_ID = %s
                 ),
@@ -124,7 +129,8 @@ class Query:
                     WHERE N.UNIQUE_CODE not in (
                                 select CREDITS_EXCLUDED_NPLS.UNIQUE_CODE 
                                 from CREDITS_EXCLUDED_NPLS 
-                                where END_DATE is null)
+                                where EXCLUDE_DATE <= D.START_MONTH 
+                                and (END_DATE is null or END_DATE > D.START_MONTH))
                     GROUP BY GROUPS
                 ),
 
@@ -146,7 +152,8 @@ class Query:
                     WHERE T.UNIQUE_CODE not in (
                                 select CREDITS_EXCLUDED_NPLS.UNIQUE_CODE 
                                 from CREDITS_EXCLUDED_NPLS 
-                                where END_DATE is null)
+                                where EXCLUDE_DATE <= D.START_MONTH 
+                                and (END_DATE is null or END_DATE > D.START_MONTH))
                     GROUP BY GROUPS
                 )
                 SELECT 
@@ -172,7 +179,7 @@ class Query:
         return '''
             WITH 
                 REPORT_DATA_TABLE (GROUPS, UNIQUE_CODE, DAYS, ARREAR_DAYS, OSTATOK_SUDEB, 
-                OSTATOK_VNEB_PROSR, OSTATOK_PERESM, OSTATOK_REZERV, VSEGO_ZADOLJENNOST) AS 
+                OSTATOK_VNEB_PROSR, OSTATOK_PERESM, OSTATOK_REZERV, VSEGO_ZADOLJENNOST, START_MONTH) AS 
                 (
                     SELECT
                         CASE SUBJECT 
@@ -186,7 +193,8 @@ class Query:
                         OSTATOK_VNEB_PROSR,
                         OSTATOK_PERESM,
                         OSTATOK_REZERV,
-                        VSEGO_ZADOLJENNOST
+                        VSEGO_ZADOLJENNOST,
+                        START_MONTH
                     FROM CREDITS
                     WHERE REPORT_ID = %s
                 ),
@@ -214,7 +222,8 @@ class Query:
                     WHERE N.UNIQUE_CODE not in (
                                 select CREDITS_EXCLUDED_NPLS.UNIQUE_CODE 
                                 from CREDITS_EXCLUDED_NPLS 
-                                where END_DATE is null)
+                                where EXCLUDE_DATE <= D.START_MONTH 
+                                and (END_DATE is null or END_DATE > D.START_MONTH))
                     GROUP BY GROUPS
                 ),
 
@@ -236,7 +245,8 @@ class Query:
                     WHERE T.UNIQUE_CODE not in (
                                 select CREDITS_EXCLUDED_NPLS.UNIQUE_CODE 
                                 from CREDITS_EXCLUDED_NPLS 
-                                where END_DATE is null)
+                                where EXCLUDE_DATE <= D.START_MONTH 
+                                and (END_DATE is null or END_DATE > D.START_MONTH))
                     GROUP BY GROUPS
                 )
 
@@ -263,7 +273,7 @@ class Query:
         return '''
             WITH 
                 REPORT_DATA_TABLE (GROUPS, UNIQUE_CODE, DAYS, ARREAR_DAYS, OSTATOK_SUDEB, 
-                OSTATOK_VNEB_PROSR, OSTATOK_PERESM, OSTATOK_REZERV, VSEGO_ZADOLJENNOST) AS 
+                OSTATOK_VNEB_PROSR, OSTATOK_PERESM, OSTATOK_REZERV, VSEGO_ZADOLJENNOST, START_MONTH) AS 
                 (
                     SELECT
                         SEGMENT AS GROUPS, 
@@ -274,7 +284,8 @@ class Query:
                         OSTATOK_VNEB_PROSR,
                         OSTATOK_PERESM,
                         OSTATOK_REZERV,
-                        VSEGO_ZADOLJENNOST
+                        VSEGO_ZADOLJENNOST,
+                        START_MONTH
                     FROM CREDITS
                     WHERE REPORT_ID = %s
                 ),
@@ -302,7 +313,8 @@ class Query:
                     WHERE N.UNIQUE_CODE not in (
                                 select CREDITS_EXCLUDED_NPLS.UNIQUE_CODE 
                                 from CREDITS_EXCLUDED_NPLS 
-                                where END_DATE is null)
+                                where EXCLUDE_DATE <= D.START_MONTH 
+                                and (END_DATE is null or END_DATE > D.START_MONTH))
                     GROUP BY GROUPS
                 ),
 
@@ -324,7 +336,8 @@ class Query:
                     WHERE T.UNIQUE_CODE not in (
                                 select CREDITS_EXCLUDED_NPLS.UNIQUE_CODE 
                                 from CREDITS_EXCLUDED_NPLS 
-                                where END_DATE is null)
+                                where EXCLUDE_DATE <= D.START_MONTH 
+                                and (END_DATE is null or END_DATE > D.START_MONTH))
                     GROUP BY GROUPS
                 )
 
@@ -351,7 +364,7 @@ class Query:
         return '''
             WITH 
                 REPORT_DATA_TABLE (GROUPS, UNIQUE_CODE, DAYS, ARREAR_DAYS, OSTATOK_SUDEB, 
-                OSTATOK_VNEB_PROSR, OSTATOK_PERESM, OSTATOK_REZERV, VSEGO_ZADOLJENNOST) AS 
+                OSTATOK_VNEB_PROSR, OSTATOK_PERESM, OSTATOK_REZERV, VSEGO_ZADOLJENNOST, START_MONTH) AS 
                 (
                     SELECT
                         CURRENCY AS GROUPS, 
@@ -362,7 +375,8 @@ class Query:
                         OSTATOK_VNEB_PROSR,
                         OSTATOK_PERESM,
                         OSTATOK_REZERV,
-                        VSEGO_ZADOLJENNOST
+                        VSEGO_ZADOLJENNOST,
+                        START_MONTH
                     FROM CREDITS
                     WHERE REPORT_ID = %s
                 ),
@@ -390,7 +404,8 @@ class Query:
                     WHERE N.UNIQUE_CODE not in (
                                 select CREDITS_EXCLUDED_NPLS.UNIQUE_CODE 
                                 from CREDITS_EXCLUDED_NPLS 
-                                where END_DATE is null)
+                                where EXCLUDE_DATE <= D.START_MONTH 
+                                and (END_DATE is null or END_DATE > D.START_MONTH))
                     GROUP BY GROUPS
                 ),
 
@@ -412,7 +427,8 @@ class Query:
                     WHERE T.UNIQUE_CODE not in (
                                 select CREDITS_EXCLUDED_NPLS.UNIQUE_CODE 
                                 from CREDITS_EXCLUDED_NPLS 
-                                where END_DATE is null)
+                                where EXCLUDE_DATE <= D.START_MONTH 
+                                and (END_DATE is null or END_DATE > D.START_MONTH))
                     GROUP BY GROUPS
                 )
 
@@ -439,7 +455,7 @@ class Query:
         return '''
             WITH 
                 REPORT_DATA_TABLE (GROUPS, UNIQUE_CODE, DAYS, ARREAR_DAYS, OSTATOK_SUDEB, 
-                OSTATOK_VNEB_PROSR, OSTATOK_PERESM, OSTATOK_REZERV, VSEGO_ZADOLJENNOST) AS 
+                OSTATOK_VNEB_PROSR, OSTATOK_PERESM, OSTATOK_REZERV, VSEGO_ZADOLJENNOST, START_MONTH) AS 
                 (
                     SELECT
                         BRANCH_SORT AS GROUPS, 
@@ -450,7 +466,8 @@ class Query:
                         OSTATOK_VNEB_PROSR,
                         OSTATOK_PERESM,
                         OSTATOK_REZERV,
-                        VSEGO_ZADOLJENNOST
+                        VSEGO_ZADOLJENNOST,
+                        START_MONTH
                     FROM CREDITS
                     WHERE REPORT_ID = %s
                 ),
@@ -478,7 +495,8 @@ class Query:
                     WHERE N.UNIQUE_CODE not in (
                                 select CREDITS_EXCLUDED_NPLS.UNIQUE_CODE 
                                 from CREDITS_EXCLUDED_NPLS 
-                                where END_DATE is null)
+                                where EXCLUDE_DATE <= D.START_MONTH 
+                                and (END_DATE is null or END_DATE > D.START_MONTH))
                     GROUP BY GROUPS
                 ),
 
@@ -500,7 +518,8 @@ class Query:
                     WHERE T.UNIQUE_CODE not in (
                                 select CREDITS_EXCLUDED_NPLS.UNIQUE_CODE 
                                 from CREDITS_EXCLUDED_NPLS 
-                                where END_DATE is null)
+                                where EXCLUDE_DATE <= D.START_MONTH 
+                                and (END_DATE is null or END_DATE > D.START_MONTH))
                     GROUP BY GROUPS
                 )
 
@@ -528,7 +547,7 @@ class Query:
         return '''
                 WITH 
                     REPORT_DATA_TABLE (GROUPS, UNIQUE_CODE, DAYS, ARREAR_DAYS, OSTATOK_SUDEB, OSTATOK_VNEB_PROSR, 
-                        OSTATOK_PERESM, OSTATOK_REZERV, VSEGO_ZADOLJENNOST, OSTATOK_PROSR, OSTATOK_NACH_PROSR_PRCNT) AS 
+                        OSTATOK_PERESM, OSTATOK_REZERV, VSEGO_ZADOLJENNOST, OSTATOK_PROSR, OSTATOK_NACH_PROSR_PRCNT, START_MONTH) AS 
                     (
                         SELECT
                             VID_KREDITOVANIYA, 
@@ -541,7 +560,8 @@ class Query:
                             OSTATOK_REZERV,
                             VSEGO_ZADOLJENNOST,
                             OSTATOK_PROSR,
-                            OSTATOK_NACH_PROSR_PRCNT
+                            OSTATOK_NACH_PROSR_PRCNT,
+                            START_MONTH
                         FROM CREDITS
                         WHERE REPORT_ID = %s 
                           AND VID_KREDITOVANIYA IN (
@@ -576,7 +596,8 @@ class Query:
                         WHERE N.UNIQUE_CODE not in (
                                 select CREDITS_EXCLUDED_NPLS.UNIQUE_CODE 
                                 from CREDITS_EXCLUDED_NPLS 
-                                where END_DATE is null)
+                                where EXCLUDE_DATE <= D.START_MONTH 
+                                and (END_DATE is null or END_DATE > D.START_MONTH))
                         GROUP BY GROUPS
                     )
 
@@ -1013,7 +1034,8 @@ class Query:
                 HAVING UNIQUE_CODE not in (
                                 select CREDITS_EXCLUDED_NPLS.UNIQUE_CODE 
                                 from CREDITS_EXCLUDED_NPLS 
-                                where END_DATE is null) 
+                                where EXCLUDE_DATE <= MAX(R.START_MONTH) 
+                                and (END_DATE is null or END_DATE > MAX(R.START_MONTH))) 
                     AND (NVL(MAX(DAYS),0) > 90 
                     AND NVL(MAX(ARREAR_DAYS),0) > 90 
                     OR SUM(OSTATOK_SUDEB) IS NOT NULL 
@@ -1044,7 +1066,8 @@ class Query:
                 HAVING UNIQUE_CODE not in (
                                 select CREDITS_EXCLUDED_NPLS.UNIQUE_CODE 
                                 from CREDITS_EXCLUDED_NPLS 
-                                where END_DATE is null) AND
+                                where EXCLUDE_DATE <= MAX(R.START_MONTH) 
+                                and (END_DATE is null or END_DATE > MAX(R.START_MONTH)))  AND
                     NVL(MAX(DAYS),0) <= 90 
                    AND NVL(MAX(ARREAR_DAYS),0) <= 90 
                     AND SUM(OSTATOK_SUDEB) IS  NULL 
