@@ -45,3 +45,11 @@ a:-webkit-any-link:focus{
     overflow: hidden;
     padding: 8px !important;
 }
+
+.person-info{
+    font-size: 14px;
+}
+
+.person-info th{
+    font-weight: 500;
+}

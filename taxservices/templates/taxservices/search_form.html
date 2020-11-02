@@ -1,0 +1,93 @@
+{% extends 'taxservices/base_taxservices.html' %}
+
+{% block title %}
+    Налог - сервис
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-xxl-12">
+            <div class="card">
+                <div class="card-header d-flex pb-0">
+                    <h4 class="card-title text-left">Поиск налогоплательщик</h4>
+                </div>
+
+                <div class="card-body">
+
+                    {% if form.errors %}
+                        <div class="alert alert-danger alert-dismissible" role="alert">
+                            <div class="alert-icon">
+                                <i class="far fa-fw fa-bell"></i>
+                            </div>
+                            <div class="alert-message">
+                                {% for field in form %}
+                                    {% if field.errors %}
+                                        {% for error in field.errors %}
+                                            {{ error|escape }}<br>
+                                        {% endfor %}
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                    {% endif %}
+
+                    {% if messages %}
+                        <ul class="messages">
+                            {% for message in messages %}
+                                <li class="{{ message.tags }}">
+                                    {{ message|safe }}
+                                    <a href="#" class="close">✖</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+
+                    <div class="custom-controls-stacked mb-3" style="flex: auto">
+                        <label class="custom-control custom-radio d-inline" href="#tab-1" role="tab">
+                            <input name="person-type-radio" type="radio" class="custom-control-input" checked="" value="J">
+                            <span class="custom-control-label">Юридическое лицо</span>
+                        </label>
+                        <label class="custom-control custom-radio d-inline ml-4">
+                            <input name="person-type-radio" type="radio" class="custom-control-input" value="P">
+                            <span class="custom-control-label">Физическое лицо</span>
+                        </label>
+                    </div>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="tab-1" role="tabpanel">
+                            <form class="form-inline" method="post" action="{% url 'tax_services_url' %}">
+                                {% csrf_token %}
+                                <input type="text" name="tin" class="form-control" style="width: 20%" placeholder="ИНН" required>
+                                <input type="hidden" name="type" value="J">
+                                <button type="submit" class="btn btn-primary ml-2">
+                                    <i class="align-middle mr-1 fas fa-fw fa-search"></i>
+                                </button>
+                            </form>
+                        </div>
+                        <div class="tab-pane " id="tab-2" role="tabpanel">
+
+                            <form class="form-inline" method="post" action="{% url 'tax_services_url' %}">
+                                {% csrf_token %}
+                                <input type="text" name="tin" class="form-control"  style="width: 10%" placeholder="ИНН" required>
+                                <input type="text" name="pinfl" class="form-control ml-2" style="width: 10%" placeholder="ПИНФЛ" >
+                                <div class="input-group ml-2">
+                                    <input type="text" name="series" class="form-control" maxlength="2" placeholder="Серия паспорт" >
+                                    <input type="text" name="number" class="form-control" maxlength="7" placeholder="Номер паспорт" >
+                                </div>
+                                <input type="hidden" name="type" value="P">
+                                <button type="submit" class="btn btn-primary ml-2">
+                                    <i class="align-middle mr-1 fas fa-fw fa-search"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

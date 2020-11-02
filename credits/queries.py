@@ -65,17 +65,17 @@ class Query:
     def orcl_overdues():
         return '''
             SELECT 
-                ROW_NUMBER() Over (Order By NVL(SUM(C.OSTATOK_PROSR), 0) DESC) Numeral,
+                ROW_NUMBER() Over (Order By NVL(SUM(C.OSTATOK_NACH_PROSR_PRCNT), 0) DESC) Numeral,
                 UNIQUE_CODE as id,
                 MAX(NAME_CLIENT) as Name, 
                 MAX(B.NAME) as Branch,
-                NVL(SUM(OSTATOK_PROSR)/1000000,0) as Balans
+                NVL(SUM(OSTATOK_NACH_PROSR_PRCNT)/1000000,0) as Balans
             FROM CREDITS C
             LEFT JOIN CREDITS_LISTREPORTS L ON L.ID = C.REPORT_ID
             LEFT JOIN CREDITS_BRANCH B ON B.CODE = C.MFO
             WHERE REPORT_ID = %s
             GROUP BY UNIQUE_CODE
-            HAVING SUM(OSTATOK_PROSR) <> 0
+            HAVING SUM(OSTATOK_NACH_PROSR_PRCNT) <> 0
             ORDER BY BALANS DESC
             --FETCH FIRST 200 ROWS ONLY    
                 '''
@@ -540,6 +540,191 @@ class Query:
                 LEFT JOIN CREDITS_BRANCH B ON B.SORT = P.GROUPS,
                 (SELECT SUM(BALANS) as Totals FROM PORTFOLIO_TABLE) X
                 ORDER BY P.GROUPS                       
+        '''
+
+    @staticmethod
+    def orcl_byindustry():
+        return '''
+            WITH
+                REPORT_DATA_TABLE (GROUPS, UNIQUE_CODE, DAYS, ARREAR_DAYS, OSTATOK_SUDEB,
+                OSTATOK_VNEB_PROSR, OSTATOK_PERESM, OSTATOK_REZERV, VSEGO_ZADOLJENNOST, START_MONTH) AS
+                (
+                    SELECT
+                        INDUSTRY AS GROUPS,
+                        CREDITS_BY_INDUSTRY.UNIQUE_CODE,
+                        DAYS,
+                        ARREAR_DAYS,
+                        OSTATOK_SUDEB,
+                        OSTATOK_VNEB_PROSR,
+                        OSTATOK_PERESM,
+                        OSTATOK_REZERV,
+                        VSEGO_ZADOLJENNOST,
+                        START_MONTH
+                    FROM CREDITS_BY_INDUSTRY
+                    WHERE REPORT_ID = %s
+                ),
+            
+                PORTFOLIO_TABLE (GROUPS, BALANS, RESERVE) AS (
+                    SELECT GROUPS, SUM(VSEGO_ZADOLJENNOST), SUM(OSTATOK_REZERV)
+                    FROM REPORT_DATA_TABLE
+                    GROUP BY GROUPS
+                ),
+            
+                NPL_UNIQUE_TABLE (UNIQUE_CODE) AS (
+                    SELECT UNIQUE_CODE
+                    FROM REPORT_DATA_TABLE R
+                    WHERE NVL(DAYS,0) > 90
+                        OR NVL(ARREAR_DAYS,0) > 90
+                        OR OSTATOK_SUDEB IS NOT NULL
+                        OR OSTATOK_VNEB_PROSR IS NOT NULL
+                    GROUP BY UNIQUE_CODE
+                ),
+            
+                NPL_TABLE (GROUPS, BALANS) AS(
+                    SELECT GROUPS, SUM(VSEGO_ZADOLJENNOST)
+                    FROM NPL_UNIQUE_TABLE N
+                    LEFT JOIN REPORT_DATA_TABLE D ON D.UNIQUE_CODE = N.UNIQUE_CODE
+                    WHERE N.UNIQUE_CODE not in (
+                                select CREDITS_EXCLUDED_NPLS.UNIQUE_CODE
+                                from CREDITS_EXCLUDED_NPLS
+                                where EXCLUDE_DATE <= D.START_MONTH
+                                and (END_DATE is null or END_DATE > D.START_MONTH))
+                    GROUP BY GROUPS
+                ),
+            
+                TOX_UNIQUE_TABLE (UNIQUE_CODE) AS (
+                    SELECT UNIQUE_CODE
+                    FROM REPORT_DATA_TABLE R
+                    GROUP BY UNIQUE_CODE
+                    HAVING SUM(OSTATOK_PERESM) IS NOT NULL
+                        AND NVL(MAX(DAYS),0) <= 90
+                        AND NVL(MAX(ARREAR_DAYS),0) <= 90
+                        AND SUM(OSTATOK_SUDEB) IS NULL
+                        AND SUM(OSTATOK_VNEB_PROSR) IS NULL
+                ),
+            
+                TOX_TABLE (GROUPS, BALANS) AS(
+                    SELECT GROUPS, SUM(VSEGO_ZADOLJENNOST)
+                    FROM TOX_UNIQUE_TABLE T
+                    LEFT JOIN REPORT_DATA_TABLE D ON D.UNIQUE_CODE = T.UNIQUE_CODE
+                    WHERE T.UNIQUE_CODE not in (
+                                select CREDITS_EXCLUDED_NPLS.UNIQUE_CODE
+                                from CREDITS_EXCLUDED_NPLS
+                                where EXCLUDE_DATE <= D.START_MONTH
+                                and (END_DATE is null or END_DATE > D.START_MONTH))
+                    GROUP BY GROUPS
+                )
+            
+            SELECT
+                P.GROUPS as id,
+                I.NAME as Title,
+                P.BALANS/1000000 as PorBalans,
+                P.BALANS/X.TOTALS as PorPercent,
+                NVL(N.BALANS,0)/1000000 as NplBalans,
+                NVL(T.BALANS,0)/1000000 as ToxBalans,
+                (NVL(N.BALANS,0)+NVL(T.BALANS,0))/1000000 as AmountNTK,
+                (NVL(N.BALANS,0)+NVL(T.BALANS,0))/P.BALANS as WeightNTK,
+                NVL(P.RESERVE,0)/1000000 as ResBalans,
+                NVL(P.RESERVE,0)/(NVL(N.BALANS,0)+NVL(T.BALANS,0)) as ResCovers
+            FROM PORTFOLIO_TABLE P
+            LEFT JOIN NPL_TABLE N  ON N.GROUPS = P.GROUPS
+            LEFT JOIN TOX_TABLE T  ON T.GROUPS = P.GROUPS
+            LEFT JOIN REFERENCES_INDUSTRY I ON I.ID = P.GROUPS,
+            (SELECT SUM(BALANS) as Totals FROM PORTFOLIO_TABLE) X
+            ORDER BY ID
+        '''
+
+
+    @staticmethod
+    def orcl_bysphere():
+        return '''
+            WITH
+                REPORT_DATA_TABLE (GROUPS, UNIQUE_CODE, DAYS, ARREAR_DAYS, OSTATOK_SUDEB,
+                OSTATOK_VNEB_PROSR, OSTATOK_PERESM, OSTATOK_REZERV, VSEGO_ZADOLJENNOST, START_MONTH) AS
+                (
+                    SELECT
+                        ECOSPHERE AS GROUPS,
+                        CREDITS_BY_INDUSTRY.UNIQUE_CODE,
+                        DAYS,
+                        ARREAR_DAYS,
+                        OSTATOK_SUDEB,
+                        OSTATOK_VNEB_PROSR,
+                        OSTATOK_PERESM,
+                        OSTATOK_REZERV,
+                        VSEGO_ZADOLJENNOST,
+                        START_MONTH
+                    FROM CREDITS_BY_INDUSTRY
+                    WHERE REPORT_ID = %s
+                ),
+            
+                PORTFOLIO_TABLE (GROUPS, BALANS, RESERVE) AS (
+                    SELECT GROUPS, SUM(VSEGO_ZADOLJENNOST), SUM(OSTATOK_REZERV)
+                    FROM REPORT_DATA_TABLE
+                    GROUP BY GROUPS
+                ),
+            
+                NPL_UNIQUE_TABLE (UNIQUE_CODE) AS (
+                    SELECT UNIQUE_CODE
+                    FROM REPORT_DATA_TABLE R
+                    WHERE NVL(DAYS,0) > 90
+                        OR NVL(ARREAR_DAYS,0) > 90
+                        OR OSTATOK_SUDEB IS NOT NULL
+                        OR OSTATOK_VNEB_PROSR IS NOT NULL
+                    GROUP BY UNIQUE_CODE
+                ),
+            
+                NPL_TABLE (GROUPS, BALANS) AS(
+                    SELECT GROUPS, SUM(VSEGO_ZADOLJENNOST)
+                    FROM NPL_UNIQUE_TABLE N
+                    LEFT JOIN REPORT_DATA_TABLE D ON D.UNIQUE_CODE = N.UNIQUE_CODE
+                    WHERE N.UNIQUE_CODE not in (
+                                select CREDITS_EXCLUDED_NPLS.UNIQUE_CODE
+                                from CREDITS_EXCLUDED_NPLS
+                                where EXCLUDE_DATE <= D.START_MONTH
+                                and (END_DATE is null or END_DATE > D.START_MONTH))
+                    GROUP BY GROUPS
+                ),
+            
+                TOX_UNIQUE_TABLE (UNIQUE_CODE) AS (
+                    SELECT UNIQUE_CODE
+                    FROM REPORT_DATA_TABLE R
+                    GROUP BY UNIQUE_CODE
+                    HAVING SUM(OSTATOK_PERESM) IS NOT NULL
+                        AND NVL(MAX(DAYS),0) <= 90
+                        AND NVL(MAX(ARREAR_DAYS),0) <= 90
+                        AND SUM(OSTATOK_SUDEB) IS NULL
+                        AND SUM(OSTATOK_VNEB_PROSR) IS NULL
+                ),
+            
+                TOX_TABLE (GROUPS, BALANS) AS(
+                    SELECT GROUPS, SUM(VSEGO_ZADOLJENNOST)
+                    FROM TOX_UNIQUE_TABLE T
+                    LEFT JOIN REPORT_DATA_TABLE D ON D.UNIQUE_CODE = T.UNIQUE_CODE
+                    WHERE T.UNIQUE_CODE not in (
+                                select CREDITS_EXCLUDED_NPLS.UNIQUE_CODE
+                                from CREDITS_EXCLUDED_NPLS
+                                where EXCLUDE_DATE <= D.START_MONTH
+                                and (END_DATE is null or END_DATE > D.START_MONTH))
+                    GROUP BY GROUPS
+                )
+            
+            SELECT
+                P.GROUPS as id,
+                E.NAME as Title,
+                P.BALANS/1000000 as PorBalans,
+                P.BALANS/X.TOTALS as PorPercent,
+                NVL(N.BALANS,0)/1000000 as NplBalans,
+                NVL(T.BALANS,0)/1000000 as ToxBalans,
+                (NVL(N.BALANS,0)+NVL(T.BALANS,0))/1000000 as AmountNTK,
+                (NVL(N.BALANS,0)+NVL(T.BALANS,0))/P.BALANS as WeightNTK,
+                NVL(P.RESERVE,0)/1000000 as ResBalans,
+                NVL(P.RESERVE,0)/NULLIF(NVL(N.BALANS,0)+NVL(T.BALANS,0), 0) as ResCovers
+            FROM PORTFOLIO_TABLE P
+            LEFT JOIN NPL_TABLE N  ON N.GROUPS = P.GROUPS
+            LEFT JOIN TOX_TABLE T  ON T.GROUPS = P.GROUPS
+            LEFT JOIN REFERENCES_ECOSPHERE E ON E.ID = P.GROUPS,
+            (SELECT SUM(BALANS) as Totals FROM PORTFOLIO_TABLE) X
+            ORDER BY PorBalans DESC 
         '''
 
     @staticmethod
@@ -1137,9 +1322,9 @@ class Query:
                        TO_CHAR(lr.START_MONTH, 'YYYY-MM-DD')    as SDATE,
                        SUM(VSEGO_ZADOLJENNOST)                  as TOTAL
                 from CREDITS cr left join CREDITS_LISTREPORTS lr on lr.ID = cr.REPORT_ID
-                where lr.START_MONTH in (DATE '2020-07-01', DATE '2020-04-01')
+                where lr.START_MONTH in (DATE '2020-07-01', DATE '2020-10-01')
                 group by lr.START_MONTH, CLIENT_TYPE, SUBSTR(SROK, 1, 1)
-            ) PIVOT (MAX(TOTAL) FOR SDATE IN ('2020-04-01', '2020-07-01'))
+            ) PIVOT (MAX(TOTAL) FOR SDATE IN ('2020-10-01', '2020-07-01'))
             
             UNION ALL
             SELECT * FROM (
@@ -1147,9 +1332,9 @@ class Query:
                        TO_CHAR(lr.START_MONTH, 'YYYY-MM-DD')    as SDATE,
                        SUM(VSEGO_ZADOLJENNOST)                  as TOTAL
                 from CREDITS cr left join CREDITS_LISTREPORTS lr on lr.ID = cr.REPORT_ID
-                where lr.START_MONTH in (DATE '2020-07-01', DATE '2020-04-01')
+                where lr.START_MONTH in (DATE '2020-07-01', DATE '2020-10-01')
                 group by lr.START_MONTH, CLIENT_TYPE
-            )  PIVOT (MAX(TOTAL) FOR SDATE IN ('2020-04-01', '2020-07-01'))
+            )  PIVOT (MAX(TOTAL) FOR SDATE IN ('2020-10-01', '2020-07-01'))
             
             UNION ALL
             SELECT * FROM (
@@ -1157,10 +1342,10 @@ class Query:
                        TO_CHAR(lr.START_MONTH, 'YYYY-MM-DD')         as SDATE,
                        SUM(VSEGO_ZADOLJENNOST)                       as TOTAL
                 from CREDITS cr left join CREDITS_LISTREPORTS lr on lr.ID = cr.REPORT_ID
-                where lr.START_MONTH in (DATE '2020-07-01', DATE '2020-04-01')
+                where lr.START_MONTH in (DATE '2020-07-01', DATE '2020-10-01')
                   and CLIENT_TYPE = 'J'
                 group by lr.START_MONTH, CLIENT_TYPE, SUBSTR(SROK, 1, 1), CURRENCY)
-                PIVOT (MAX(TOTAL) FOR SDATE IN ('2020-04-01', '2020-07-01'))
+                PIVOT (MAX(TOTAL) FOR SDATE IN ('2020-10-01', '2020-07-01'))
             
             UNION ALL
             SELECT * FROM (
@@ -1168,9 +1353,9 @@ class Query:
                        TO_CHAR(lr.START_MONTH, 'YYYY-MM-DD')         as SDATE,
                        SUM(VSEGO_ZADOLJENNOST)                       as TOTAL
                 from CREDITS cr left join CREDITS_LISTREPORTS lr on lr.ID = cr.REPORT_ID
-                where lr.START_MONTH in (DATE '2020-07-01', DATE '2020-04-01')
+                where lr.START_MONTH in (DATE '2020-07-01', DATE '2020-10-01')
                   and CLIENT_TYPE = 'J'
                 group by lr.START_MONTH, CLIENT_TYPE, CURRENCY)
-                PIVOT (MAX(TOTAL) FOR SDATE IN ('2020-04-01', '2020-07-01'))
+                PIVOT (MAX(TOTAL) FOR SDATE IN ('2020-10-01', '2020-07-01'))
             ORDER BY 1
         '''

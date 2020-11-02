@@ -1,0 +1,36 @@
+{% extends 'taxservices/base_taxservices.html' %}
+
+{% block content %}
+    {% include 'taxservices/includes/info.juridic.html' %}
+
+    <div class="row">
+
+        <div class="col-md-3 col-xl-3">
+            {% include 'taxservices/includes/menu.juridic.html' %}
+        </div>
+
+        <div class="col-md-9 col-xl-9">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">База налога на добавленную стоимость (НДС)</h5>
+                </div>
+                <div class="card-body">
+
+                    <table class="table mb-0">
+                        <tbody>
+                            <tr>
+                                <td><i class="fas fa-circle text-primary fa-fw"></i> Обороты по реализации товаров, работ, услуг</td>
+                                <td class="text-right">{{ object.nds|default:'—' }}</td>
+                            </tr>
+                            <tr>
+                                <td><i class="fas fa-circle text-warning fa-fw"></i> Чистая выручка от реализации товаров (работ, услуг)</td>
+                                <td class="text-right">{{ object.ndsupr|default:'—' }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% load humanize %}
+{% load i18n %}
+{% load render_table from django_tables2 %}
+    <div style="max-height: 400px;height: 800px;overflow-y: scroll;">
+    {% render_table table %}
+    </div>
+
+    <hr>
+    {% if action == 'balance' %}
+    <ul class="list-group mb-3">
+        <li class="list-group-item d-flex justify-content-between lh-condensed bg-light">
+            <h6 class="w-75">Отчетный период</h6>
+            <h6 class="text-muted">Начало</h6>
+            <h6 class="text-muted">Конец</h6>
+        </li>
+        <li class="list-group-item d-flex justify-content-between lh-condensed">
+            <span class="w-75">Коплаш коеффициенти</span>
+            <span class="text-muted">{{ bdata.covr_koef }}</span>
+            <span class="text-muted">{{ edata.covr_koef }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between lh-condensed">
+            <span class="w-75">Ликвидлик коеффициенти</span>
+            <span class="text-muted">{{ bdata.likv_koef }}</span>
+            <span class="text-muted">{{ edata.likv_koef }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between lh-condensed">
+            <span class="w-75">Автономия коеффициенти</span>
+            <span class="text-muted">{{ bdata.avto_koef }}</span>
+            <span class="text-muted">{{ edata.avto_koef }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between">
+            <span class="w-75">Уз айланма маблаглари мавжудлиги курсаткичи</span>
+            {% if bdata.indicator > 0 %}
+            <span class="text-success">{{ bdata.indicator }}<br>Положительный</span>
+            {% else %}
+            <span class="text-danger">{{ bdata.indicator }}<br>Отрицательный</span>
+            {% endif %}
+            {% if edata.indicator > 0 %}
+            <span class="text-success">{{ edata.indicator }}<br>Положительный</span>
+            {% else %}
+            <span class="text-danger">{{ edata.indicator }}<br>Отрицательный</span>
+            {% endif %}
+        </li>
+        <li class="list-group-item d-flex justify-content-between  bg-light">
+          <h6 class="w-75">Кредитга лаёкатлилик синфи</h6>
+          <strong>{{ bdata.classification }} класс</strong>
+          <strong>{{ edata.classification }} класс</strong>
+        </li>
+      </ul>
+    {% endif %}

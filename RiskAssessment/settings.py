@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'issuances.apps.IssuancesConfig',
     'analytics.apps.AnalyticsConfig',
     'uploads.apps.UploadsConfig',
+    'taxservices.apps.TaxservicesConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -50,7 +51,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_tables2',
     'crispy_forms',
-    'rest_framework',
+    'rest_framework'
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
@@ -96,6 +97,9 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'libraries':{
+                'user_tags': 'templatetags.user_tags',
+            }
         },
     },
 ]
@@ -121,6 +125,11 @@ DATABASES = {
     'PASSWORD': 'asaka',
   }
 }
+
+TAX_BASE_URL = 'https://ws.soliqservis.uz/gnk/data/'
+TAX_USERNAME = 'asakabank'
+TAX_PASSWORD = 'TP!tN4Axgd'
+
 
 CACHES = {
     'default': {

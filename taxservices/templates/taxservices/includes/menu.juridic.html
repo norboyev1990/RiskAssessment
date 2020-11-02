@@ -1,0 +1,20 @@
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">Все сервисы</h5>
+    </div>
+
+    <div class="list-group list-group-flush" style="font-size: 14px;">
+        <a class="list-group-item list-group-item-action {% if request.path == person.get_taxdebts_url %} active {% endif %}"
+           href="{{ person.get_taxdebts_url }}">Налоговая задолженность</a>
+        <a class="list-group-item list-group-item-action {% if request.path == person.get_employee_url %} active {% endif %}"
+           href="{{ person.get_employee_url }}">Количество работников</a>
+        <a class="list-group-item list-group-item-action {% if request.path == person.get_balances_url %} active {% endif %}"
+           href="{{ person.get_balances_url }}">Бухгалтерский баланс (форма-№1)</a>
+        <a class="list-group-item list-group-item-action {% if request.path == person.get_finances_url %} active {% endif %}"
+           href="{{ person.get_finances_url }}">Финансовая отчетность (форма-№2)</a>
+        <a class="list-group-item list-group-item-action {% if request.path == person.get_report_enp_url %} active {% endif %}"
+           href="{{ person.get_report_enp_url }}">Отчет по подоходному налогу (отчет ЕНП)</a>
+        <a class="list-group-item list-group-item-action {% if request.path == person.get_base_nds_url %} active {% endif %}"
+           href="{{ person.get_base_nds_url }}">База налога на добавленную стоимость (НДС)</a>
+    </div>
+</div>

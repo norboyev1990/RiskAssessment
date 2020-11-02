@@ -1,0 +1,36 @@
+{% extends 'taxservices/base_taxservices.html' %}
+
+{% block content %}
+
+    {% include 'taxservices/includes/info.physic.html' %}
+
+    <div class="row">
+
+        <div class="col-md-3 col-xl-3">
+            {% include 'taxservices/includes/menu.physic.html' %}
+        </div>
+
+        <div class="col-md-9 col-xl-9">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Информация</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning alert-outline alert-dismissible" role="alert">
+                        <div class="alert-icon">
+                            <i class="far fa-fw fa-bell"></i>
+                        </div>
+                        <div class="alert-message">
+                            <strong>Выберите сервис </strong> для просмотра данных!
+                        </div>
+
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

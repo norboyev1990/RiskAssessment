@@ -19,6 +19,8 @@ from . import views
 
 urlpatterns = [
     path('', views.index, name = "home"),
+    path('page_404/', views.page_404, name = "page_404"),
+    path('page_403/', views.page_403, name = "page_403"),
     path('admin/', admin.site.urls),
     re_path(r'^', include('accounts.urls')),
     path('credits/', include('credits.urls')),
@@ -26,6 +28,7 @@ urlpatterns = [
     path('repayment/', include('repayment.urls')),
     path('issuances/', include('issuances.urls')),
     path('references/', include('references.urls')),
+    path('taxservices/', include('taxservices.urls')),
     path('analytics/', include('analytics.urls')),
     path('uploads/', include('uploads.urls')),
     path('api/', include('api.urls')),

@@ -9,7 +9,11 @@
     <meta name="description" content="Risk Assessement System">
     <meta name="author" content="RD-ASAKA">
 
-    <title>Risk Assessement System</title>
+    <title>
+        {% block title %}
+            Risk Assessement System
+        {% endblock %}
+    </title>
 {#    <script type="text/javascript" src="{% static 'spark/js/settings.js' %}"></script>#}
     <link rel="stylesheet" href="{% static 'spark/css/modern.css' %}" type="text/css">
     <link rel="stylesheet" href="{% static 'spark/css/custom.css' %}" type="text/css">

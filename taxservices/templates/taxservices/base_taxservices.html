@@ -1,0 +1,43 @@
+{% extends 'layout.html' %}
+{% load i18n %}
+
+{% block pagecontent %}
+<div class="container-fluid">
+    <div class="header">
+        <h1 class="header-title">
+            {% block title %}
+                Налог-сервис
+            {% endblock %}
+        </h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">{% trans 'Home' %}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Налог-сервис</li>
+            </ol>
+        </nav>
+    </div>
+
+
+    {% block content %}
+        There is no any content for you
+    {% endblock %}
+
+</div>
+{% endblock %}
+
+{% block scriptcontent %}
+    <script>
+        $('[name=person-type-radio]').on('change', function () {
+            if (this.value === 'J') {
+                $('#tab-1').addClass('active')
+                $('#tab-2').removeClass('active')
+            }else{
+                $('#tab-1').removeClass('active')
+                $('#tab-2').addClass('active')
+            }
+        })
+    </script>
+
+    {% block script %}{% endblock %}
+
+{% endblock %}

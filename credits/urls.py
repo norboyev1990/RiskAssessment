@@ -12,10 +12,13 @@ urlpatterns = [
     path('by_segments', views.by_segments, name='by_segments'),
     path('by_currency', views.by_currency, name='by_currency'),
     path('by_branches', views.by_branches, name='by_branches'),
+    path('by_industry', views.by_industry, name='by_industry'),
+    path('by_sphere', views.by_sphere, name='by_sphere'),
     path('by_products', views.by_products, name='by_products'),
     path('by_percents/<str:sts>/', views.by_percents, name='by_percents'),
     path('by_averages/<str:sts>/', views.by_averages, name='by_averages'),
     path('issued_overdues/', views.issued_overdues, name='issued_overdues'),
     path('export_doklad_excel/', views.export_all_tables, name='export_doklad_word'),
     path('export_doklad_word/', views.export_all_docx, name='export_doklad_excel'),
+    path('test', views.user_check)
 ]

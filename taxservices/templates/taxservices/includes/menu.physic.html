@@ -1,0 +1,22 @@
+
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">Все сервисы</h5>
+    </div>
+
+    <div class="list-group list-group-flush" role="tablist" style="font-size: 14px;">
+        <a class="list-group-item list-group-item-action {% if request.path == person.get_salaries_url %} active {% endif %}"
+           href="{{ person.get_salaries_url }}">Сведения о заработной плате</a>
+        <a class="list-group-item list-group-item-action {% if request.path == person.get_taxdebts_url %} active {% endif %}"
+           href="{{ person.get_taxdebts_url }}">Налоговая задолженность</a>
+        <a class="list-group-item list-group-item-action {% if request.path == person.get_founders_url %} active {% endif %}"
+           href="{{ person.get_founders_url }}">Юридическое лицо, в котором физическое лицо является учредителем</a>
+        <a class="list-group-item list-group-item-action {% if request.path == person.get_dividend_url %} active {% endif %}"
+           href="{{ person.get_dividend_url }}">Сведения о полученных дивидендах</a>
+        <a class="list-group-item list-group-item-action {% if request.path == person.get_objects_url %} active {% endif %}"
+           href="{{ person.get_objects_url }}">Сведения об имуществе физического лица</a>
+        <a class="list-group-item list-group-item-action {% if request.path == person.get_leaseds_url %} active {% endif %}"
+           href="{{ person.get_leaseds_url }}">Сведения о сданной в аренду имущества</a>
+    </div>
+</div>

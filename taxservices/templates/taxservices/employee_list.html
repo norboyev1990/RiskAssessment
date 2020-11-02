@@ -1,0 +1,26 @@
+{% extends 'taxservices/base_taxservices.html' %}
+{% load django_tables2 %}
+
+{% block content %}
+
+    {% include 'taxservices/includes/info.juridic.html' %}
+
+    <div class="row">
+
+        <div class="col-md-3 col-xl-3">
+            {% include 'taxservices/includes/menu.juridic.html' %}
+        </div>
+
+        <div class="col-md-9 col-xl-9">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Количество работников</h5>
+                </div>
+                <div class="card-body">
+                    {% render_table table %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

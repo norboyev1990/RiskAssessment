@@ -1,16 +1,14 @@
 from io import BytesIO
 
 import pandas as pd
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db import connection
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render
+from django.utils.decorators import method_decorator
 from django_tables2.export.export import TableExport
-from credits.models import ListReports, NplClients, ToxicCredits, OverdueCredits, InfoCredits, ByTerms, ByRetailProduct, \
-    ByPercentage, ByPercentageUL, ByAverageUl, ByAverageFl, ByOverdueBranch
-from credits.tables import NplClientsTable, Query, ToxicCreditsTable, OverdueCreditsTable, InfoCreditsTable, \
-    ByTermsTable, ByRetailProductTable, ByPercentageTable, ByPercentageULTable, ByAverageULTable, ByAverageFLTable, \
-    ByOverdueBranchTable, ProductProcessTable
+from credits.models import *
+from credits.tables import *
 from .apps import CreditsConfig
 from django.utils.translation import gettext as _
 
@@ -29,8 +27,14 @@ import os
 from RiskAssessment.settings import BASE_DIR
 import numpy as np
 
+from .decorators import group_required, teacher_required
 
-@login_required
+
+@group_required('Manager RD')
+def user_check(request):
+    pass
+
+@group_required('Manager RD')
 def index(request):
     month = pd.to_datetime(request.current_month)
     report = ListReports.objects.get(REPORT_MONTH=month.month, REPORT_YEAR=month.year)
@@ -45,7 +49,7 @@ def index(request):
     return render(request, 'credits/index.html', context)
 
 
-@login_required
+@group_required('Manager RD')
 def general_info(request):
     title = _("General info")
     month = pd.to_datetime(request.current_month)
@@ -71,7 +75,7 @@ def general_info(request):
     return render(request, 'credits/view.html', context)
 
 
-@login_required
+@group_required('Manager RD')
 def npl_clients(request):
     title = _("NPL clients")
     month = pd.to_datetime(request.current_month)
@@ -278,6 +282,59 @@ def by_branches(request):
     }
 
     return render(request, 'credits/view.html', context)
+
+
+@login_required
+def by_industry(request):
+    title = _("В разбивке по отраслям")
+    month = pd.to_datetime(request.current_month)
+    report = ListReports.objects.get(REPORT_MONTH=month.month, REPORT_YEAR=month.year)
+
+    query = Query.orcl_byindustry()
+    model = ByTerms.objects.raw(query, [report.id])
+    table = ByTermsTable(model, c1_name='Отрасль')
+    table.paginate(page=request.GET.get("page", 1), per_page=10)
+
+    export_format = request.GET.get("_export", None)
+    if TableExport.is_valid_format(export_format):
+        exporter = TableExport(export_format, table, dataset_kwargs={"title": title})
+        return exporter.response("report_by_industries.{}".format(export_format))
+
+    context = {
+        "page_title": title,
+        "data_table": table,
+        "data_month": month.strftime('%Y-%m'),
+        "menu_block": CreditsConfig.name
+    }
+
+    return render(request, 'credits/view.html', context)
+
+
+@login_required
+def by_sphere(request):
+    title = _("В разбивке по сферам")
+    month = pd.to_datetime(request.current_month)
+    report = ListReports.objects.get(REPORT_MONTH=month.month, REPORT_YEAR=month.year)
+
+    query = Query.orcl_bysphere()
+    model = ByTerms.objects.raw(query, [report.id])
+    table = ByTermsTable(model, c1_name='Сфера')
+    table.paginate(page=request.GET.get("page", 1), per_page=10)
+
+    export_format = request.GET.get("_export", None)
+    if TableExport.is_valid_format(export_format):
+        exporter = TableExport(export_format, table, dataset_kwargs={"title": title})
+        return exporter.response("report_by_spheres.{}".format(export_format))
+
+    context = {
+        "page_title": title,
+        "data_table": table,
+        "data_month": month.strftime('%Y-%m'),
+        "menu_block": CreditsConfig.name
+    }
+
+    return render(request, 'credits/view.html', context)
+
 
 
 @login_required

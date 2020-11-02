@@ -1,0 +1,58 @@
+<div class="row">
+    <div class="col-xxl-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-actions float-right">
+
+                    <a href="{{ person.get_generate_xls_url }}" class="font-weight-bold mr-1">
+                        Сформировать в Excel
+                    </a>
+
+                </div>
+                <h5 class="card-title mb-0">Информации о юридическое лицо</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <table class="table table-sm person-info">
+                            <tbody>
+                                <tr>
+                                    <th>Наименование </th>
+                                    <td>{{ person.company_name }}</td>
+                                    <th>Вид деятельности </th>
+                                    <td>{{ person.get_activity }}</td>
+                                    <th>ИНН руководителя</th>
+                                    <td>{{ person.gd_tin }}</td>
+                                </tr>
+                                <tr>
+                                    <th>ИНН</th>
+                                    <td>{{ person.tin }}</td>
+                                    <th>Адрес</th>
+                                    <td>{{ person.adress }}</td>
+                                    <th>Ф.И.О. руководителя</th>
+                                    <td>{{ person.gd_name }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Статус предприятия</th>
+                                    <td>{{ person.get_status }}</td>
+                                    <th>Области</th>
+                                    <td>{{ person.get_province }}</td>
+                                    <th>ИНН бухгалтера</th>
+                                    <td>{{ person.gb_tin }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Форма собственности </th>
+                                    <td><i>Нет сведений</i></td>
+                                    <th>Район</th>
+                                    <td>{{ person.get_region }}</td>
+                                    <th>Ф.И.О. бухгалтера</th>
+                                    <td>{{ person.gb_name }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

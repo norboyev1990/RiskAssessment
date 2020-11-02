@@ -1,5 +1,6 @@
 {% load static %}
 {% load i18n %}
+{% load user_tags %}
 {% url 'home' as home_url %}
 {% url 'dashboard' as dashboard_url %}
 {% url 'general_info' as general_info_url %}
@@ -12,6 +13,8 @@
 {% url 'by_segments' as by_segments_url %}
 {% url 'by_currency' as by_currency_url %}
 {% url 'by_branches' as by_branches_url %}
+{% url 'by_industry' as by_industry_url %}
+{% url 'by_sphere' as by_sphere_url %}
 {% url 'by_products' as by_products_url %}
 {% url 'by_percents' 'national_all' as bp_national_all_url %}
 {% url 'by_percents' 'foreign_all' as bp_foreign_all_url %}
@@ -36,6 +39,8 @@
 {% url 'upload_repayment' as upload_repayment_url %}
 {% url 'upload_issuances' as upload_issuances_url %}
 {% url 'upload_overdues' as upload_overdues_url %}
+
+{% url 'tax_services_url' as tax_services_url %}
 
 <style>
     .sidebar.toggled {
@@ -67,106 +72,126 @@
 
 
             <li class="sidebar-header">{% trans 'Main' %}</li>
-            <li class="sidebar-item {% if request.path == dashboard_url %} active {%endif%}">
-                <a href="{{ dashboard_url }}" class="sidebar-link">
-                    <i class="align-middle mr-2 fas fa-fw fa-home"></i>
-                    <span class="align-middle">{% trans 'Home' %}</span>
-                </a>
-            </li>
-            <li class="sidebar-item {% if request.path == clients_list_url %} active {%endif%}">
-                <a href="{{ clients_list_url }}" class="sidebar-link">
-                    <i class="align-middle mr-2 fas fa-fw fa-user-tie"></i>
-                    <span class="align-middle">{% trans 'Clients' %}</span>
-                </a>
-            </li>
 
-            <li class="sidebar-item {% if menu_block == 'analytics' %} active {%endif%}">
-                <a href="#analytics" data-toggle="collapse" class="sidebar-link collapsed">
-                    <i class="align-middle mr-1 fas fa-fw fa-chart-pie"></i>
-                    <span class="align-middle">{% trans 'Аналитика' %}</span>
-                </a>
+            {% if request.user|has_group:"Manager RD"%}
+                <li class="sidebar-item {% if request.path == dashboard_url %} active {%endif%}">
+                    <a href="{{ dashboard_url }}" class="sidebar-link">
+                        <i class="align-middle mr-2 fas fa-fw fa-home"></i>
+                        <span class="align-middle">{% trans 'Home' %}</span>
+                    </a>
+                </li>
+                <li class="sidebar-item {% if request.path == clients_list_url %} active {%endif%}">
+                    <a href="{{ clients_list_url }}" class="sidebar-link">
+                        <i class="align-middle mr-2 fas fa-fw fa-user-tie"></i>
+                        <span class="align-middle">{% trans 'Clients' %}</span>
+                    </a>
+                </li>
+            {% endif %}
 
-                <ul id="analytics" class="sidebar-dropdown list-unstyled collapse " data-parent="#sidebar">
-                    <li class="sidebar-item {% if menu_group == 'bad_credits' %} active {%endif%}">
-                        <a class="sidebar-link" href="{{ general_analytics_url }}">{% trans 'Проблемных кредитов' %}</a></li>
-                    <li class="sidebar-item {% if menu_group == 'risk_appetita' %} active {%endif%}">
-                        <a class="sidebar-link" href="{{ risk_appetita_url }}">{% trans 'Расчет риск-аппетита' %}</a></li>
-                </ul>
-            </li>
+            {% if request.user|has_group:"Manager CD"%}
+                <li class="sidebar-item {% if request.path == tax_services_url %} active {%endif%}">
+                    <a href="{{ tax_services_url }}" class="sidebar-link">
+                        <i class="align-middle mr-2 fas fa-fw fa-user-tie"></i>
+                        <span class="align-middle">{% trans 'Налог-сервис' %}</span>
+                    </a>
+                </li>
+            {% endif %}
 
-            <li class="sidebar-header">{% trans 'Reports' %}</li>
-            <li class="sidebar-item {% if menu_block == 'credits' %} active {%endif%}">
-                <a href="#loan-portfolio" data-toggle="collapse" class="sidebar-link collapsed">
-                    <i class="align-middle mr-2 fas fa-fw fa-folder-open"></i>
-                    <span class="align-middle">{% trans 'Loan portfolio' %}</span>
-                </a>
+            {% if request.user|has_group:"Manager RD"%}
+                <li class="sidebar-item {% if menu_block == 'analytics' %} active {%endif%}">
+                    <a href="#analytics" data-toggle="collapse" class="sidebar-link collapsed">
+                        <i class="align-middle mr-1 fas fa-fw fa-chart-pie"></i>
+                        <span class="align-middle">{% trans 'Аналитика' %}</span>
+                    </a>
 
-                <ul id="loan-portfolio" class="sidebar-dropdown list-unstyled collapse " data-parent="#sidebar">
-                    <li class="sidebar-item {% if request.path == general_info_url %} active {%endif%}">
-                        <a class="sidebar-link" href="{{ general_info_url }}">{% trans 'General info' %}</a></li>
-                    <li class="sidebar-item {% if request.path == npl_clients_url %} active {%endif%}">
-                        <a class="sidebar-link" href="{{ npl_clients_url }}">{% trans 'NPL clients' %}</a></li>
-                    <li class="sidebar-item {% if request.path == toxic_loans_url %} active {%endif%}">
-                        <a class="sidebar-link" href="{{ toxic_loans_url }}">{% trans 'Toxic loans' %}</a></li>
-                    <li class="sidebar-item {% if request.path == overdue_loans_url %} active {%endif%}">
-                        <a class="sidebar-link" href="{{ overdue_loans_url }}">{% trans 'Overdue loans' %}</a></li>
-                    <li class="sidebar-item {% if request.path == by_terms_url %} active {%endif%}">
-                        <a class="sidebar-link" href="{{ by_terms_url }}">{% trans 'Disaggregated by terms' %}</a></li>
-                    <li class="sidebar-item {% if request.path == by_subjects_url %} active {%endif%}">
-                        <a class="sidebar-link" href="{{ by_subjects_url }}">{% trans 'Disaggregated by subjects' %}</a></li>
-                    <li class="sidebar-item {% if request.path == by_segments_url %} active {%endif%}">
-                        <a class="sidebar-link" href="{{ by_segments_url }}">{% trans 'Disaggregated by segments' %}</a></li>
-                    <li class="sidebar-item {% if request.path == by_currency_url %} active {%endif%}">
-                        <a class="sidebar-link" href="{{ by_currency_url }}">{% trans 'Disaggregated by currency' %}</a></li>
-                    <li class="sidebar-item {% if request.path == by_branches_url %} active {%endif%}">
-                        <a class="sidebar-link" href="{{ by_branches_url }}">{% trans 'Disaggregated by branches' %}</a></li>
-                    <li class="sidebar-item {% if request.path == by_products_url %} active {%endif%}">
-                        <a class="sidebar-link" href="{{ by_products_url }}">{% trans 'Disaggregated by products' %}</a></li>
-                    <li class="sidebar-item {% if menu_group == 'by_percents' %} active {%endif%}">
-                        <a class="sidebar-link" href="{{ bp_national_all_url }}">{% trans 'Disaggregated by percents' %}</a></li>
-                    <li class="sidebar-item {% if menu_group == 'by_averages' %} active {%endif%}">
-                        <a class="sidebar-link" href="{{ ba_juridical_url }}">{% trans 'Disaggregated by averages' %}</a></li>
-                    <li class="sidebar-item {% if request.path == issued_overdues_url %} active {%endif%}">
-                        <a class="sidebar-link" href="{{ issued_overdues_url }}">{% trans 'Issued overdues by branches' %}</a></li>
-                </ul>
-            </li>
+                    <ul id="analytics" class="sidebar-dropdown list-unstyled collapse " data-parent="#sidebar">
+                        <li class="sidebar-item {% if menu_group == 'bad_credits' %} active {%endif%}">
+                            <a class="sidebar-link" href="{{ general_analytics_url }}">{% trans 'Проблемных кредитов' %}</a></li>
+                        <li class="sidebar-item {% if menu_group == 'risk_appetita' %} active {%endif%}">
+                            <a class="sidebar-link" href="{{ risk_appetita_url }}">{% trans 'Расчет риск-аппетита' %}</a></li>
+                    </ul>
+                </li>
 
-            <li class="sidebar-item {% if menu_block == 'repayment' %} active {%endif%}">
-                <a href="#issue-and-repayment" data-toggle="collapse" class="sidebar-link collapsed">
-                    <i class="align-middle mr-2 fas fa-fw fa-folder-open"></i>
-                    <span class="align-middle">{% trans 'Выдача и погашения' %}</span>
-                </a>
+                <li class="sidebar-header">{% trans 'Reports' %}</li>
+                <li class="sidebar-item {% if menu_block == 'credits' %} active {%endif%}">
+                    <a href="#loan-portfolio" data-toggle="collapse" class="sidebar-link collapsed">
+                        <i class="align-middle mr-2 fas fa-fw fa-folder-open"></i>
+                        <span class="align-middle">{% trans 'Loan portfolio' %}</span>
+                    </a>
 
-                <ul id="issue-and-repayment" class="sidebar-dropdown list-unstyled collapse " data-parent="#sidebar">
-                    <li class="sidebar-item {% if request.path == repayments_top_url %} active {%endif%}">
-                        <a class="sidebar-link" href="{{ repayments_top_url }}">{% trans 'Погашения по топ 25 клиента' %}</a></li>
-                    <li class="sidebar-item {% if request.path == repayments_all_url %} active {%endif%}">
-                        <a class="sidebar-link" href="{{ repayments_all_url }}">{% trans 'Погашения по тип клиента' %}</a></li>
-                    <li class="sidebar-item {% if request.path == repayments_by_subjects_url %} active {%endif%}">
-                        <a class="sidebar-link" href="{{ repayments_by_subjects_url }}">{% trans 'Погашения по субъектам' %}</a></li>
-                    <li class="sidebar-item {% if request.path == repayments_by_currency_url %} active {%endif%}">
-                        <a class="sidebar-link" href="{{ repayments_by_currency_url }}">{% trans 'Погашения по валютам' %}</a></li>
-                </ul>
-            </li>
+                    <ul id="loan-portfolio" class="sidebar-dropdown list-unstyled collapse " data-parent="#sidebar">
+                        <li class="sidebar-item {% if request.path == general_info_url %} active {%endif%}">
+                            <a class="sidebar-link" href="{{ general_info_url }}">{% trans 'General info' %}</a></li>
+                        <li class="sidebar-item {% if request.path == npl_clients_url %} active {%endif%}">
+                            <a class="sidebar-link" href="{{ npl_clients_url }}">{% trans 'NPL clients' %}</a></li>
+                        <li class="sidebar-item {% if request.path == toxic_loans_url %} active {%endif%}">
+                            <a class="sidebar-link" href="{{ toxic_loans_url }}">{% trans 'Toxic loans' %}</a></li>
+                        <li class="sidebar-item {% if request.path == overdue_loans_url %} active {%endif%}">
+                            <a class="sidebar-link" href="{{ overdue_loans_url }}">{% trans 'Overdue loans' %}</a></li>
+                        <li class="sidebar-item {% if request.path == by_terms_url %} active {%endif%}">
+                            <a class="sidebar-link" href="{{ by_terms_url }}">{% trans 'Disaggregated by terms' %}</a></li>
+                        <li class="sidebar-item {% if request.path == by_subjects_url %} active {%endif%}">
+                            <a class="sidebar-link" href="{{ by_subjects_url }}">{% trans 'Disaggregated by subjects' %}</a></li>
+                        <li class="sidebar-item {% if request.path == by_segments_url %} active {%endif%}">
+                            <a class="sidebar-link" href="{{ by_segments_url }}">{% trans 'Disaggregated by segments' %}</a></li>
+                        <li class="sidebar-item {% if request.path == by_currency_url %} active {%endif%}">
+                            <a class="sidebar-link" href="{{ by_currency_url }}">{% trans 'Disaggregated by currency' %}</a></li>
+                        <li class="sidebar-item {% if request.path == by_branches_url %} active {%endif%}">
+                            <a class="sidebar-link" href="{{ by_branches_url }}">{% trans 'Disaggregated by branches' %}</a></li>
+                        <li class="sidebar-item {% if request.path == by_industry_url %} active {%endif%}">
+                            <a class="sidebar-link" href="{{ by_industry_url }}">{% trans 'В разбивке по отраслям' %}</a></li>
+                        <li class="sidebar-item {% if request.path == by_sphere_url %} active {%endif%}">
+                            <a class="sidebar-link" href="{{ by_sphere_url }}">{% trans 'В разбивке по сферам' %}</a></li>
+                        <li class="sidebar-item {% if request.path == by_products_url %} active {%endif%}">
+                            <a class="sidebar-link" href="{{ by_products_url }}">{% trans 'Disaggregated by products' %}</a></li>
+                        <li class="sidebar-item {% if menu_group == 'by_percents' %} active {%endif%}">
+                            <a class="sidebar-link" href="{{ bp_national_all_url }}">{% trans 'Disaggregated by percents' %}</a></li>
+                        <li class="sidebar-item {% if menu_group == 'by_averages' %} active {%endif%}">
+                            <a class="sidebar-link" href="{{ ba_juridical_url }}">{% trans 'Disaggregated by averages' %}</a></li>
+                        <li class="sidebar-item {% if request.path == issued_overdues_url %} active {%endif%}">
+                            <a class="sidebar-link" href="{{ issued_overdues_url }}">{% trans 'Issued overdues by branches' %}</a></li>
+                    </ul>
+                </li>
 
-            <li class="sidebar-header">{% trans 'Данные' %}</li>
-            <li class="sidebar-item {% if menu_block == 'uploads' %} active {%endif%}">
-                <a href="#upload-data" data-toggle="collapse" class="sidebar-link collapsed">
-                    <i class="align-middle mr-2 fas fa-fw fa-folder-open"></i>
-                    <span class="align-middle">{% trans 'Загрузка данных в базу' %}</span>
-                </a>
+                <li class="sidebar-item {% if menu_block == 'repayment' %} active {%endif%}">
+                    <a href="#issue-and-repayment" data-toggle="collapse" class="sidebar-link collapsed">
+                        <i class="align-middle mr-2 fas fa-fw fa-folder-open"></i>
+                        <span class="align-middle">{% trans 'Выдача и погашения' %}</span>
+                    </a>
 
-                <ul id="upload-data" class="sidebar-dropdown list-unstyled collapse " data-parent="#sidebar">
-                    <li class="sidebar-item {% if request.path == upload_credits_url %} active {%endif%}">
-                        <a class="sidebar-link" href="{{ upload_credits_url }}">{% trans 'Загрузка портфель' %}</a></li>
-                    <li class="sidebar-item {% if request.path == upload_repayment_url %} active {%endif%}">
-                        <a class="sidebar-link" href="{{ upload_repayment_url }}">{% trans 'Загрузка пред. платежи' %}</a></li>
-                    <li class="sidebar-item {% if request.path == upload_issuances_url %} active {%endif%}">
-                        <a class="sidebar-link" href="{{ upload_issuances_url }}">{% trans 'Загрузка выдачи' %}</a></li>
-                    <li class="sidebar-item {% if request.path == upload_overdues_url %} active {%endif%}">
-                        <a class="sidebar-link" href="{{ upload_overdues_url }}">{% trans 'Загрузка просрочки' %}</a></li>
-                </ul>
-            </li>
+                    <ul id="issue-and-repayment" class="sidebar-dropdown list-unstyled collapse " data-parent="#sidebar">
+                        <li class="sidebar-item {% if request.path == repayments_top_url %} active {%endif%}">
+                            <a class="sidebar-link" href="{{ repayments_top_url }}">{% trans 'Погашения по топ 25 клиента' %}</a></li>
+                        <li class="sidebar-item {% if request.path == repayments_all_url %} active {%endif%}">
+                            <a class="sidebar-link" href="{{ repayments_all_url }}">{% trans 'Погашения по тип клиента' %}</a></li>
+                        <li class="sidebar-item {% if request.path == repayments_by_subjects_url %} active {%endif%}">
+                            <a class="sidebar-link" href="{{ repayments_by_subjects_url }}">{% trans 'Погашения по субъектам' %}</a></li>
+                        <li class="sidebar-item {% if request.path == repayments_by_currency_url %} active {%endif%}">
+                            <a class="sidebar-link" href="{{ repayments_by_currency_url }}">{% trans 'Погашения по валютам' %}</a></li>
+                    </ul>
+                </li>
+            {% endif %}
+
+            {% if request.user|has_group:"Administrator"%}
+                <li class="sidebar-header">{% trans 'Данные' %}</li>
+                <li class="sidebar-item {% if menu_block == 'uploads' %} active {%endif%}">
+                    <a href="#upload-data" data-toggle="collapse" class="sidebar-link collapsed">
+                        <i class="align-middle mr-2 fas fa-fw fa-folder-open"></i>
+                        <span class="align-middle">{% trans 'Загрузка данных в базу' %}</span>
+                    </a>
+
+                    <ul id="upload-data" class="sidebar-dropdown list-unstyled collapse " data-parent="#sidebar">
+                        <li class="sidebar-item {% if request.path == upload_credits_url %} active {%endif%}">
+                            <a class="sidebar-link" href="{{ upload_credits_url }}">{% trans 'Загрузка портфель' %}</a></li>
+                        <li class="sidebar-item {% if request.path == upload_repayment_url %} active {%endif%}">
+                            <a class="sidebar-link" href="{{ upload_repayment_url }}">{% trans 'Загрузка пред. платежи' %}</a></li>
+                        <li class="sidebar-item {% if request.path == upload_issuances_url %} active {%endif%}">
+                            <a class="sidebar-link" href="{{ upload_issuances_url }}">{% trans 'Загрузка выдачи' %}</a></li>
+                        <li class="sidebar-item {% if request.path == upload_overdues_url %} active {%endif%}">
+                            <a class="sidebar-link" href="{{ upload_overdues_url }}">{% trans 'Загрузка просрочки' %}</a></li>
+                    </ul>
+                </li>
+            {% endif %}
         </ul>
     </div>
 </nav>
