@@ -10,7 +10,7 @@ class ServicesManager(models.Manager):
         httpUrl = settings.TAX_BASE_URL + service_name
         basic_auth = HTTPBasicAuth(settings.TAX_USERNAME, settings.TAX_PASSWORD)
 
-        response = requests.post(httpUrl, json=params, auth=basic_auth)
+        response = requests.post(httpUrl, json=params, auth=basic_auth, proxies=settings.PROXIES)
         if (response.status_code == 200
                 and response.json()['success']
                 and response.json()['data']):
@@ -31,7 +31,7 @@ class ServicesManager(models.Manager):
         httpUrl = settings.TAX_BASE_URL + service_name
         basic_auth = HTTPBasicAuth(settings.TAX_USERNAME, settings.TAX_PASSWORD)
 
-        response = requests.post(httpUrl, json=params, auth=basic_auth)
+        response = requests.post(httpUrl, json=params, auth=basic_auth, proxies=settings.PROXIES)
 
         if (response.status_code == 200
                 and response.json()['success']

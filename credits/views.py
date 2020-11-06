@@ -6,7 +6,10 @@ from django.db import connection
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
+from django.views.generic.base import View
 from django_tables2.export.export import TableExport
+from docxtpl import DocxTemplate
+
 from credits.models import *
 from credits.tables import *
 from .apps import CreditsConfig
@@ -467,6 +470,41 @@ def issued_overdues(request):
     return render(request, 'credits/view.html', context)
 
 
+class GenerateWord(View):
+    def get(self, request):
+        month = pd.to_datetime(request.current_month)
+        report = ListReports.objects.get(REPORT_MONTH=month.month, REPORT_YEAR=month.year)
+        last_month = pd.to_datetime(request.current_month) - pd.DateOffset(months=3)
+
+        # Общие показатели
+        query = 'SELECT ROWNUM as id, T.* FROM TABLE(GET_INDS(%s)) T'
+        general = InfoCredits.objects.raw(query, [month])
+
+        # NPL клиенты
+        query = Query.orcl_npls()
+        npl_clients = NplClients.objects.raw(query, [report.id])[:10]
+
+
+        doc = DocxTemplate("media/tmp_files/doklad_template.docx")
+        context = {
+            'olddate': last_month.strftime('%d.%m.%Y'),
+            'newdate': month.strftime('%d.%m.%Y'),
+            'general': general,
+            'npl_clients': npl_clients
+        }
+
+
+        doc.render(context)
+        byte_io = BytesIO()
+        doc.save(byte_io)
+        byte_io.seek(0)
+        response = HttpResponse(byte_io.read())
+        response["Content-Disposition"] = "attachment; filename=generated_report.docx"
+        response["Content-Type"] = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+
+        return response
+
+
 # Экспортировать все таблицы в Excel
 class CursorByName():
     def __init__(self, cursor):
@@ -486,6 +524,7 @@ def export_all_tables(request):
     report = ListReports.objects.get(REPORT_MONTH=sMonth.month, REPORT_YEAR=sMonth.year)
     last_month = pd.to_datetime(request.session['data_month']) - pd.DateOffset(months=3)
     cursor = connection.cursor()
+
     # Indicators
     cursor.execute('''SELECT ROWNUM as id, T.* FROM TABLE(GET_INDS(%s)) T''', [sMonth])
     ind_data = []
@@ -498,6 +537,7 @@ def export_all_tables(request):
                            "NEW_VALUE": sMonth.strftime('%d.%m.%Y'),
                            "UPDATES": "Изменение", "PERCENT": "Изменение, %"},
                   inplace=True)
+
 
     # NPLS
     cursor.execute(Query.orcl_npls(), [report.id])
@@ -518,7 +558,7 @@ def export_all_tables(request):
         toxic.append(row)
     toxic_df = pd.DataFrame(toxic)
     toxic_df = toxic_df.head(10)
-    toxic_df.drop(['ID', 'NUMERAL'], axis=1, inplace=True)
+    # toxic_df.drop(['ID', 'NUMERAL'], axis=1, inplace=True)
     toxic_df.rename(columns={"NAME": "Наименование клиента", "BRANCH": "Филиал", "BALANS": "Остаток Кредита"},
                     inplace=True)
 
@@ -1024,7 +1064,7 @@ def export_all_docx(request):
         toxic.append(row)
     toxic_df = pd.DataFrame(toxic)
     toxic_df = toxic_df.head(10)
-    toxic_df.drop(['ID', 'NUMERAL'], axis=1, inplace=True)
+    # toxic_df.drop(['ID', 'NUMERAL'], axis=1, inplace=True)
     toxic_df.rename(columns={"NAME": "Наименование клиента", "BRANCH": "Филиал", "BALANS": "Остаток кредита"},
                     inplace=True)
 

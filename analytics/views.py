@@ -75,3 +75,11 @@ def risk_appetita(request):
         "menu_group": 'risk_appetita',
     }
     return render(request, 'analytics/risk_appetita.html', context)
+
+def cascading_reserve(request):
+    title = "Каскадирование дополнительных резервов на КП"
+    context = {
+        "page_title": title,
+        "menu_block": 'analytics',
+        "menu_group": 'risk_appetita',
+    }

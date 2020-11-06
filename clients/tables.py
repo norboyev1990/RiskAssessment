@@ -144,6 +144,11 @@ class ContractsListTable(tables.Table):
         exclude = ('id',)
 
 class ExportClientsTable(tables.Table):
+    Status = tables.Column(verbose_name="Класс качества", accessor="get_status_name")
     class Meta:
         model = Clients
+        sequence = ('ClientName', 'BranchName', 'Subject', 'Status',
+                    'TotalLoans','TotalReserve','NeededReserve','TotalOverdue',
+                    'OverdueDays','NachPercent','ArrearDays','SummaSudeb',
+                    'SummaVneb','SummaPeresm')
         exclude = ('ClientID','ClientType','Passport','CountLoans','Address','ClientStatus')

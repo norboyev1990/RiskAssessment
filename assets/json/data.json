@@ -1,0 +1,18 @@
+(15) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+0: {id: "TJ-SU", value: 7104, multiPolygon: Array(1), name: "Sughd", NAME_ENG: "Sughd", …}
+1: {id: "UZ-AN", value: 1574, multiPolygon: Array(1), name: "Andijon", NAME_ENG: "Andijan", …}
+2: {id: "UZ-BU", value: 9573, multiPolygon: Array(1), name: "Buxoro", NAME_ENG: "Buxoro", …}
+3: {id: "UZ-FA", value: 210, multiPolygon: Array(1), name: "Farg`ona", NAME_ENG: "Fergana", …}
+4: {id: "UZ-JI", value: 5442, multiPolygon: Array(1), name: "Jizzax", NAME_ENG: "Jizzakh", …}
+5: {id: "UZ-NG", value: 1978, multiPolygon: Array(1), name: "Namangan", NAME_ENG: "Namangan", …}
+6: {id: "UZ-NW", value: 1904, multiPolygon: Array(1), name: "Navoiy", NAME_ENG: "Navoiy", …}
+7: {id: "UZ-QA", value: 3316, multiPolygon: Array(1), name: "Qashqadaryo", NAME_ENG: "Qashqadaryo", …}
+8: {id: "UZ-QR", value: 611, multiPolygon: Array(2), name: "Qoraqalpog‘iston", NAME_ENG: "Karakalpakstan", …}
+9: {id: "UZ-SA", value: 4290, multiPolygon: Array(1), name: "Samarqand", NAME_ENG: "Samarqand", …}
+10: {id: "UZ-SI", value: 319, multiPolygon: Array(1), name: "Sirdaryo", NAME_ENG: "Sirdarya", …}
+11: {id: "UZ-SU", value: 3666, multiPolygon: Array(1), name: "Surxondaryo", NAME_ENG: "Surxondaryo", …}
+12: {id: "UZ-TK", value: 8443, multiPolygon: Array(1), name: "Toshkent", NAME_ENG: "Tashkent", …}
+13: {id: "UZ-TO", value: 5120, multiPolygon: Array(1), name: "Toshkent", NAME_ENG: "Tashkent", …}
+14: {id: "UZ-XO", value: 406, multiPolygon: Array(1), name: "Xorazm", NAME_ENG: "Khorezm", …}
+length: 15
+__proto__: Array(0)

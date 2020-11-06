@@ -260,7 +260,7 @@ class Query:
                 (NVL(N.BALANS,0)+NVL(T.BALANS,0))/1000000 as AmountNTK,
                 (NVL(N.BALANS,0)+NVL(T.BALANS,0))/P.BALANS as WeightNTK,
                 NVL(P.RESERVE,0)/1000000 as ResBalans,
-                NVL(P.RESERVE,0)/(NVL(N.BALANS,0)+NVL(T.BALANS,0)) as ResCovers
+                NVL(P.RESERVE,0)/NULLIF(NVL(N.BALANS,0)+NVL(T.BALANS,0),0) as ResCovers
             FROM PORTFOLIO_TABLE P
             LEFT JOIN NPL_TABLE N  ON N.GROUPS = P.GROUPS
             LEFT JOIN TOX_TABLE T  ON T.GROUPS = P.GROUPS
@@ -625,7 +625,7 @@ class Query:
                 (NVL(N.BALANS,0)+NVL(T.BALANS,0))/1000000 as AmountNTK,
                 (NVL(N.BALANS,0)+NVL(T.BALANS,0))/P.BALANS as WeightNTK,
                 NVL(P.RESERVE,0)/1000000 as ResBalans,
-                NVL(P.RESERVE,0)/(NVL(N.BALANS,0)+NVL(T.BALANS,0)) as ResCovers
+                NVL(P.RESERVE,0)/NULLIF(NVL(N.BALANS,0)+NVL(T.BALANS,0),0) as ResCovers
             FROM PORTFOLIO_TABLE P
             LEFT JOIN NPL_TABLE N  ON N.GROUPS = P.GROUPS
             LEFT JOIN TOX_TABLE T  ON T.GROUPS = P.GROUPS
@@ -748,7 +748,7 @@ class Query:
                             OSTATOK_NACH_PROSR_PRCNT,
                             START_MONTH
                         FROM CREDITS
-                        WHERE REPORT_ID = %s 
+                        WHERE REPORT_ID = %s
                           AND VID_KREDITOVANIYA IN (
                               '30-Потребительский кредит', 
                               '32-Микрозаем', 
@@ -1158,7 +1158,7 @@ class Query:
                 S_UZS.TOTAL AS TotalUZS,
                 S_USD.TOTAL AS TotalUSD,
                 S_EUR.TOTAL AS TotalEUR,
-                S_JPY.TOTAL AS TotalJPY
+                NVL(S_JPY.TOTAL,0) AS TotalJPY
             FROM VIEW_TERMTYPE_NAMES TN
             LEFT JOIN VALUTA_UZS UZS  ON UZS.GROUPS = TN.GROUPS
             LEFT JOIN VALUTA_USD USD  ON USD.GROUPS = TN.GROUPS
@@ -1307,7 +1307,7 @@ class Query:
               NVL(SUM(OSTATOK_PROSR),0) AS Overdue
             FROM CREDITS C
             LEFT JOIN CREDITS_BRANCH B ON B.CODE = C.MFO
-            WHERE REPORT_ID = %s 
+            WHERE REPORT_ID = %s
               AND DATE_DOGOVOR >= TO_DATE('2019-12-01', 'YYYY-MM-DD')
             GROUP BY B.NAME, B.SORT, C.MFO
 

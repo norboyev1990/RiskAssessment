@@ -27,7 +27,7 @@
 
 
         <div id="finance-bank" class="row mt-n4">
-            <div class="col-md-6">
+            <div class="col-md-12 col-xxl-6">
                 <div class="card">
                     <div class="card-header">
                         <h5 class="card-title">[[ header ]]</h5>
@@ -68,61 +68,155 @@
                             </tbody>
                         </table>
 
+                        <p class="text-sm text-muted"><em>*расчет фактических значений ROE и ROA произведен из расчета средемесячных значений капитала и активов за 2019 год</em></p>
+
+                        <table class="table table-sm mb-0" style="font-size: small">
+                            <tbody>
+                                <tr>
+                                    <td>ср. мес. значение капитала за 2019</td>
+                                    <td class="text-right">4265</td>
+                                </tr>
+                                <tr>
+                                    <td>ср. мес. значение активов за 2019</td>
+                                    <td class="text-right">35 709</td>
+                                </tr>
+                                <tr>
+                                    <td>Средный валовый доход банка (за последные 3 года)</td>
+                                    <td class="text-right">892</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-12 col-xxl-6">
                 <div class="card">
-                    <div class="card-body">
-                        <svg width="*" height="360">
-                            <polygon points="5,356 54,278 186,278 132,356"
-                                     fill="#17a2b8" stroke="#3e4676" stroke-width="2"/>
-                            <polygon points="136,356 190,278 258,278 312,356"
-                                     fill="#17a2b8" stroke="#3e4676" stroke-width="2"/>
-                            <polygon points="316,356 262,278 394,278 443,356"
-                                     fill="#17a2b8" stroke="#3e4676" stroke-width="2"/>
-                            <polygon points="56,275 126,162 322,162 392,275"
-                                     fill="#17a2b8" stroke="#3e4676" stroke-width="2"/>
-                            <polygon points="128,159 224,5 320,159"
-                                     fill="#17a2b8" stroke="#3e4676" stroke-width="2"/>
-                            <text x="224" y="105" text-anchor="middle" fill="white">Допустимый
-                                <tspan x="224" y="125">уровен риска</tspan>
-                            </text>
-                            <text x="224" y="225" text-anchor="middle" fill="white" font-size="18" font-weight="bold">
-                                Риск-аппетит
-                            </text>
-                            <text x="90" y="320" text-anchor="middle" fill="white" font-size="10">
-                                Кредитные риски
-                            </text>
-                            <text x="224" y="320" text-anchor="middle" fill="white" font-size="10">
-                                Рыночные риски
-                            </text>
-                            <text x="353" y="320" text-anchor="middle" fill="white" font-size="10">
-                                Операционные риски
-                            </text>
-                            <line x1="266" y1="72" x2="311" y2="42" style="stroke:rgb(255,0,0);stroke-width:2"/>
-                            <polygon points="312,45 308,40 315,39"
-                                     fill="rgb(255,0,0)" stroke="rgb(255,0,0)" stroke-width="2"/>
-                            <line x1="353" y1="210" x2="400" y2="210" style="stroke:rgb(255,0,0);stroke-width:2"/>
-                            <polygon points="400,207 400,213 406,210"
-                                     fill="rgb(255,0,0)" stroke="rgb(255,0,0)" stroke-width="2"/>
-                            <text x="330" y="20" font-size="14" font-weight="bold">
-                                Допустимый уровень риска
-                                <tspan x="330" y="40" fill="#3e4676" font-weight="normal">[[ allowed_level_risk ]] млрд. сум</tspan>
-                            </text>
-                            <text x="420" y="200" font-size="14" font-weight="bold">
-                                Риск-аппетит
-                                <tspan x="430" y="220" fill="#3e4676" font-weight="normal">[[ total_risk_appetit ]] млрд. сум</tspan>
-                                <tspan x="430" y="240" font-weight="normal" font-size="10"><tspan fill="#dc3545" >45%</tspan> от допустимого уровня риска</tspan>
-                                <tspan x="430" y="260" font-weight="normal" font-size="10">31% от плановых процентных доходов за 2020 г.</tspan>
-                            </text>
-                        </svg>
+                    <div class="card-header">
+                        <h5 class="card-title">Диаграмма риск-аппетит</h5>
+                    </div>
+                    <div class="card-body pt-0">
+                        <div class="row">
+                            <div class="col-7">
+                                <img class="contrast" src="{% static 'graph/large.webp' %}" width="100%">
+                                <div class="row mt-2">
+                                    <div class="col-4 text-center">
+                                        <h6 class="badge badge-success w-50">576</h6>
+                                        <h5>64%</h5>
+                                    </div>
+                                    <div class="col-4 text-center">
+                                        <h6 class="badge badge-primary w-50">190</h6>
+                                        <h5>21%</h5>
+                                    </div>
+                                    <div class="col-4 text-center">
+                                        <h6 class="badge badge-warning w-50">134</h6>
+                                        <h5>15%</h5>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-5">
+                                <h5 class="mt-4">Допустисый уровен риска</h5>
+                                <p class="mb-5">1985 млрд. сум</p>
+                                <hr>
+                                <h5 class="mt-2">Риск-аппетит</h5>
+                                <p class="">900 млрд. сум</p>
+                                <p class="mb-0 text-sm"><span class="badge badge-warning">45%</span> от допустимого уровня риска</p>
+                                <p class="mb-0 text-sm">31% от плановых процентных доходов за 2020 г.</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <table class="table table-sm mt-2" style="font-size: 10px">
+                                    <tbody>
+                                        <tr>
+                                            <td style="width: 300px">Количество годовой прибыли под риском</td>
+                                            <td class="table-success text-center font-weight-bolder" style="width: 50px">2</td>
+                                            <td>года</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Итого риск аппетит на 2020 в разбивке риск компонентов</td>
+                                            <td class="table-warning text-center font-weight-bolder">900</td>
+                                            <td>млрд. сум</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-right">Кредитные риски</td>
+                                            <td class="text-center">576</td>
+                                            <td class="">Доформирование резервов по КП</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-right">Риночные риски</td>
+                                            <td class="text-center">190</td>
+                                            <td class="">Лимиты на убиток по валютной позитции (все валюты) и на инвест. портфель</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-right">Операционные риски</td>
+                                            <td class="text-center">134</td>
+                                            <td class="">15% от среднего валовога дохода Банка за последные 3 года</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+
+{#                        <svg width="*" height="360">#}
+{#                            <polygon points="5,356 54,278 186,278 132,356"#}
+{#                                     fill="#17a2b8" stroke="#3e4676" stroke-width="2"/>#}
+{#                            <polygon points="136,356 190,278 258,278 312,356"#}
+{#                                     fill="#17a2b8" stroke="#3e4676" stroke-width="2"/>#}
+{#                            <polygon points="316,356 262,278 394,278 443,356"#}
+{#                                     fill="#17a2b8" stroke="#3e4676" stroke-width="2"/>#}
+{#                            <polygon points="56,275 126,162 322,162 392,275"#}
+{#                                     fill="#17a2b8" stroke="#3e4676" stroke-width="2"/>#}
+{#                            <polygon points="128,159 224,5 320,159"#}
+{#                                     fill="#17a2b8" stroke="#3e4676" stroke-width="2"/>#}
+{#                            <text x="224" y="105" text-anchor="middle" fill="white">Допустимый#}
+{#                                <tspan x="224" y="125">уровен риска</tspan>#}
+{#                            </text>#}
+{#                            <text x="224" y="225" text-anchor="middle" fill="white" font-size="18" font-weight="bold">#}
+{#                                Риск-аппетит#}
+{#                            </text>#}
+{#                            <text x="90" y="320" text-anchor="middle" fill="white" font-size="10">#}
+{#                                Кредитные риски#}
+{#                            </text>#}
+{#                            <text x="224" y="320" text-anchor="middle" fill="white" font-size="10">#}
+{#                                Рыночные риски#}
+{#                            </text>#}
+{#                            <text x="353" y="320" text-anchor="middle" fill="white" font-size="10">#}
+{#                                Операционные риски#}
+{#                            </text>#}
+{#                            <line x1="266" y1="72" x2="311" y2="42" style="stroke:rgb(255,0,0);stroke-width:2"/>#}
+{#                            <polygon points="312,45 308,40 315,39"#}
+{#                                     fill="rgb(255,0,0)" stroke="rgb(255,0,0)" stroke-width="2"/>#}
+{#                            <line x1="353" y1="210" x2="400" y2="210" style="stroke:rgb(255,0,0);stroke-width:2"/>#}
+{#                            <polygon points="400,207 400,213 406,210"#}
+{#                                     fill="rgb(255,0,0)" stroke="rgb(255,0,0)" stroke-width="2"/>#}
+{#                            <text x="330" y="20" font-size="14" font-weight="bold">#}
+{#                                Допустимый уровень риска#}
+{#                                <tspan x="330" y="40" fill="#3e4676" font-weight="normal">[[ allowed_level_risk ]] млрд. сум</tspan>#}
+{#                            </text>#}
+{#                            <text x="420" y="200" font-size="14" font-weight="bold">#}
+{#                                Риск-аппетит#}
+{#                                <tspan x="430" y="220" fill="#3e4676" font-weight="normal">[[ total_risk_appetit ]] млрд. сум</tspan>#}
+{#                                <tspan x="430" y="240" font-weight="normal" font-size="10"><tspan fill="#dc3545" >45%</tspan> от допустимого уровня риска</tspan>#}
+{#                                <tspan x="430" y="260" font-weight="normal" font-size="10">31% от плановых процентных доходов за 2020 г.</tspan>#}
+{#                            </text>#}
+{#                        </svg>#}
 
 
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-12 col-xxl-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Каскадирование дополнителных резервов на кредитный портфель</h5>
+                    </div>
+                    <div class="card-body">
+                        <table></table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 d-none">
                 <div class="card">
                     <div class="card-body">
                         <div id="chartdiv-sphere" style="height: 400px"></div>

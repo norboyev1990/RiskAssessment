@@ -63,6 +63,18 @@ class Clients(models.Model):
         else:
             return mark_safe('<span class="badge badge-success">Стандарт</span>')
 
+    def get_status_name(self):
+        if self.ClientStatus == 10:
+            return "Безнадежный"
+        elif self.ClientStatus == 30:
+            return "Сомнительный"
+        elif self.ClientStatus == 50:
+            return "Неудовлет."
+        elif self.ClientStatus == 70:
+            return "Субстандарт"
+        else:
+            return "Стандарт"
+
     def get_overdues(self):
         if self.TotalOverdue:
             return mark_safe('<div>{}</div><div class="text-muted" style="font-size: 14px">{} дней</div>'
