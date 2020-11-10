@@ -5,3 +5,4 @@ __pycache__/
 *.xls
 risk_env
 .idea
+oracle_to_postgree.db

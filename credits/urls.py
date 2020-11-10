@@ -7,6 +7,7 @@ urlpatterns = [
     path('npl_clients', npl_clients, name='npl_clients'),
     path('toxic_loans', toxic_loans, name='toxic_loans'),
     path('overdue_loans', overdue_loans, name='overdue_loans'),
+    path('overdue_percents', overdue_percents, name='overdue_percents'),
     path('by_terms', by_terms, name='by_terms'),
     path('by_subjects', by_subjects, name='by_subjects'),
     path('by_segments', by_segments, name='by_segments'),

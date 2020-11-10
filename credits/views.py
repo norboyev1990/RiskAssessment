@@ -158,6 +158,32 @@ def overdue_loans(request):
 
     return render(request, 'credits/view.html', context)
 
+@login_required
+def overdue_percents(request):
+    title = _("Просроченные проценты (16377)")
+    month = pd.to_datetime(request.current_month)
+    report = ListReports.objects.get(REPORT_MONTH=month.month, REPORT_YEAR=month.year)
+
+    top = int(request.GET.get('tp')) if request.GET.get('tp') else 9999999
+    query = Query.orcl_overdue_percents()
+    model = OverdueCredits.objects.raw(query, [report.id])[:top]
+    table = OverduePercentsTable(model)
+    table.paginate(page=request.GET.get("page", 1), per_page=10)
+
+    export_format = request.GET.get("_export", None)
+    if TableExport.is_valid_format(export_format):
+        exporter = TableExport(export_format, table, dataset_kwargs={"title": title})
+        return exporter.response("overdue_percents.{}".format(export_format))
+
+    context = {
+        "page_title": title,
+        "data_table": table,
+        "data_month": month.strftime('%Y-%m'),
+        "menu_block": CreditsConfig.name,
+    }
+
+    return render(request, 'credits/view.html', context)
+
 
 @login_required
 def by_terms(request):

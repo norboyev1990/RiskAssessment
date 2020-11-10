@@ -8,6 +8,7 @@
 {% url 'npl_clients' as npl_clients_url %}
 {% url 'toxic_loans' as toxic_loans_url %}
 {% url 'overdue_loans' as overdue_loans_url %}
+{% url 'overdue_percents' as overdue_percents_url %}
 {% url 'by_terms' as by_terms_url %}
 {% url 'by_subjects' as by_subjects_url %}
 {% url 'by_segments' as by_segments_url %}
@@ -128,6 +129,8 @@
                             <a class="sidebar-link" href="{{ toxic_loans_url }}">{% trans 'Toxic loans' %}</a></li>
                         <li class="sidebar-item {% if request.path == overdue_loans_url %} active {%endif%}">
                             <a class="sidebar-link" href="{{ overdue_loans_url }}">{% trans 'Overdue loans' %}</a></li>
+                        <li class="sidebar-item {% if request.path == overdue_percents_url %} active {%endif%}">
+                            <a class="sidebar-link" href="{{ overdue_percents_url }}">{% trans 'Просроченные проценты' %}</a></li>
                         <li class="sidebar-item {% if request.path == by_terms_url %} active {%endif%}">
                             <a class="sidebar-link" href="{{ by_terms_url }}">{% trans 'Disaggregated by terms' %}</a></li>
                         <li class="sidebar-item {% if request.path == by_subjects_url %} active {%endif%}">

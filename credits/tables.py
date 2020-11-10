@@ -117,6 +117,17 @@ class ToxicCreditsTable(tables.Table):
 
 class OverdueCreditsTable(tables.Table):
     Name = StringColumn(verbose_name="Наименование клиента", footer="Итого:")
+    Balans = SummingColumn(verbose_name="Остаток просрочки")
+
+    class Meta:
+        model = OverdueCredits
+        template_name = "django_tables2/bootstrap4.html"
+        orderable = False
+        attrs = attrs_table_style
+        exclude = ('id',)
+
+class OverduePercentsTable(tables.Table):
+    Name = StringColumn(verbose_name="Наименование клиента", footer="Итого:")
     Balans = SummingColumn(verbose_name="Остаток р/с 16377")
 
     class Meta:

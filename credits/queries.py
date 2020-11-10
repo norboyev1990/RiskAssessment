@@ -65,20 +65,39 @@ class Query:
     def orcl_overdues():
         return '''
             SELECT 
-                ROW_NUMBER() Over (Order By NVL(SUM(C.OSTATOK_NACH_PROSR_PRCNT), 0) DESC) Numeral,
+                ROW_NUMBER() Over (Order By NVL(SUM(C.OSTATOK_PROSR), 0) DESC) Numeral,
                 UNIQUE_CODE as id,
                 MAX(NAME_CLIENT) as Name, 
                 MAX(B.NAME) as Branch,
-                NVL(SUM(OSTATOK_NACH_PROSR_PRCNT)/1000000,0) as Balans
+                NVL(SUM(OSTATOK_PROSR)/1000000,0) as Balans
             FROM CREDITS C
             LEFT JOIN CREDITS_LISTREPORTS L ON L.ID = C.REPORT_ID
             LEFT JOIN CREDITS_BRANCH B ON B.CODE = C.MFO
             WHERE REPORT_ID = %s
             GROUP BY UNIQUE_CODE
-            HAVING SUM(OSTATOK_NACH_PROSR_PRCNT) <> 0
+            HAVING SUM(OSTATOK_PROSR) <> 0
             ORDER BY BALANS DESC
             --FETCH FIRST 200 ROWS ONLY    
                 '''
+
+    @staticmethod
+    def orcl_overdue_percents():
+        return '''
+                SELECT 
+                    ROW_NUMBER() Over (Order By NVL(SUM(C.OSTATOK_NACH_PROSR_PRCNT), 0) DESC) Numeral,
+                    UNIQUE_CODE as id,
+                    MAX(NAME_CLIENT) as Name, 
+                    MAX(B.NAME) as Branch,
+                    NVL(SUM(OSTATOK_NACH_PROSR_PRCNT)/1000000,0) as Balans
+                FROM CREDITS C
+                LEFT JOIN CREDITS_LISTREPORTS L ON L.ID = C.REPORT_ID
+                LEFT JOIN CREDITS_BRANCH B ON B.CODE = C.MFO
+                WHERE REPORT_ID = %s
+                GROUP BY UNIQUE_CODE
+                HAVING SUM(OSTATOK_NACH_PROSR_PRCNT) <> 0
+                ORDER BY BALANS DESC
+                --FETCH FIRST 200 ROWS ONLY    
+                    '''
 
     @staticmethod
     def orcl_byterms():
